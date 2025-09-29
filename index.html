@@ -221,8 +221,8 @@
             const tableContainer = document.getElementById('tableContainer');
 
             try {
-                // Fetch the JSON data created by the Office Script
-                const response = await fetch('./data.json');
+                // Fetch the JSON data created by the Office Script with cache-busting
+                const response = await fetch(`./data.json?t=${Date.now()}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
