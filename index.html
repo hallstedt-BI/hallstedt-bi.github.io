@@ -27,8 +27,37 @@
         }
         
         .table-container {
-            padding: 20px;
+            padding: 40px;
             overflow-x: auto;
+            max-width: 100vw;
+        }
+        
+        .tables-row {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+            align-items: flex-start;
+        }
+        
+        .table-section {
+            flex: 1;
+        }
+        
+        .table-section.narrow {
+            flex: 0 0 300px;
+            max-width: 350px;
+        }
+        
+        .table-section.wide {
+            flex: 2;
+        }
+        
+        .section-header {
+            margin: 0 0 15px 0 !important;
+            color: #0078d4;
+            border-bottom: 2px solid #0078d4;
+            padding-bottom: 5px;
+            font-size: 1.4rem;
         }
         
         .loading {
@@ -65,9 +94,10 @@
         
         .data-table th,
         .data-table td {
-            padding: 12px;
+            padding: 15px 12px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
+            font-size: 1.1rem;
         }
         
         .data-table th {
@@ -76,10 +106,29 @@
             font-weight: 600;
             position: sticky;
             top: 0;
+            font-size: 1.2rem;
         }
         
         .data-table tr:hover {
             background-color: #f8f9fa;
+        }
+        
+        /* TV-optimized styling */
+        body {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+        }
+        
+        .last-updated {
+            font-size: 1.2rem;
         }
         
         .instructions {
@@ -159,27 +208,42 @@
                     lastUpdated.style.display = 'block';
                 }
                 
-                // Create and display multiple sections
+                // Create and display multiple sections with TV-optimized layout
                 if (data.sections) {
                     tableContainer.innerHTML = '';
                     
-                    // Display each section
-                    Object.keys(data.sections).forEach(sectionKey => {
-                        const section = data.sections[sectionKey];
-                        if (section.data && section.data.length > 0) {
-                            // Create section header
-                            const sectionHeader = document.createElement('h3');
-                            sectionHeader.textContent = `${section.title} (${section.totalRows} rows)`;
-                            sectionHeader.style.cssText = 'margin: 30px 0 15px 0; color: #0078d4; border-bottom: 2px solid #0078d4; padding-bottom: 5px;';
-                            
-                            // Create table for this section
-                            const table = createTable(section.data);
-                            table.style.marginBottom = '30px';
-                            
-                            tableContainer.appendChild(sectionHeader);
-                            tableContainer.appendChild(table);
-                        }
-                    });
+                    // Create top row with main stats (wide) and small table (narrow)
+                    const topRow = document.createElement('div');
+                    topRow.className = 'tables-row';
+                    
+                    // Main stats section (left side - wide)
+                    if (data.sections.mainStats && data.sections.mainStats.data.length > 0) {
+                        const mainStatsSection = createTableSection(
+                            data.sections.mainStats, 
+                            'table-section wide'
+                        );
+                        topRow.appendChild(mainStatsSection);
+                    }
+                    
+                    // Small table section (right side - narrow)
+                    if (data.sections.smallTable && data.sections.smallTable.data.length > 0) {
+                        const smallTableSection = createTableSection(
+                            data.sections.smallTable, 
+                            'table-section narrow'
+                        );
+                        topRow.appendChild(smallTableSection);
+                    }
+                    
+                    tableContainer.appendChild(topRow);
+                    
+                    // Large table section (full width at bottom)
+                    if (data.sections.largeTable && data.sections.largeTable.data.length > 0) {
+                        const largeTableSection = createTableSection(
+                            data.sections.largeTable, 
+                            'table-section'
+                        );
+                        tableContainer.appendChild(largeTableSection);
+                    }
                     
                     tableContainer.style.display = 'block';
                 } else if (data.data && data.data.length > 0) {
@@ -198,6 +262,24 @@
                 errorMessage.textContent = `❌ Error: ${error.message}`;
                 errorMessage.style.display = 'block';
             }
+        }
+
+        function createTableSection(sectionData, className) {
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = className;
+            
+            // Create section header
+            const sectionHeader = document.createElement('h3');
+            sectionHeader.className = 'section-header';
+            sectionHeader.textContent = `${sectionData.title} (${sectionData.totalRows} rows)`;
+            
+            // Create table
+            const table = createTable(sectionData.data);
+            
+            sectionDiv.appendChild(sectionHeader);
+            sectionDiv.appendChild(table);
+            
+            return sectionDiv;
         }
 
         function createTable(data) {
