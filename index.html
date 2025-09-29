@@ -310,7 +310,7 @@
             // Create section header
             const sectionHeader = document.createElement('h3');
             sectionHeader.className = 'section-header';
-            sectionHeader.textContent = `${sectionData.title} (${sectionData.totalRows} rows)`;
+            sectionHeader.textContent = sectionData.title;
             
             // Create table
             const table = createTable(sectionData.data);
