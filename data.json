@@ -1,647 +1,257 @@
 {
-  "lastUpdated": "2025-09-29T11:10:26.400Z",
+  "lastUpdated": "2025-09-29T11:20:58.178Z",
   "sheetName": "Tabell HT25 ",
-  "totalRows": 40,
-  "data": [
-    {
-      "0": "",
-      "#": 1,
-      "Spelare": "Aleks / Amanda",
-      "Poäng": 0,
-      "SM": 0,
-      "Vinster": 0,
-      "Oavgjort": 0,
-      "Förlust": 0,
-      "Sets": 0,
-      "GA": 0,
-      "GC": 0,
-      "G/D": 0,
-      "": "",
-      "Matcher": ""
+  "sections": {
+    "mainStats": {
+      "title": "Main Statistics (A-K)",
+      "totalRows": 9,
+      "data": [
+        {
+          "#": 1,
+          "Spelare": "Aleks / Amanda",
+          "Poäng": 0,
+          "SM": 0,
+          "Vinster": 0,
+          "Oavgjort": 0,
+          "Förlust": 0,
+          "Sets": 0,
+          "GA": 0,
+          "GC": 0,
+          "G/D": 0
+        },
+        {
+          "#": 2,
+          "Spelare": "Mood / Robert",
+          "Poäng": 0,
+          "SM": 1,
+          "Vinster": 0,
+          "Oavgjort": 0,
+          "Förlust": 1,
+          "Sets": -2,
+          "GA": 12,
+          "GC": 22,
+          "G/D": -10
+        },
+        {
+          "#": 4,
+          "Spelare": "Kristian / Silvan",
+          "Poäng": 0,
+          "SM": 0,
+          "Vinster": 0,
+          "Oavgjort": 0,
+          "Förlust": 0,
+          "Sets": 0,
+          "GA": 0,
+          "GC": 0,
+          "G/D": 0
+        },
+        {
+          "#": 3,
+          "Spelare": "Daniel / Hyberg",
+          "Poäng": 0,
+          "SM": 0,
+          "Vinster": 0,
+          "Oavgjort": 0,
+          "Förlust": 0,
+          "Sets": 0,
+          "GA": 0,
+          "GC": 0,
+          "G/D": 0
+        },
+        {
+          "#": 5,
+          "Spelare": "Martin F / Fredrik",
+          "Poäng": 3,
+          "SM": 1,
+          "Vinster": 1,
+          "Oavgjort": 0,
+          "Förlust": 0,
+          "Sets": 2,
+          "GA": 22,
+          "GC": 12,
+          "G/D": 10
+        },
+        {
+          "#": 6,
+          "Spelare": "Mark / Haubir",
+          "Poäng": 3,
+          "SM": 1,
+          "Vinster": 1,
+          "Oavgjort": 0,
+          "Förlust": 0,
+          "Sets": 0,
+          "GA": 22,
+          "GC": 14,
+          "G/D": 8
+        },
+        {
+          "#": 7,
+          "Spelare": "Lucas / Dara",
+          "Poäng": 0,
+          "SM": 1,
+          "Vinster": 0,
+          "Oavgjort": 0,
+          "Förlust": 1,
+          "Sets": -2,
+          "GA": 12,
+          "GC": 22,
+          "G/D": -10
+        },
+        {
+          "#": 8,
+          "Spelare": "Anton / Jonas",
+          "Poäng": 0,
+          "SM": 1,
+          "Vinster": 0,
+          "Oavgjort": 0,
+          "Förlust": 1,
+          "Sets": 0,
+          "GA": 14,
+          "GC": 22,
+          "G/D": -8
+        },
+        {
+          "#": 9,
+          "Spelare": "Anders K / George",
+          "Poäng": 3,
+          "SM": 1,
+          "Vinster": 1,
+          "Oavgjort": 0,
+          "Förlust": 0,
+          "Sets": 2,
+          "GA": 22,
+          "GC": 12,
+          "G/D": 10
+        }
+      ]
     },
-    {
-      "0": "",
-      "#": 2,
-      "Spelare": "Mood / Robert",
-      "Poäng": 0,
-      "SM": 1,
-      "Vinster": 0,
-      "Oavgjort": 0,
-      "Förlust": 1,
-      "Sets": -2,
-      "GA": 12,
-      "GC": 22,
-      "G/D": -10,
-      "": "Sets gjorde förlorare",
-      "Matcher": "Förlorare"
+    "largeTable": {
+      "title": "Detailed Data (O-S)",
+      "totalRows": 36,
+      "data": [
+        {
+          "Vinnare": 1,
+          "Matcher - Förlorare": "Anders K / George",
+          "Resultat": "Mood / Robert",
+          "TotPoäng": "2-0"
+        },
+        {
+          "Vinnare": 2,
+          "Matcher - Förlorare": "Mark / Haubir",
+          "Resultat": "Anton / Jonas",
+          "TotPoäng": "2-0"
+        },
+        {
+          "Vinnare": 3,
+          "Matcher - Förlorare": "Martin F / Fredrik",
+          "Resultat": "Lucas / Dara",
+          "TotPoäng": "2-0"
+        },
+        {
+          "Vinnare": 4
+        },
+        {
+          "Vinnare": 5
+        },
+        {
+          "Vinnare": 6
+        },
+        {
+          "Vinnare": 7
+        },
+        {
+          "Vinnare": 8
+        },
+        {
+          "Vinnare": 9
+        },
+        {
+          "Vinnare": 10
+        },
+        {
+          "Vinnare": 11
+        },
+        {
+          "Vinnare": 12
+        },
+        {
+          "Vinnare": 13
+        },
+        {
+          "Vinnare": 14
+        },
+        {
+          "Vinnare": 15
+        },
+        {
+          "Vinnare": 16
+        },
+        {
+          "Vinnare": 17
+        },
+        {
+          "Vinnare": 18
+        },
+        {
+          "Vinnare": 19
+        },
+        {
+          "Vinnare": 20
+        },
+        {
+          "Vinnare": 21
+        },
+        {
+          "Vinnare": 22
+        },
+        {
+          "Vinnare": 23
+        },
+        {
+          "Vinnare": 24
+        },
+        {
+          "Vinnare": 25
+        },
+        {
+          "Vinnare": 26
+        },
+        {
+          "Vinnare": 27
+        },
+        {
+          "Vinnare": 28
+        },
+        {
+          "Vinnare": 29
+        },
+        {
+          "Vinnare": 30
+        },
+        {
+          "Vinnare": 31
+        },
+        {
+          "Vinnare": 32
+        },
+        {
+          "Vinnare": 33
+        },
+        {
+          "Vinnare": 34
+        },
+        {
+          "Vinnare": 35
+        },
+        {
+          "Vinnare": 36
+        }
+      ]
     },
-    {
-      "0": "",
-      "#": 4,
-      "Spelare": "Kristian / Silvan",
-      "Poäng": 0,
-      "SM": 0,
-      "Vinster": 0,
-      "Oavgjort": 0,
-      "Förlust": 0,
-      "Sets": 0,
-      "GA": 0,
-      "GC": 0,
-      "G/D": 0,
-      "": 0,
-      "Matcher": "Mood / Robert"
-    },
-    {
-      "0": "",
-      "#": 3,
-      "Spelare": "Daniel / Hyberg",
-      "Poäng": 0,
-      "SM": 0,
-      "Vinster": 0,
-      "Oavgjort": 0,
-      "Förlust": 0,
-      "Sets": 0,
-      "GA": 0,
-      "GC": 0,
-      "G/D": 0,
-      "": "",
-      "Matcher": "Anton / Jonas"
-    },
-    {
-      "0": "",
-      "#": 5,
-      "Spelare": "Martin F / Fredrik",
-      "Poäng": 3,
-      "SM": 1,
-      "Vinster": 1,
-      "Oavgjort": 0,
-      "Förlust": 0,
-      "Sets": 2,
-      "GA": 22,
-      "GC": 12,
-      "G/D": 10,
-      "": 0,
-      "Matcher": "Lucas / Dara"
-    },
-    {
-      "0": "",
-      "#": 6,
-      "Spelare": "Mark / Haubir",
-      "Poäng": 3,
-      "SM": 1,
-      "Vinster": 1,
-      "Oavgjort": 0,
-      "Förlust": 0,
-      "Sets": 0,
-      "GA": 22,
-      "GC": 14,
-      "G/D": 8,
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": 7,
-      "Spelare": "Lucas / Dara",
-      "Poäng": 0,
-      "SM": 1,
-      "Vinster": 0,
-      "Oavgjort": 0,
-      "Förlust": 1,
-      "Sets": -2,
-      "GA": 12,
-      "GC": 22,
-      "G/D": -10,
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": 8,
-      "Spelare": "Anton / Jonas",
-      "Poäng": 0,
-      "SM": 1,
-      "Vinster": 0,
-      "Oavgjort": 0,
-      "Förlust": 1,
-      "Sets": 0,
-      "GA": 14,
-      "GC": 22,
-      "G/D": -8,
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": 9,
-      "Spelare": "Anders K / George",
-      "Poäng": 3,
-      "SM": 1,
-      "Vinster": 1,
-      "Oavgjort": 0,
-      "Förlust": 0,
-      "Sets": 2,
-      "GA": 22,
-      "GC": 12,
-      "G/D": 10,
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "Ranking",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": " ",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "🥇",
-      "Poäng": "Martin F / Fredrik",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "🥈",
-      "Poäng": "Anders K / George",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "🥉",
-      "Poäng": "Mark / Haubir",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": " ",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": 4,
-      "Poäng": "Aleks / Amanda",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": 5,
-      "Poäng": "Kristian / Silvan",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": 6,
-      "Poäng": "Daniel / Hyberg",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": 7,
-      "Poäng": "Anton / Jonas",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": 8,
-      "Poäng": "Mood / Robert",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": 9,
-      "Poäng": "Lucas / Dara",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
-    },
-    {
-      "0": "",
-      "#": "",
-      "Spelare": "",
-      "Poäng": "",
-      "SM": "",
-      "Vinster": "",
-      "Oavgjort": "",
-      "Förlust": "",
-      "Sets": "",
-      "GA": "",
-      "GC": "",
-      "G/D": "",
-      "": "",
-      "Matcher": ""
+    "smallTable": {
+      "title": "Additional Info (B-C)",
+      "totalRows": 0,
+      "data": []
     }
-  ]
+  }
 }
