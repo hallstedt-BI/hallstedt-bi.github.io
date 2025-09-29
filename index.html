@@ -244,45 +244,56 @@
                 if (data.sections) {
                     tableContainer.innerHTML = '';
                     
-                    // Create top row with main stats and detailed data side-by-side
-                    const topRow = document.createElement('div');
-                    topRow.className = 'tables-row';
-                    topRow.style.display = 'flex'; // Force flex display
-                    topRow.style.gap = '40px';
-                    console.log('Creating flex container for side-by-side tables');
+                    // Create main row with left column (Stats + Ranking) and right column (Results)
+                    const mainRow = document.createElement('div');
+                    mainRow.className = 'tables-row';
+                    mainRow.style.display = 'flex';
+                    mainRow.style.gap = '40px';
+                    mainRow.style.alignItems = 'flex-start';
+                    console.log('Creating flex container for side-by-side layout');
                     
-                    // Main stats section (left side)
+                    // Left column container for Stats and Ranking
+                    const leftColumn = document.createElement('div');
+                    leftColumn.style.flex = '1';
+                    leftColumn.style.display = 'flex';
+                    leftColumn.style.flexDirection = 'column';
+                    leftColumn.style.gap = '20px';
+                    
+                    // Main stats section (top of left column)
                     if (data.sections.mainStats && data.sections.mainStats.data.length > 0) {
                         const mainStatsSection = createTableSection(
                             data.sections.mainStats, 
                             'table-section'
                         );
-                        topRow.appendChild(mainStatsSection);
+                        leftColumn.appendChild(mainStatsSection);
                         console.log('Added main stats section');
                     }
                     
-                    // Large table section (right side - detailed data)
-                    if (data.sections.largeTable && data.sections.largeTable.data.length > 0) {
-                        const largeTableSection = createTableSection(
-                            data.sections.largeTable, 
-                            'table-section detailed-data-table'
-                        );
-                        topRow.appendChild(largeTableSection);
-                        console.log('Added detailed data section');
-                    }
-                    
-                    tableContainer.appendChild(topRow);
-                    console.log('Flex container children count:', topRow.children.length);
-                    
-                    // Small table section (full width at bottom)
+                    // Small table section (bottom of left column)
                     if (data.sections.smallTable && data.sections.smallTable.data.length > 0) {
                         const smallTableSection = createTableSection(
                             data.sections.smallTable, 
                             'table-section'
                         );
-                        tableContainer.appendChild(smallTableSection);
-                        console.log('Added additional info section at bottom');
+                        leftColumn.appendChild(smallTableSection);
+                        console.log('Added ranking section below stats');
                     }
+                    
+                    mainRow.appendChild(leftColumn);
+                    
+                    // Right column - Large table section (detailed data)
+                    if (data.sections.largeTable && data.sections.largeTable.data.length > 0) {
+                        const largeTableSection = createTableSection(
+                            data.sections.largeTable, 
+                            'table-section detailed-data-table'
+                        );
+                        largeTableSection.style.flex = '1';
+                        mainRow.appendChild(largeTableSection);
+                        console.log('Added detailed data section');
+                    }
+                    
+                    tableContainer.appendChild(mainRow);
+                    console.log('Main layout created');
                     
                     tableContainer.style.display = 'block';
                 } else if (data.data && data.data.length > 0) {
