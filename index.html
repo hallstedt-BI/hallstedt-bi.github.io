@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel Viewer</title>
+    <title>Pingis HT25</title>
     <style>
         body {
             margin: 0;
@@ -33,23 +33,39 @@
         }
         
         .tables-row {
-            display: flex;
+            display: flex !important;
+            flex-wrap: nowrap;
             gap: 40px;
             margin-bottom: 40px;
             align-items: flex-start;
+            width: 100%;
         }
         
         .table-section {
             flex: 1;
+            min-width: 0; /* Allow tables to shrink */
         }
         
         .table-section.narrow {
-            flex: 0 0 300px;
-            max-width: 350px;
+            flex: 0 0 350px;
+            max-width: 400px;
+            min-width: 300px;
         }
         
         .table-section.wide {
             flex: 2;
+            min-width: 0;
+        }
+        
+        /* Force tables in narrow sections to be smaller */
+        .table-section.narrow .data-table {
+            font-size: 0.9rem;
+        }
+        
+        .table-section.narrow .data-table th,
+        .table-section.narrow .data-table td {
+            padding: 10px 8px;
+            font-size: 0.95rem;
         }
         
         .section-header {
@@ -212,37 +228,44 @@
                 if (data.sections) {
                     tableContainer.innerHTML = '';
                     
-                    // Create top row with main stats (wide) and small table (narrow)
+                    // Create top row with main stats and detailed data side-by-side
                     const topRow = document.createElement('div');
                     topRow.className = 'tables-row';
+                    topRow.style.display = 'flex'; // Force flex display
+                    topRow.style.gap = '40px';
+                    console.log('Creating flex container for side-by-side tables');
                     
-                    // Main stats section (left side - wide)
+                    // Main stats section (left side)
                     if (data.sections.mainStats && data.sections.mainStats.data.length > 0) {
                         const mainStatsSection = createTableSection(
                             data.sections.mainStats, 
-                            'table-section wide'
+                            'table-section'
                         );
                         topRow.appendChild(mainStatsSection);
+                        console.log('Added main stats section');
                     }
                     
-                    // Small table section (right side - narrow)
-                    if (data.sections.smallTable && data.sections.smallTable.data.length > 0) {
-                        const smallTableSection = createTableSection(
-                            data.sections.smallTable, 
-                            'table-section narrow'
-                        );
-                        topRow.appendChild(smallTableSection);
-                    }
-                    
-                    tableContainer.appendChild(topRow);
-                    
-                    // Large table section (full width at bottom)
+                    // Large table section (right side - detailed data)
                     if (data.sections.largeTable && data.sections.largeTable.data.length > 0) {
                         const largeTableSection = createTableSection(
                             data.sections.largeTable, 
                             'table-section'
                         );
-                        tableContainer.appendChild(largeTableSection);
+                        topRow.appendChild(largeTableSection);
+                        console.log('Added detailed data section');
+                    }
+                    
+                    tableContainer.appendChild(topRow);
+                    console.log('Flex container children count:', topRow.children.length);
+                    
+                    // Small table section (full width at bottom)
+                    if (data.sections.smallTable && data.sections.smallTable.data.length > 0) {
+                        const smallTableSection = createTableSection(
+                            data.sections.smallTable, 
+                            'table-section'
+                        );
+                        tableContainer.appendChild(smallTableSection);
+                        console.log('Added additional info section at bottom');
                     }
                     
                     tableContainer.style.display = 'block';
