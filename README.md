@@ -26,8 +26,8 @@ This setup allows you to export data from a SharePoint Excel file directly to yo
 3. Replace the default code with the contents of `office-script.ts`
 4. **Update the configuration** at the top:
    ```typescript
-   const GITHUB_TOKEN = 'your_token_here';  // Paste your GitHub token
-   const GITHUB_REPO = 'your-username/your-repo-name';  // Update with your repo
+   const GITHUB_TOKEN = "your_token_here"; // Paste your GitHub token
+   const GITHUB_REPO = "your-username/your-repo-name"; // Update with your repo
    ```
 5. Save the script with a name like "Export to GitHub"
 
@@ -48,7 +48,7 @@ This setup allows you to export data from a SharePoint Excel file directly to yo
 ## Features
 
 - ✅ No authentication required for website visitors
-- ✅ Automatic table generation from Excel data  
+- ✅ Automatic table generation from Excel data
 - ✅ Shows last updated timestamp
 - ✅ Responsive design for mobile/desktop
 - ✅ Auto-refreshes every 5 minutes
