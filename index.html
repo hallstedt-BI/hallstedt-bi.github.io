@@ -159,8 +159,31 @@
                     lastUpdated.style.display = 'block';
                 }
                 
-                // Create and display the table
-                if (data.data && data.data.length > 0) {
+                // Create and display multiple sections
+                if (data.sections) {
+                    tableContainer.innerHTML = '';
+                    
+                    // Display each section
+                    Object.keys(data.sections).forEach(sectionKey => {
+                        const section = data.sections[sectionKey];
+                        if (section.data && section.data.length > 0) {
+                            // Create section header
+                            const sectionHeader = document.createElement('h3');
+                            sectionHeader.textContent = `${section.title} (${section.totalRows} rows)`;
+                            sectionHeader.style.cssText = 'margin: 30px 0 15px 0; color: #0078d4; border-bottom: 2px solid #0078d4; padding-bottom: 5px;';
+                            
+                            // Create table for this section
+                            const table = createTable(section.data);
+                            table.style.marginBottom = '30px';
+                            
+                            tableContainer.appendChild(sectionHeader);
+                            tableContainer.appendChild(table);
+                        }
+                    });
+                    
+                    tableContainer.style.display = 'block';
+                } else if (data.data && data.data.length > 0) {
+                    // Fallback for old format
                     const table = createTable(data.data);
                     tableContainer.innerHTML = '';
                     tableContainer.appendChild(table);
