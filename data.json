@@ -1,9 +1,9 @@
 {
-  "lastUpdated": "2025-09-29T11:20:58.178Z",
+  "lastUpdated": "2025-09-29T11:46:15.091Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
-      "title": "Main Statistics (A-K)",
+      "title": "Statistik",
       "totalRows": 9,
       "data": [
         {
@@ -126,7 +126,7 @@
       ]
     },
     "largeTable": {
-      "title": "Detailed Data (O-S)",
+      "title": "Resultat",
       "totalRows": 36,
       "data": [
         {
@@ -249,7 +249,7 @@
       ]
     },
     "smallTable": {
-      "title": "Additional Info (B-C)",
+      "title": "Ranking",
       "totalRows": 0,
       "data": []
     }
