@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-09-29T12:01:08.682Z",
+  "lastUpdated": "2025-09-29T12:10:17.156Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -250,8 +250,36 @@
     },
     "smallTable": {
       "title": "Ranking",
-      "totalRows": 0,
-      "data": []
+      "totalRows": 9,
+      "data": [
+        {
+          "Ranking": "🥇"
+        },
+        {
+          "Ranking": "🥈"
+        },
+        {
+          "Ranking": "🥉"
+        },
+        {
+          "Ranking": 4
+        },
+        {
+          "Ranking": 5
+        },
+        {
+          "Ranking": 6
+        },
+        {
+          "Ranking": 7
+        },
+        {
+          "Ranking": 8
+        },
+        {
+          "Ranking": 9
+        }
+      ]
     }
   }
 }
