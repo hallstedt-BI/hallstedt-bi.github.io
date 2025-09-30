@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-09-30T09:10:58.415Z",
+  "lastUpdated": "2025-09-30T15:01:33.274Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -36,14 +36,14 @@
           "#": 4,
           "Spelare": "Kristian / Silvan",
           "Poäng": 0,
-          "SM": 0,
+          "SM": 1,
           "Vinster": 0,
           "Oavgjort": 0,
-          "Förlust": 0,
-          "Sets": 0,
-          "GA": 0,
-          "GC": 0,
-          "G/D": 0
+          "Förlust": 1,
+          "Sets": -1,
+          "GA": 27,
+          "GC": 33,
+          "G/D": -6
         },
         {
           "#": 3,
@@ -74,15 +74,15 @@
         {
           "#": 6,
           "Spelare": "Mark / Haubir",
-          "Poäng": 3,
-          "SM": 1,
-          "Vinster": 1,
+          "Poäng": 6,
+          "SM": 2,
+          "Vinster": 2,
           "Oavgjort": 0,
           "Förlust": 0,
-          "Sets": 0,
-          "GA": 22,
-          "GC": 14,
-          "G/D": 8
+          "Sets": 1,
+          "GA": 55,
+          "GC": 41,
+          "G/D": 14
         },
         {
           "#": 7,
@@ -151,7 +151,11 @@
           "TotPoäng": "22-12"
         },
         {
-          "Lag": 4
+          "Lag": 4,
+          "Vinnare": "Mark / Haubir",
+          "Förlorare": "Kristian / Silvan",
+          "Resultat": "2-1",
+          "TotPoäng": "33-27"
         },
         {
           "Lag": 5
@@ -257,15 +261,15 @@
       "data": [
         {
           "Ranking": "🥇",
-          "Spelare": "Martin F / Fredrik"
+          "Spelare": "Mark / Haubir"
         },
         {
           "Ranking": "🥈",
-          "Spelare": "Anders K / George"
+          "Spelare": "Martin F / Fredrik"
         },
         {
           "Ranking": "🥉",
-          "Spelare": "Mark / Haubir"
+          "Spelare": "Anders K / George"
         },
         {
           "Ranking": 4,
@@ -273,15 +277,15 @@
         },
         {
           "Ranking": 5,
-          "Spelare": "Kristian / Silvan"
-        },
-        {
-          "Ranking": 6,
           "Spelare": "Daniel / Hyberg"
         },
         {
-          "Ranking": 7,
+          "Ranking": 6,
           "Spelare": "Anton / Jonas"
+        },
+        {
+          "Ranking": 7,
+          "Spelare": "Kristian / Silvan"
         },
         {
           "Ranking": 8,
