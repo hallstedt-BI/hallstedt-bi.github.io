@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-09-30T08:35:00.989Z",
+  "lastUpdated": "2025-09-30T09:09:56.705Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -130,121 +130,124 @@
       "totalRows": 36,
       "data": [
         {
-          "Vinnare": 1,
-          "Förlorare": "Anders K / George",
-          "Resultat": "Mood / Robert",
-          "TotPoäng": "2-0"
+          "Lag": 1,
+          "Vinnare": "Anders K / George",
+          "Förlorare": "Mood / Robert",
+          "Resultat": "2-0",
+          "TotPoäng": "22-12"
         },
         {
-          "Vinnare": 2,
-          "Förlorare": "Mark / Haubir",
-          "Resultat": "Anton / Jonas",
-          "TotPoäng": "2-0"
+          "Lag": 2,
+          "Vinnare": "Mark / Haubir",
+          "Förlorare": "Anton / Jonas",
+          "Resultat": "2-0",
+          "TotPoäng": "22-14"
         },
         {
-          "Vinnare": 3,
-          "Förlorare": "Martin F / Fredrik",
-          "Resultat": "Lucas / Dara",
-          "TotPoäng": "2-0"
+          "Lag": 3,
+          "Vinnare": "Martin F / Fredrik",
+          "Förlorare": "Lucas / Dara",
+          "Resultat": "2-0",
+          "TotPoäng": "22-12"
         },
         {
-          "Vinnare": 4
+          "Lag": 4
         },
         {
-          "Vinnare": 5
+          "Lag": 5
         },
         {
-          "Vinnare": 6
+          "Lag": 6
         },
         {
-          "Vinnare": 7
+          "Lag": 7
         },
         {
-          "Vinnare": 8
+          "Lag": 8
         },
         {
-          "Vinnare": 9
+          "Lag": 9
         },
         {
-          "Vinnare": 10
+          "Lag": 10
         },
         {
-          "Vinnare": 11
+          "Lag": 11
         },
         {
-          "Vinnare": 12
+          "Lag": 12
         },
         {
-          "Vinnare": 13
+          "Lag": 13
         },
         {
-          "Vinnare": 14
+          "Lag": 14
         },
         {
-          "Vinnare": 15
+          "Lag": 15
         },
         {
-          "Vinnare": 16
+          "Lag": 16
         },
         {
-          "Vinnare": 17
+          "Lag": 17
         },
         {
-          "Vinnare": 18
+          "Lag": 18
         },
         {
-          "Vinnare": 19
+          "Lag": 19
         },
         {
-          "Vinnare": 20
+          "Lag": 20
         },
         {
-          "Vinnare": 21
+          "Lag": 21
         },
         {
-          "Vinnare": 22
+          "Lag": 22
         },
         {
-          "Vinnare": 23
+          "Lag": 23
         },
         {
-          "Vinnare": 24
+          "Lag": 24
         },
         {
-          "Vinnare": 25
+          "Lag": 25
         },
         {
-          "Vinnare": 26
+          "Lag": 26
         },
         {
-          "Vinnare": 27
+          "Lag": 27
         },
         {
-          "Vinnare": 28
+          "Lag": 28
         },
         {
-          "Vinnare": 29
+          "Lag": 29
         },
         {
-          "Vinnare": 30
+          "Lag": 30
         },
         {
-          "Vinnare": 31
+          "Lag": 31
         },
         {
-          "Vinnare": 32
+          "Lag": 32
         },
         {
-          "Vinnare": 33
+          "Lag": 33
         },
         {
-          "Vinnare": 34
+          "Lag": 34
         },
         {
-          "Vinnare": 35
+          "Lag": 35
         },
         {
-          "Vinnare": 36
+          "Lag": 36
         }
       ]
     },
@@ -253,15 +256,15 @@
       "totalRows": 9,
       "data": [
         {
-          "Ranking": "🥇",
+          "Ranking": 1,
           "Spelare": "Martin F / Fredrik"
         },
         {
-          "Ranking": "🥈",
+          "Ranking": 2,
           "Spelare": "Anders K / George"
         },
         {
-          "Ranking": "🥉",
+          "Ranking": 3,
           "Spelare": "Mark / Haubir"
         },
         {
