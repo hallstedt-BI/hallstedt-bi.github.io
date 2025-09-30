@@ -271,50 +271,42 @@
                     lastUpdated.style.display = 'block';
                 }
                 
-                // Parse data and create Statistics and Ranking sections side by side
-                if (data.data && data.data.length > 0) {
+                // Create and display multiple sections with TV-optimized layout
+                if (data.sections) {
                     tableContainer.innerHTML = '';
                     
-                    // Parse statistics data (rows 1-9: players with actual data)
-                    const statsData = data.data.slice(0, 9).filter(row => 
-                        row['#'] && row['Spelare'] && row['Spelare'].trim() !== ''
-                    );
-                    
-                    // Parse ranking data (rows around index 12-20: ranking section)
-                    const rankingData = [];
-                    for (let i = 12; i < data.data.length && rankingData.length < 9; i++) {
-                        const row = data.data[i];
-                        if (row['Spelare'] && (row['Spelare'].includes('🥇') || row['Spelare'].includes('🥈') || row['Spelare'].includes('🥉') || !isNaN(row['Spelare']))) {
-                            rankingData.push({
-                                'Plats': row['Spelare'],
-                                'Lag': row['Poäng'] || ''
-                            });
-                        }
-                    }
-                    
-                    // Create main row for side-by-side layout
+                    // Create main row with left column (Stats + Ranking) side by side instead of stacked
                     const mainRow = document.createElement('div');
                     mainRow.className = 'tables-row';
+                    mainRow.style.display = 'flex';
+                    mainRow.style.gap = '40px';
+                    mainRow.style.alignItems = 'flex-start';
                     
-                    // Statistics section (left)
-                    if (statsData.length > 0) {
-                        const statsSection = createTableSection(
-                            { title: 'Statistik', data: statsData },
+                    // Main stats section (left side)
+                    if (data.sections.mainStats && data.sections.mainStats.data.length > 0) {
+                        const mainStatsSection = createTableSection(
+                            data.sections.mainStats, 
                             'table-section'
                         );
-                        mainRow.appendChild(statsSection);
+                        mainRow.appendChild(mainStatsSection);
                     }
                     
-                    // Ranking section (right)
-                    if (rankingData.length > 0) {
-                        const rankingSection = createTableSection(
-                            { title: 'Ranking', data: rankingData },
+                    // Small table section (right side - now side by side instead of stacked)
+                    if (data.sections.smallTable && data.sections.smallTable.data.length > 0) {
+                        const smallTableSection = createTableSection(
+                            data.sections.smallTable, 
                             'table-section'
                         );
-                        mainRow.appendChild(rankingSection);
+                        mainRow.appendChild(smallTableSection);
                     }
                     
                     tableContainer.appendChild(mainRow);
+                    tableContainer.style.display = 'block';
+                } else if (data.data && data.data.length > 0) {
+                    // Fallback for old format
+                    const table = createTable(data.data);
+                    tableContainer.innerHTML = '';
+                    tableContainer.appendChild(table);
                     tableContainer.style.display = 'block';
                 } else {
                     throw new Error('No data found in the JSON file');

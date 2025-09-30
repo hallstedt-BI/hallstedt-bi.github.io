@@ -210,54 +210,25 @@
                     lastUpdated.style.display = 'block';
                 }
                 
-                // Parse and display results data
-                if (data.data && data.data.length > 0) {
+                // Display results data using the same system as original
+                if (data.sections) {
                     tableContainer.innerHTML = '';
                     
-                    // Look for results data in the "Matcher" column
-                    const resultsData = [];
-                    for (let i = 0; i < data.data.length; i++) {
-                        const row = data.data[i];
-                        if (row['Matcher'] && row['Matcher'].trim() !== '' && row['Matcher'] !== 'Matcher') {
-                            // Create a simplified result entry
-                            if (row['Spelare'] && row['Spelare'].trim() !== '' && !row['Spelare'].includes('🥇') && !row['Spelare'].includes('🥈') && !row['Spelare'].includes('🥉') && row['Spelare'] !== 'Ranking') {
-                                resultsData.push({
-                                    'Lag': row['Spelare'] || '',
-                                    'Motståndare': row['Matcher'] || '',
-                                    'Poäng': row['Poäng'] || 0,
-                                    'Vinster': row['Vinster'] || 0,
-                                    'Förlust': row['Förlust'] || 0,
-                                    'Sets': row['Sets'] || 0,
-                                    'GA': row['GA'] || 0,
-                                    'GC': row['GC'] || 0
-                                });
-                            }
-                        }
-                    }
-                    
-                    // If no specific results found, show all match data
-                    if (resultsData.length === 0) {
-                        const allMatchData = data.data.filter(row => 
-                            row['#'] && row['Spelare'] && row['Spelare'].trim() !== '' && 
-                            !row['Spelare'].includes('🥇') && !row['Spelare'].includes('🥈') && 
-                            !row['Spelare'].includes('🥉') && row['Spelare'] !== 'Ranking'
-                        );
-                        
-                        if (allMatchData.length > 0) {
-                            const resultsSection = createTableSection(
-                                { title: 'Resultat', data: allMatchData },
-                                'table-section'
-                            );
-                            tableContainer.appendChild(resultsSection);
-                        }
-                    } else {
-                        const resultsSection = createTableSection(
-                            { title: 'Resultat', data: resultsData },
+                    // Show the large table section (detailed results data)
+                    if (data.sections.largeTable && data.sections.largeTable.data.length > 0) {
+                        const largeTableSection = createTableSection(
+                            data.sections.largeTable, 
                             'table-section'
                         );
-                        tableContainer.appendChild(resultsSection);
+                        tableContainer.appendChild(largeTableSection);
                     }
                     
+                    tableContainer.style.display = 'block';
+                } else if (data.data && data.data.length > 0) {
+                    // Fallback for old format
+                    const table = createTable(data.data);
+                    tableContainer.innerHTML = '';
+                    tableContainer.appendChild(table);
                     tableContainer.style.display = 'block';
                 } else {
                     throw new Error('No data found in the JSON file');
