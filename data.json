@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-09-30T15:01:33.274Z",
+  "lastUpdated": "2025-10-01T11:07:36.631Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -10,14 +10,14 @@
           "#": 1,
           "Spelare": "Aleks / Amanda",
           "Poäng": 0,
-          "SM": 0,
+          "SM": 1,
           "Vinster": 0,
           "Oavgjort": 0,
-          "Förlust": 0,
-          "Sets": 0,
-          "GA": 0,
-          "GC": 0,
-          "G/D": 0
+          "Förlust": 1,
+          "Sets": -2,
+          "GA": 9,
+          "GC": 22,
+          "G/D": -13
         },
         {
           "#": 2,
@@ -35,15 +35,15 @@
         {
           "#": 4,
           "Spelare": "Kristian / Silvan",
-          "Poäng": 0,
-          "SM": 1,
-          "Vinster": 0,
+          "Poäng": 3,
+          "SM": 2,
+          "Vinster": 1,
           "Oavgjort": 0,
           "Förlust": 1,
-          "Sets": -1,
-          "GA": 27,
-          "GC": 33,
-          "G/D": -6
+          "Sets": 1,
+          "GA": 49,
+          "GC": 42,
+          "G/D": 7
         },
         {
           "#": 3,
@@ -158,7 +158,11 @@
           "TotPoäng": "33-27"
         },
         {
-          "Lag": 5
+          "Lag": 5,
+          "Vinnare": "Kristian / Silvan",
+          "Förlorare": "Aleks / Amanda",
+          "Resultat": "2-0",
+          "TotPoäng": "22-9"
         },
         {
           "Lag": 6
@@ -273,7 +277,7 @@
         },
         {
           "Ranking": 4,
-          "Spelare": "Aleks / Amanda"
+          "Spelare": "Kristian / Silvan"
         },
         {
           "Ranking": 5,
@@ -285,15 +289,15 @@
         },
         {
           "Ranking": 7,
-          "Spelare": "Kristian / Silvan"
-        },
-        {
-          "Ranking": 8,
           "Spelare": "Mood / Robert"
         },
         {
-          "Ranking": 9,
+          "Ranking": 8,
           "Spelare": "Lucas / Dara"
+        },
+        {
+          "Ranking": 9,
+          "Spelare": "Aleks / Amanda"
         }
       ]
     }
