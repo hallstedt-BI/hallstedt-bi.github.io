@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-01T11:07:36.631Z",
+  "lastUpdated": "2025-10-02T13:12:16.669Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -10,14 +10,14 @@
           "#": 1,
           "Spelare": "Aleks / Amanda",
           "Poäng": 0,
-          "SM": 1,
+          "SM": 2,
           "Vinster": 0,
           "Oavgjort": 0,
-          "Förlust": 1,
-          "Sets": -2,
-          "GA": 9,
-          "GC": 22,
-          "G/D": -13
+          "Förlust": 2,
+          "Sets": -4,
+          "GA": 18,
+          "GC": 44,
+          "G/D": -26
         },
         {
           "#": 2,
@@ -48,15 +48,15 @@
         {
           "#": 3,
           "Spelare": "Daniel / Hyberg",
-          "Poäng": 0,
-          "SM": 0,
-          "Vinster": 0,
+          "Poäng": 3,
+          "SM": 1,
+          "Vinster": 1,
           "Oavgjort": 0,
           "Förlust": 0,
-          "Sets": 0,
-          "GA": 0,
-          "GC": 0,
-          "G/D": 0
+          "Sets": 2,
+          "GA": 22,
+          "GC": 9,
+          "G/D": 13
         },
         {
           "#": 5,
@@ -165,7 +165,11 @@
           "TotPoäng": "22-9"
         },
         {
-          "Lag": 6
+          "Lag": 6,
+          "Vinnare": "Daniel / Hyberg",
+          "Förlorare": "Aleks / Amanda",
+          "Resultat": "2-0",
+          "TotPoäng": "22-9"
         },
         {
           "Lag": 7
@@ -269,19 +273,19 @@
         },
         {
           "Ranking": "🥈",
-          "Spelare": "Martin F / Fredrik"
+          "Spelare": "Daniel / Hyberg"
         },
         {
           "Ranking": "🥉",
-          "Spelare": "Anders K / George"
+          "Spelare": "Martin F / Fredrik"
         },
         {
           "Ranking": 4,
-          "Spelare": "Kristian / Silvan"
+          "Spelare": "Anders K / George"
         },
         {
           "Ranking": 5,
-          "Spelare": "Daniel / Hyberg"
+          "Spelare": "Kristian / Silvan"
         },
         {
           "Ranking": 6,
