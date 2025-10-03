@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-02T13:12:16.669Z",
+  "lastUpdated": "2025-10-03T13:00:56.262Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -10,14 +10,14 @@
           "#": 1,
           "Spelare": "Aleks / Amanda",
           "Poäng": 0,
-          "SM": 2,
+          "SM": 3,
           "Vinster": 0,
           "Oavgjort": 0,
-          "Förlust": 2,
-          "Sets": -4,
-          "GA": 18,
-          "GC": 44,
-          "G/D": -26
+          "Förlust": 3,
+          "Sets": -6,
+          "GA": 32,
+          "GC": 66,
+          "G/D": -34
         },
         {
           "#": 2,
@@ -100,15 +100,15 @@
         {
           "#": 8,
           "Spelare": "Anton / Jonas",
-          "Poäng": 0,
-          "SM": 1,
-          "Vinster": 0,
+          "Poäng": 3,
+          "SM": 2,
+          "Vinster": 1,
           "Oavgjort": 0,
           "Förlust": 1,
-          "Sets": 0,
-          "GA": 14,
-          "GC": 22,
-          "G/D": -8
+          "Sets": 2,
+          "GA": 36,
+          "GC": 36,
+          "G/D": 0
         },
         {
           "#": 9,
@@ -172,7 +172,11 @@
           "TotPoäng": "22-9"
         },
         {
-          "Lag": 7
+          "Lag": 7,
+          "Vinnare": "Anton / Jonas",
+          "Förlorare": "Aleks / Amanda",
+          "Resultat": "2-0",
+          "TotPoäng": "22-14"
         },
         {
           "Lag": 8
@@ -285,11 +289,11 @@
         },
         {
           "Ranking": 5,
-          "Spelare": "Kristian / Silvan"
+          "Spelare": "Anton / Jonas"
         },
         {
           "Ranking": 6,
-          "Spelare": "Anton / Jonas"
+          "Spelare": "Kristian / Silvan"
         },
         {
           "Ranking": 7,
