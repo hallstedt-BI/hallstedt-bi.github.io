@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-07T14:46:42.264Z",
+  "lastUpdated": "2025-10-09T11:25:38.244Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -10,27 +10,27 @@
           "#": 1,
           "Spelare": "Aleks / Amanda",
           "Poäng": 0,
-          "SM": 3,
+          "SM": 4,
           "Vinster": 0,
           "Oavgjort": 0,
-          "Förlust": 3,
-          "Sets": -6,
-          "GA": 32,
-          "GC": 66,
-          "G/D": -34
+          "Förlust": 4,
+          "Sets": -7,
+          "GA": 57,
+          "GC": 95,
+          "G/D": -38
         },
         {
           "#": 2,
           "Spelare": "Mood / Robert",
-          "Poäng": 0,
-          "SM": 1,
-          "Vinster": 0,
+          "Poäng": 3,
+          "SM": 2,
+          "Vinster": 1,
           "Oavgjort": 0,
           "Förlust": 1,
-          "Sets": -2,
-          "GA": 12,
-          "GC": 22,
-          "G/D": -10
+          "Sets": -1,
+          "GA": 41,
+          "GC": 47,
+          "G/D": -6
         },
         {
           "#": 4,
@@ -186,7 +186,11 @@
           "TotPoäng": "32-24"
         },
         {
-          "Lag": 9
+          "Lag": 9,
+          "Vinnare": "Mood / Robert",
+          "Förlorare": "Aleks / Amanda",
+          "Resultat": "2-1",
+          "TotPoäng": "29-25"
         },
         {
           "Lag": 10
