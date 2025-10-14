@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-09T11:25:38.244Z",
+  "lastUpdated": "2025-10-14T13:12:34.087Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -23,14 +23,14 @@
           "#": 2,
           "Spelare": "Mood / Robert",
           "Poäng": 3,
-          "SM": 2,
+          "SM": 3,
           "Vinster": 1,
           "Oavgjort": 0,
-          "Förlust": 1,
-          "Sets": -1,
-          "GA": 41,
-          "GC": 47,
-          "G/D": -6
+          "Förlust": 2,
+          "Sets": -2,
+          "GA": 61,
+          "GC": 73,
+          "G/D": -12
         },
         {
           "#": 4,
@@ -48,15 +48,15 @@
         {
           "#": 3,
           "Spelare": "Daniel / Hyberg",
-          "Poäng": 6,
-          "SM": 2,
-          "Vinster": 2,
+          "Poäng": 9,
+          "SM": 3,
+          "Vinster": 3,
           "Oavgjort": 0,
           "Förlust": 0,
-          "Sets": 3,
-          "GA": 54,
-          "GC": 33,
-          "G/D": 21
+          "Sets": 4,
+          "GA": 80,
+          "GC": 53,
+          "G/D": 27
         },
         {
           "#": 5,
@@ -193,7 +193,11 @@
           "TotPoäng": "29-25"
         },
         {
-          "Lag": 10
+          "Lag": 10,
+          "Vinnare": "Daniel / Hyberg",
+          "Förlorare": "Mood / Robert",
+          "Resultat": "2-1",
+          "TotPoäng": "26-20"
         },
         {
           "Lag": 11
