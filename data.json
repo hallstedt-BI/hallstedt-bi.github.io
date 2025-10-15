@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-15T11:52:28.603Z",
+  "lastUpdated": "2025-10-15T13:10:16.877Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -35,28 +35,28 @@
         {
           "#": 4,
           "Spelare": "Kristian / Silvan",
-          "Poäng": 3,
-          "SM": 2,
-          "Vinster": 1,
+          "Poäng": 6,
+          "SM": 3,
+          "Vinster": 2,
           "Oavgjort": 0,
           "Förlust": 1,
-          "Sets": 1,
-          "GA": 49,
-          "GC": 42,
-          "G/D": 7
+          "Sets": 3,
+          "GA": 71,
+          "GC": 56,
+          "G/D": 15
         },
         {
           "#": 3,
           "Spelare": "Daniel / Hyberg",
-          "Poäng": 9,
-          "SM": 3,
-          "Vinster": 3,
+          "Poäng": 12,
+          "SM": 4,
+          "Vinster": 4,
           "Oavgjort": 0,
           "Förlust": 0,
-          "Sets": 4,
-          "GA": 80,
-          "GC": 53,
-          "G/D": 27
+          "Sets": 5,
+          "GA": 107,
+          "GC": 78,
+          "G/D": 29
         },
         {
           "#": 5,
@@ -101,27 +101,27 @@
           "#": 8,
           "Spelare": "Anton / Jonas",
           "Poäng": 3,
-          "SM": 2,
+          "SM": 3,
           "Vinster": 1,
           "Oavgjort": 0,
-          "Förlust": 1,
-          "Sets": 2,
-          "GA": 36,
-          "GC": 36,
-          "G/D": 0
+          "Förlust": 2,
+          "Sets": 1,
+          "GA": 61,
+          "GC": 63,
+          "G/D": -2
         },
         {
           "#": 9,
           "Spelare": "Anders K / George",
           "Poäng": 3,
-          "SM": 2,
+          "SM": 3,
           "Vinster": 1,
           "Oavgjort": 0,
-          "Förlust": 1,
-          "Sets": 1,
-          "GA": 46,
-          "GC": 44,
-          "G/D": 2
+          "Förlust": 2,
+          "Sets": -1,
+          "GA": 60,
+          "GC": 66,
+          "G/D": -6
         }
       ]
     },
@@ -200,10 +200,18 @@
           "TotPoäng": "26-20"
         },
         {
-          "Lag": 11
+          "Lag": 11,
+          "Vinnare": "Daniel / Hyberg",
+          "Förlorare": "Anton / Jonas",
+          "Resultat": "2-1",
+          "TotPoäng": "27-25"
         },
         {
-          "Lag": 12
+          "Lag": 12,
+          "Vinnare": "Kristian / Silvan",
+          "Förlorare": "Anders K / George",
+          "Resultat": "2-0",
+          "TotPoäng": "22-14"
         },
         {
           "Lag": 13
@@ -289,19 +297,19 @@
         },
         {
           "Ranking": 2,
-          "Spelare": "Mark / Haubir"
+          "Spelare": "Kristian / Silvan"
         },
         {
           "Ranking": 3,
-          "Spelare": "Martin F / Fredrik"
+          "Spelare": "Mark / Haubir"
         },
         {
           "Ranking": 4,
-          "Spelare": "Anton / Jonas"
+          "Spelare": "Martin F / Fredrik"
         },
         {
           "Ranking": 5,
-          "Spelare": "Kristian / Silvan"
+          "Spelare": "Anton / Jonas"
         },
         {
           "Ranking": 6,
