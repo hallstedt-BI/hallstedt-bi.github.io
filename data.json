@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-15T13:10:16.877Z",
+  "lastUpdated": "2025-10-22T07:19:47.162Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -48,15 +48,15 @@
         {
           "#": 3,
           "Spelare": "Daniel / Hyberg",
-          "Poäng": 12,
-          "SM": 4,
-          "Vinster": 4,
+          "Poäng": 15,
+          "SM": 5,
+          "Vinster": 5,
           "Oavgjort": 0,
           "Förlust": 0,
-          "Sets": 5,
-          "GA": 107,
-          "GC": 78,
-          "G/D": 29
+          "Sets": 7,
+          "GA": 131,
+          "GC": 98,
+          "G/D": 33
         },
         {
           "#": 5,
@@ -75,14 +75,14 @@
           "#": 6,
           "Spelare": "Mark / Haubir",
           "Poäng": 6,
-          "SM": 2,
+          "SM": 3,
           "Vinster": 2,
           "Oavgjort": 0,
-          "Förlust": 0,
-          "Sets": 1,
-          "GA": 55,
-          "GC": 41,
-          "G/D": 14
+          "Förlust": 1,
+          "Sets": -1,
+          "GA": 75,
+          "GC": 65,
+          "G/D": 10
         },
         {
           "#": 7,
@@ -214,7 +214,11 @@
           "TotPoäng": "22-14"
         },
         {
-          "Lag": 13
+          "Lag": 13,
+          "Vinnare": "Daniel / Hyberg",
+          "Förlorare": "Mark / Haubir",
+          "Resultat": "2-0",
+          "TotPoäng": "24-20"
         },
         {
           "Lag": 14
