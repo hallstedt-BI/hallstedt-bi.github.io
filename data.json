@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-04T07:54:00.761Z",
+  "lastUpdated": "2025-11-04T12:03:21.786Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -35,15 +35,15 @@
         {
           "#": 6,
           "Spelare": "Mark / Haubir",
-          "Poäng": 6,
-          "SM": 3,
-          "Vinster": 2,
+          "Poäng": 9,
+          "SM": 4,
+          "Vinster": 3,
           "Oavgjort": 0,
           "Förlust": 1,
-          "Sets": -1,
-          "GA": 75,
-          "GC": 65,
-          "G/D": 10
+          "Sets": 0,
+          "GA": 106,
+          "GC": 85,
+          "G/D": 21
         },
         {
           "#": 2,
@@ -101,14 +101,14 @@
           "#": 1,
           "Spelare": "Aleks / Amanda",
           "Poäng": 0,
-          "SM": 4,
+          "SM": 5,
           "Vinster": 0,
           "Oavgjort": 0,
-          "Förlust": 4,
-          "Sets": -7,
-          "GA": 57,
-          "GC": 95,
-          "G/D": -38
+          "Förlust": 5,
+          "Sets": -8,
+          "GA": 77,
+          "GC": 126,
+          "G/D": -49
         },
         {
           "#": 7,
@@ -221,7 +221,11 @@
           "TotPoäng": "24-20"
         },
         {
-          "Lag": 14
+          "Lag": 14,
+          "Vinnare": "Mark / Haubir",
+          "Förlorare": "Aleks / Amanda",
+          "Resultat": "2-1",
+          "TotPoäng": "31-20"
         },
         {
           "Lag": 15
@@ -301,11 +305,11 @@
         },
         {
           "Ranking": 2,
-          "Spelare": "Kristian / Silvan"
+          "Spelare": "Mark / Haubir"
         },
         {
           "Ranking": 3,
-          "Spelare": "Mark / Haubir"
+          "Spelare": "Kristian / Silvan"
         },
         {
           "Ranking": 4,
