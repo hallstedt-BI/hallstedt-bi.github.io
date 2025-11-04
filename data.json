@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-10-22T07:19:47.162Z",
+  "lastUpdated": "2025-11-04T07:54:00.761Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -7,30 +7,17 @@
       "totalRows": 9,
       "data": [
         {
-          "#": 1,
-          "Spelare": "Aleks / Amanda",
-          "Poäng": 0,
-          "SM": 4,
-          "Vinster": 0,
+          "#": 3,
+          "Spelare": "Daniel / Hyberg",
+          "Poäng": 15,
+          "SM": 5,
+          "Vinster": 5,
           "Oavgjort": 0,
-          "Förlust": 4,
-          "Sets": -7,
-          "GA": 57,
-          "GC": 95,
-          "G/D": -38
-        },
-        {
-          "#": 2,
-          "Spelare": "Mood / Robert",
-          "Poäng": 3,
-          "SM": 3,
-          "Vinster": 1,
-          "Oavgjort": 0,
-          "Förlust": 2,
-          "Sets": -2,
-          "GA": 61,
-          "GC": 73,
-          "G/D": -12
+          "Förlust": 0,
+          "Sets": 7,
+          "GA": 131,
+          "GC": 98,
+          "G/D": 33
         },
         {
           "#": 4,
@@ -46,32 +33,6 @@
           "G/D": 15
         },
         {
-          "#": 3,
-          "Spelare": "Daniel / Hyberg",
-          "Poäng": 15,
-          "SM": 5,
-          "Vinster": 5,
-          "Oavgjort": 0,
-          "Förlust": 0,
-          "Sets": 7,
-          "GA": 131,
-          "GC": 98,
-          "G/D": 33
-        },
-        {
-          "#": 5,
-          "Spelare": "Martin F / Fredrik",
-          "Poäng": 3,
-          "SM": 1,
-          "Vinster": 1,
-          "Oavgjort": 0,
-          "Förlust": 0,
-          "Sets": 2,
-          "GA": 22,
-          "GC": 12,
-          "G/D": 10
-        },
-        {
           "#": 6,
           "Spelare": "Mark / Haubir",
           "Poäng": 6,
@@ -85,17 +46,30 @@
           "G/D": 10
         },
         {
-          "#": 7,
-          "Spelare": "Lucas / Dara",
-          "Poäng": 0,
-          "SM": 1,
-          "Vinster": 0,
+          "#": 2,
+          "Spelare": "Mood / Robert",
+          "Poäng": 3,
+          "SM": 3,
+          "Vinster": 1,
           "Oavgjort": 0,
-          "Förlust": 1,
+          "Förlust": 2,
           "Sets": -2,
-          "GA": 12,
-          "GC": 22,
-          "G/D": -10
+          "GA": 61,
+          "GC": 73,
+          "G/D": -12
+        },
+        {
+          "#": 5,
+          "Spelare": "Martin F / Fredrik",
+          "Poäng": 3,
+          "SM": 1,
+          "Vinster": 1,
+          "Oavgjort": 0,
+          "Förlust": 0,
+          "Sets": 2,
+          "GA": 22,
+          "GC": 12,
+          "G/D": 10
         },
         {
           "#": 8,
@@ -122,6 +96,32 @@
           "GA": 60,
           "GC": 66,
           "G/D": -6
+        },
+        {
+          "#": 1,
+          "Spelare": "Aleks / Amanda",
+          "Poäng": 0,
+          "SM": 4,
+          "Vinster": 0,
+          "Oavgjort": 0,
+          "Förlust": 4,
+          "Sets": -7,
+          "GA": 57,
+          "GC": 95,
+          "G/D": -38
+        },
+        {
+          "#": 7,
+          "Spelare": "Lucas / Dara",
+          "Poäng": 0,
+          "SM": 1,
+          "Vinster": 0,
+          "Oavgjort": 0,
+          "Förlust": 1,
+          "Sets": -2,
+          "GA": 12,
+          "GC": 22,
+          "G/D": -10
         }
       ]
     },
