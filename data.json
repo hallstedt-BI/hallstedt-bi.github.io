@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-04T12:03:21.786Z",
+  "lastUpdated": "2025-11-07T14:38:29.734Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -35,15 +35,15 @@
         {
           "#": 6,
           "Spelare": "Mark / Haubir",
-          "Poäng": 9,
-          "SM": 4,
-          "Vinster": 3,
+          "Poäng": 12,
+          "SM": 5,
+          "Vinster": 4,
           "Oavgjort": 0,
           "Förlust": 1,
-          "Sets": 0,
-          "GA": 106,
-          "GC": 85,
-          "G/D": 21
+          "Sets": 2,
+          "GA": 128,
+          "GC": 97,
+          "G/D": 31
         },
         {
           "#": 2,
@@ -62,40 +62,40 @@
           "#": 5,
           "Spelare": "Martin F / Fredrik",
           "Poäng": 3,
-          "SM": 1,
+          "SM": 2,
           "Vinster": 1,
           "Oavgjort": 0,
-          "Förlust": 0,
-          "Sets": 2,
-          "GA": 22,
-          "GC": 12,
-          "G/D": 10
+          "Förlust": 1,
+          "Sets": 0,
+          "GA": 34,
+          "GC": 34,
+          "G/D": 0
         },
         {
           "#": 8,
           "Spelare": "Anton / Jonas",
           "Poäng": 3,
-          "SM": 3,
+          "SM": 4,
           "Vinster": 1,
           "Oavgjort": 0,
-          "Förlust": 2,
-          "Sets": 1,
-          "GA": 61,
-          "GC": 63,
-          "G/D": -2
+          "Förlust": 3,
+          "Sets": -1,
+          "GA": 78,
+          "GC": 86,
+          "G/D": -8
         },
         {
           "#": 9,
           "Spelare": "Anders K / George",
-          "Poäng": 3,
-          "SM": 3,
-          "Vinster": 1,
+          "Poäng": 6,
+          "SM": 4,
+          "Vinster": 2,
           "Oavgjort": 0,
           "Förlust": 2,
-          "Sets": -1,
-          "GA": 60,
-          "GC": 66,
-          "G/D": -6
+          "Sets": 1,
+          "GA": 83,
+          "GC": 83,
+          "G/D": 0
         },
         {
           "#": 1,
@@ -228,10 +228,18 @@
           "TotPoäng": "31-20"
         },
         {
-          "Lag": 15
+          "Lag": 15,
+          "Vinnare": "Mark / Haubir",
+          "Förlorare": "Martin F / Fredrik",
+          "Resultat": "2-0",
+          "TotPoäng": "22-12"
         },
         {
-          "Lag": 16
+          "Lag": 16,
+          "Vinnare": "Anders K / George",
+          "Förlorare": "Anton / Jonas",
+          "Resultat": "2-0",
+          "TotPoäng": "23-17"
         },
         {
           "Lag": 17
@@ -313,15 +321,15 @@
         },
         {
           "Ranking": 4,
-          "Spelare": "Martin F / Fredrik"
+          "Spelare": "Anders K / George"
         },
         {
           "Ranking": 5,
-          "Spelare": "Anton / Jonas"
+          "Spelare": "Martin F / Fredrik"
         },
         {
           "Ranking": 6,
-          "Spelare": "Anders K / George"
+          "Spelare": "Anton / Jonas"
         },
         {
           "Ranking": 7,
