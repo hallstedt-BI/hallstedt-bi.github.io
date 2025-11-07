@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-07T14:38:29.734Z",
+  "lastUpdated": "2025-11-07T15:17:28.062Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -10,53 +10,53 @@
           "#": 3,
           "Spelare": "Daniel / Hyberg",
           "Poäng": 15,
-          "SM": 5,
+          "SM": 6,
           "Vinster": 5,
           "Oavgjort": 0,
-          "Förlust": 0,
-          "Sets": 7,
-          "GA": 131,
-          "GC": 98,
-          "G/D": 33
+          "Förlust": 1,
+          "Sets": 6,
+          "GA": 163,
+          "GC": 131,
+          "G/D": 32
         },
         {
           "#": 4,
           "Spelare": "Kristian / Silvan",
-          "Poäng": 6,
-          "SM": 3,
-          "Vinster": 2,
+          "Poäng": 9,
+          "SM": 4,
+          "Vinster": 3,
           "Oavgjort": 0,
           "Förlust": 1,
-          "Sets": 3,
-          "GA": 71,
-          "GC": 56,
-          "G/D": 15
+          "Sets": 4,
+          "GA": 104,
+          "GC": 88,
+          "G/D": 16
         },
         {
           "#": 6,
           "Spelare": "Mark / Haubir",
-          "Poäng": 12,
-          "SM": 5,
-          "Vinster": 4,
+          "Poäng": 15,
+          "SM": 6,
+          "Vinster": 5,
           "Oavgjort": 0,
           "Förlust": 1,
-          "Sets": 2,
-          "GA": 128,
-          "GC": 97,
-          "G/D": 31
+          "Sets": 4,
+          "GA": 150,
+          "GC": 109,
+          "G/D": 41
         },
         {
           "#": 2,
           "Spelare": "Mood / Robert",
           "Poäng": 3,
-          "SM": 3,
+          "SM": 4,
           "Vinster": 1,
           "Oavgjort": 0,
-          "Förlust": 2,
-          "Sets": -2,
-          "GA": 61,
-          "GC": 73,
-          "G/D": -12
+          "Förlust": 3,
+          "Sets": -4,
+          "GA": 73,
+          "GC": 95,
+          "G/D": -22
         },
         {
           "#": 5,
@@ -242,10 +242,18 @@
           "TotPoäng": "23-17"
         },
         {
-          "Lag": 17
+          "Lag": 17,
+          "Vinnare": "Kristian / Silvan",
+          "Förlorare": "Daniel / Hyberg",
+          "Resultat": "2-1",
+          "TotPoäng": "33-32"
         },
         {
-          "Lag": 18
+          "Lag": 18,
+          "Vinnare": "Mark / Haubir",
+          "Förlorare": "Mood / Robert",
+          "Resultat": "2-0",
+          "TotPoäng": "22-12"
         },
         {
           "Lag": 19
