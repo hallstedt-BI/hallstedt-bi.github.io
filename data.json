@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-07T15:17:28.062Z",
+  "lastUpdated": "2025-11-24T07:24:47.830Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -9,66 +9,66 @@
         {
           "#": 3,
           "Spelare": "Daniel / Hyberg",
-          "Poäng": 15,
-          "SM": 6,
-          "Vinster": 5,
+          "Poäng": 12,
+          "SM": 5,
+          "Vinster": 4,
           "Oavgjort": 0,
           "Förlust": 1,
-          "Sets": 6,
-          "GA": 163,
-          "GC": 131,
-          "G/D": 32
+          "Sets": 2,
+          "GA": 97,
+          "GC": 80,
+          "G/D": 17
         },
         {
           "#": 4,
           "Spelare": "Kristian / Silvan",
-          "Poäng": 9,
+          "Poäng": 12,
           "SM": 4,
-          "Vinster": 3,
+          "Vinster": 4,
           "Oavgjort": 0,
-          "Förlust": 1,
+          "Förlust": 0,
           "Sets": 4,
-          "GA": 104,
-          "GC": 88,
-          "G/D": 16
+          "GA": 70,
+          "GC": 46,
+          "G/D": 24
         },
         {
           "#": 6,
-          "Spelare": "Mark / Haubir",
-          "Poäng": 15,
-          "SM": 6,
-          "Vinster": 5,
+          "Spelare": "Mark / Emil",
+          "Poäng": 0,
+          "SM": 0,
+          "Vinster": 0,
           "Oavgjort": 0,
-          "Förlust": 1,
-          "Sets": 4,
-          "GA": 150,
-          "GC": 109,
-          "G/D": 41
+          "Förlust": 0,
+          "Sets": 0,
+          "GA": 0,
+          "GC": 0,
+          "G/D": 0
         },
         {
           "#": 2,
           "Spelare": "Mood / Robert",
           "Poäng": 3,
-          "SM": 4,
+          "SM": 3,
           "Vinster": 1,
           "Oavgjort": 0,
-          "Förlust": 3,
-          "Sets": -4,
-          "GA": 73,
-          "GC": 95,
-          "G/D": -22
+          "Förlust": 2,
+          "Sets": -1,
+          "GA": 58,
+          "GC": 68,
+          "G/D": -10
         },
         {
           "#": 5,
           "Spelare": "Martin F / Fredrik",
           "Poäng": 3,
-          "SM": 2,
+          "SM": 1,
           "Vinster": 1,
           "Oavgjort": 0,
-          "Förlust": 1,
+          "Förlust": 0,
           "Sets": 0,
-          "GA": 34,
-          "GC": 34,
+          "GA": 0,
+          "GC": 0,
           "G/D": 0
         },
         {
@@ -79,23 +79,23 @@
           "Vinster": 1,
           "Oavgjort": 0,
           "Förlust": 3,
-          "Sets": -1,
-          "GA": 78,
-          "GC": 86,
-          "G/D": -8
+          "Sets": 0,
+          "GA": 72,
+          "GC": 65,
+          "G/D": 7
         },
         {
           "#": 9,
           "Spelare": "Anders K / George",
-          "Poäng": 6,
-          "SM": 4,
-          "Vinster": 2,
+          "Poäng": 9,
+          "SM": 5,
+          "Vinster": 3,
           "Oavgjort": 0,
           "Förlust": 2,
-          "Sets": 1,
-          "GA": 83,
-          "GC": 83,
-          "G/D": 0
+          "Sets": 0,
+          "GA": 78,
+          "GC": 85,
+          "G/D": -7
         },
         {
           "#": 1,
@@ -105,10 +105,10 @@
           "Vinster": 0,
           "Oavgjort": 0,
           "Förlust": 5,
-          "Sets": -8,
-          "GA": 77,
-          "GC": 126,
-          "G/D": -49
+          "Sets": -5,
+          "GA": 35,
+          "GC": 66,
+          "G/D": -31
         },
         {
           "#": 7,
@@ -118,10 +118,10 @@
           "Vinster": 0,
           "Oavgjort": 0,
           "Förlust": 1,
-          "Sets": -2,
-          "GA": 12,
-          "GC": 22,
-          "G/D": -10
+          "Sets": 0,
+          "GA": 0,
+          "GC": 0,
+          "G/D": 0
         }
       ]
     },
@@ -138,122 +138,106 @@
         },
         {
           "Lag": 2,
-          "Vinnare": "Mark / Haubir",
-          "Förlorare": "Anton / Jonas",
-          "Resultat": "2-0",
-          "TotPoäng": "22-14"
-        },
-        {
-          "Lag": 3,
           "Vinnare": "Martin F / Fredrik",
           "Förlorare": "Lucas / Dara",
-          "Resultat": "2-0",
+          "Resultat": "2-1",
           "TotPoäng": "22-12"
         },
         {
-          "Lag": 4,
-          "Vinnare": "Mark / Haubir",
-          "Förlorare": "Kristian / Silvan",
-          "Resultat": "2-1",
-          "TotPoäng": "33-27"
-        },
-        {
-          "Lag": 5,
+          "Lag": 3,
           "Vinnare": "Kristian / Silvan",
           "Förlorare": "Aleks / Amanda",
           "Resultat": "2-0",
           "TotPoäng": "22-9"
         },
         {
-          "Lag": 6,
+          "Lag": 4,
           "Vinnare": "Daniel / Hyberg",
           "Förlorare": "Aleks / Amanda",
           "Resultat": "2-0",
           "TotPoäng": "22-9"
         },
         {
-          "Lag": 7,
+          "Lag": 5,
           "Vinnare": "Anton / Jonas",
           "Förlorare": "Aleks / Amanda",
           "Resultat": "2-0",
           "TotPoäng": "22-14"
         },
         {
-          "Lag": 8,
+          "Lag": 6,
           "Vinnare": "Daniel / Hyberg",
           "Förlorare": "Anders K / George",
           "Resultat": "2-1",
           "TotPoäng": "32-24"
         },
         {
-          "Lag": 9,
+          "Lag": 7,
           "Vinnare": "Mood / Robert",
           "Förlorare": "Aleks / Amanda",
           "Resultat": "2-1",
           "TotPoäng": "29-25"
         },
         {
-          "Lag": 10,
+          "Lag": 8,
           "Vinnare": "Daniel / Hyberg",
           "Förlorare": "Mood / Robert",
           "Resultat": "2-1",
           "TotPoäng": "26-20"
         },
         {
-          "Lag": 11,
+          "Lag": 9,
           "Vinnare": "Daniel / Hyberg",
           "Förlorare": "Anton / Jonas",
           "Resultat": "2-1",
           "TotPoäng": "27-25"
         },
         {
-          "Lag": 12,
+          "Lag": 10,
           "Vinnare": "Kristian / Silvan",
           "Förlorare": "Anders K / George",
           "Resultat": "2-0",
           "TotPoäng": "22-14"
         },
         {
-          "Lag": 13,
-          "Vinnare": "Daniel / Hyberg",
-          "Förlorare": "Mark / Haubir",
-          "Resultat": "2-0",
-          "TotPoäng": "24-20"
-        },
-        {
-          "Lag": 14,
-          "Vinnare": "Mark / Haubir",
-          "Förlorare": "Aleks / Amanda",
-          "Resultat": "2-1",
-          "TotPoäng": "31-20"
-        },
-        {
-          "Lag": 15,
-          "Vinnare": "Mark / Haubir",
-          "Förlorare": "Martin F / Fredrik",
-          "Resultat": "2-0",
-          "TotPoäng": "22-12"
-        },
-        {
-          "Lag": 16,
+          "Lag": 11,
           "Vinnare": "Anders K / George",
           "Förlorare": "Anton / Jonas",
           "Resultat": "2-0",
           "TotPoäng": "23-17"
         },
         {
-          "Lag": 17,
+          "Lag": 12,
           "Vinnare": "Kristian / Silvan",
           "Förlorare": "Daniel / Hyberg",
           "Resultat": "2-1",
           "TotPoäng": "33-32"
         },
         {
-          "Lag": 18,
-          "Vinnare": "Mark / Haubir",
-          "Förlorare": "Mood / Robert",
+          "Lag": 13,
+          "Vinnare": "Kristian / Silvan",
+          "Förlorare": "Anton / Jonas",
+          "Resultat": "2-1",
+          "TotPoäng": "34-29"
+        },
+        {
+          "Lag": 14,
+          "Vinnare": "Anders K / George",
+          "Förlorare": "Aleks / Amanda",
           "Resultat": "2-0",
-          "TotPoäng": "22-12"
+          "TotPoäng": "25-16"
+        },
+        {
+          "Lag": 15
+        },
+        {
+          "Lag": 16
+        },
+        {
+          "Lag": 17
+        },
+        {
+          "Lag": 18
         },
         {
           "Lag": 19
@@ -317,19 +301,19 @@
       "data": [
         {
           "Ranking": 1,
-          "Spelare": "Daniel / Hyberg"
-        },
-        {
-          "Ranking": 2,
-          "Spelare": "Mark / Haubir"
-        },
-        {
-          "Ranking": 3,
           "Spelare": "Kristian / Silvan"
         },
         {
-          "Ranking": 4,
+          "Ranking": 2,
+          "Spelare": "Daniel / Hyberg"
+        },
+        {
+          "Ranking": 3,
           "Spelare": "Anders K / George"
+        },
+        {
+          "Ranking": 4,
+          "Spelare": "Anton / Jonas"
         },
         {
           "Ranking": 5,
@@ -337,11 +321,11 @@
         },
         {
           "Ranking": 6,
-          "Spelare": "Anton / Jonas"
+          "Spelare": "Mood / Robert"
         },
         {
           "Ranking": 7,
-          "Spelare": "Mood / Robert"
+          "Spelare": "Mark / Emil"
         },
         {
           "Ranking": 8,
