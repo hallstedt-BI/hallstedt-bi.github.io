@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-27T10:57:56.616Z",
+  "lastUpdated": "2025-11-27T11:59:52.614Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -22,28 +22,28 @@
         {
           "#": 4,
           "Spelare": "Kristian / Silvan",
-          "Poäng": 12,
-          "SM": 4,
-          "Vinster": 4,
+          "Poäng": 15,
+          "SM": 5,
+          "Vinster": 5,
           "Oavgjort": 0,
           "Förlust": 0,
-          "Sets": 4,
-          "GA": 70,
-          "GC": 46,
-          "G/D": 24
+          "Sets": 6,
+          "GA": 93,
+          "GC": 63,
+          "G/D": 30
         },
         {
           "#": 6,
           "Spelare": "Mark / Emil",
           "Poäng": 0,
-          "SM": 1,
+          "SM": 2,
           "Vinster": 0,
           "Oavgjort": 0,
-          "Förlust": 1,
-          "Sets": 0,
-          "GA": 0,
-          "GC": 0,
-          "G/D": 0
+          "Förlust": 2,
+          "Sets": -2,
+          "GA": 17,
+          "GC": 23,
+          "G/D": -6
         },
         {
           "#": 2,
@@ -235,7 +235,11 @@
           "TotPoäng": "34-30"
         },
         {
-          "Lag": 16
+          "Lag": 16,
+          "Vinnare": "Kristian / Silvan",
+          "Förlorare": "Mark / Emil",
+          "Resultat": "2-0",
+          "TotPoäng": "22-12"
         },
         {
           "Lag": 17
@@ -333,11 +337,11 @@
         },
         {
           "Ranking": 8,
-          "Spelare": "Mark / Emil"
+          "Spelare": "Lucas / Dara"
         },
         {
           "Ranking": 9,
-          "Spelare": "Lucas / Dara"
+          "Spelare": "Mark / Emil"
         }
       ]
     }
