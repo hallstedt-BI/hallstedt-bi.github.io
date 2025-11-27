@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025-11-24T07:24:47.830Z",
+  "lastUpdated": "2025-11-27T10:57:56.616Z",
   "sheetName": "Tabell HT25 ",
   "sections": {
     "mainStats": {
@@ -36,10 +36,10 @@
           "#": 6,
           "Spelare": "Mark / Emil",
           "Poäng": 0,
-          "SM": 0,
+          "SM": 1,
           "Vinster": 0,
           "Oavgjort": 0,
-          "Förlust": 0,
+          "Förlust": 1,
           "Sets": 0,
           "GA": 0,
           "GC": 0,
@@ -100,9 +100,9 @@
         {
           "#": 1,
           "Spelare": "Aleks / Amanda",
-          "Poäng": 0,
-          "SM": 5,
-          "Vinster": 0,
+          "Poäng": 3,
+          "SM": 6,
+          "Vinster": 1,
           "Oavgjort": 0,
           "Förlust": 5,
           "Sets": -5,
@@ -228,7 +228,11 @@
           "TotPoäng": "25-16"
         },
         {
-          "Lag": 15
+          "Lag": 15,
+          "Vinnare": "Aleks / Amanda",
+          "Förlorare": "Mark / Emil",
+          "Resultat": "2-1",
+          "TotPoäng": "34-30"
         },
         {
           "Lag": 16
@@ -325,15 +329,15 @@
         },
         {
           "Ranking": 7,
-          "Spelare": "Mark / Emil"
+          "Spelare": "Aleks / Amanda"
         },
         {
           "Ranking": 8,
-          "Spelare": "Lucas / Dara"
+          "Spelare": "Mark / Emil"
         },
         {
           "Ranking": 9,
-          "Spelare": "Aleks / Amanda"
+          "Spelare": "Lucas / Dara"
         }
       ]
     }
