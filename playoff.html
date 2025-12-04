@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pingis HT25 - Playoff</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 100vw;
+            margin: 0 auto;
+            background: white;
+            overflow: hidden;
+        }
+
+        .table-container {
+            padding: 40px;
+            overflow-x: auto;
+            max-width: 100vw;
+        }
+
+        .section-header {
+            margin: 0 0 15px 0;
+            color: #0078d4;
+            border-bottom: 2px solid #0078d4;
+            padding-bottom: 5px;
+            font-size: 1.4rem;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #6c757d;
+        }
+
+        .error {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #dc3545;
+        }
+
+        .last-updated {
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            color: #6c757d;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        /* Bracket styling */
+        .bracket-container {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin: 40px 0;
+        }
+
+        .bracket-round {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            min-width: 200px;
+        }
+
+        .bracket-round-title {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #0078d4;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0078d4;
+        }
+
+        .bracket-match {
+            background: white;
+            border: 2px solid #0078d4;
+            border-radius: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .bracket-team {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 1.1rem;
+        }
+
+        .bracket-team:last-child {
+            border-bottom: none;
+        }
+
+        .bracket-team.winner {
+            background-color: #e6f3ff;
+            font-weight: 600;
+        }
+
+        .team-name {
+            flex: 1;
+            color: #333;
+        }
+
+        .team-score {
+            font-weight: 700;
+            color: #0078d4;
+            margin-left: 15px;
+            font-size: 1.2rem;
+        }
+
+        .bracket-team.empty {
+            background-color: #f8f9fa;
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Spacing for bracket tree structure */
+        .bracket-round.quarterfinals .bracket-match {
+            margin: 15px 0;
+        }
+
+        .bracket-round.semifinals .bracket-match {
+            margin: 60px 0;
+        }
+
+        .bracket-round.finals .bracket-match {
+            margin: 140px 0;
+        }
+
+        /* TV-optimized styling */
+        body {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .last-updated {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 1200px) {
+            .bracket-container {
+                gap: 30px;
+            }
+
+            .bracket-round {
+                min-width: 160px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .bracket-container {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .bracket-round.semifinals .bracket-match,
+            .bracket-round.finals .bracket-match {
+                margin: 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="table-container">
+            <div id="loadingMessage" class="loading">
+                📊 Loading playoff data...
+            </div>
+            <div id="errorMessage" class="error" style="display: none;">
+                ❌ Error loading data
+            </div>
+            <div id="lastUpdated" class="last-updated" style="display: none;">
+                Last updated: <span id="updateTime"></span>
+            </div>
+            <h2 class="section-header">Playoff Bracket</h2>
+            <div id="bracketContainer" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPlayoffData();
+        });
+
+        async function loadPlayoffData() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const lastUpdated = document.getElementById('lastUpdated');
+            const updateTime = document.getElementById('updateTime');
+            const bracketContainer = document.getElementById('bracketContainer');
+
+            try {
+                // Fetch the CSV data with cache-busting
+                const response = await fetch(`./Pingis 2025(Matcher inkl slutspel HT25 ).csv`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const csvText = await response.text();
+                const playoffData = parseCSV(csvText);
+
+                // Hide loading message
+                loadingMessage.style.display = 'none';
+
+                // Show last updated time
+                const now = new Date();
+                updateTime.textContent = now.toLocaleString();
+                lastUpdated.style.display = 'block';
+
+                createBracket(playoffData);
+                bracketContainer.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading playoff data:', error);
+                loadingMessage.style.display = 'none';
+                errorMessage.textContent = `❌ Error: ${error.message}`;
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n').map(line => line.split(','));
+
+            // Parse the structure from CSV
+            // Skip Play in, focus on: Kvartsfinal (3,4), Semifinal (6,7), Final (9,10)
+
+            const playoffData = {
+                quarterfinals: [],
+                semifinals: [],
+                finals: []
+            };
+
+            // Skip header rows (0,1,2) and parse from row 3 onwards
+            for (let i = 3; i < lines.length; i++) {
+                const row = lines[i];
+
+                // Kvartsfinal (columns 3-4)
+                if (row[3] && row[3].trim()) {
+                    playoffData.quarterfinals.push({
+                        team: row[3].trim(),
+                        score: row[4] ? row[4].trim() : ''
+                    });
+                }
+
+                // Semifinal (columns 6-7)
+                if (row[6] && row[6].trim()) {
+                    playoffData.semifinals.push({
+                        team: row[6].trim(),
+                        score: row[7] ? row[7].trim() : ''
+                    });
+                }
+
+                // Final (columns 9-10)
+                if (row[9] && row[9].trim()) {
+                    playoffData.finals.push({
+                        team: row[9].trim(),
+                        score: row[10] ? row[10].trim() : ''
+                    });
+                }
+            }
+
+            // Group teams into matches (pairs)
+            return {
+                quarterfinals: groupIntoMatches(playoffData.quarterfinals),
+                semifinals: groupIntoMatches(playoffData.semifinals),
+                finals: groupIntoMatches(playoffData.finals)
+            };
+        }
+
+        function groupIntoMatches(teams) {
+            const matches = [];
+            for (let i = 0; i < teams.length; i += 2) {
+                const team1 = teams[i] || { team: '', score: '' };
+                const team2 = teams[i + 1] || { team: '', score: '' };
+
+                let winner = 0;
+                if (team1.score && team2.score) {
+                    const score1 = parseInt(team1.score);
+                    const score2 = parseInt(team2.score);
+                    if (!isNaN(score1) && !isNaN(score2)) {
+                        winner = score1 > score2 ? 1 : (score2 > score1 ? 2 : 0);
+                    }
+                }
+
+                matches.push({
+                    team1: team1.team,
+                    score1: team1.score,
+                    team2: team2.team,
+                    score2: team2.score,
+                    winner: winner
+                });
+            }
+            return matches;
+        }
+
+        function createBracket(playoffData) {
+            const bracketContainer = document.getElementById('bracketContainer');
+            bracketContainer.innerHTML = '';
+
+            const bracket = document.createElement('div');
+            bracket.className = 'bracket-container';
+
+            // Quarterfinals
+            if (playoffData.quarterfinals && playoffData.quarterfinals.length > 0) {
+                const quarterfinalsRound = createRound('Kvartsfinal', playoffData.quarterfinals, 'quarterfinals');
+                bracket.appendChild(quarterfinalsRound);
+            }
+
+            // Semifinals
+            if (playoffData.semifinals && playoffData.semifinals.length > 0) {
+                const semifinalsRound = createRound('Semifinal', playoffData.semifinals, 'semifinals');
+                bracket.appendChild(semifinalsRound);
+            }
+
+            // Finals
+            if (playoffData.finals && playoffData.finals.length > 0) {
+                const finalsRound = createRound('Final', playoffData.finals, 'finals');
+                bracket.appendChild(finalsRound);
+            }
+
+            bracketContainer.appendChild(bracket);
+        }
+
+        function createRound(title, matches, roundClass) {
+            const roundDiv = document.createElement('div');
+            roundDiv.className = `bracket-round ${roundClass}`;
+
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'bracket-round-title';
+            titleDiv.textContent = title;
+            roundDiv.appendChild(titleDiv);
+
+            const matchesContainer = document.createElement('div');
+
+            matches.forEach(match => {
+                const matchDiv = createMatch(match);
+                matchesContainer.appendChild(matchDiv);
+            });
+
+            roundDiv.appendChild(matchesContainer);
+            return roundDiv;
+        }
+
+        function createMatch(match) {
+            const matchDiv = document.createElement('div');
+            matchDiv.className = 'bracket-match';
+
+            // Team 1
+            const team1Div = document.createElement('div');
+            team1Div.className = 'bracket-team';
+            if (!match.team1 || match.team1 === '') {
+                team1Div.classList.add('empty');
+            } else if (match.winner === 1) {
+                team1Div.classList.add('winner');
+            }
+
+            const team1Name = document.createElement('span');
+            team1Name.className = 'team-name';
+            team1Name.textContent = match.team1 || 'TBD';
+
+            const team1Score = document.createElement('span');
+            team1Score.className = 'team-score';
+            team1Score.textContent = match.score1 !== '' && match.score1 !== null && match.score1 !== undefined ? match.score1 : '';
+
+            team1Div.appendChild(team1Name);
+            if (team1Score.textContent !== '') {
+                team1Div.appendChild(team1Score);
+            }
+
+            // Team 2
+            const team2Div = document.createElement('div');
+            team2Div.className = 'bracket-team';
+            if (!match.team2 || match.team2 === '') {
+                team2Div.classList.add('empty');
+            } else if (match.winner === 2) {
+                team2Div.classList.add('winner');
+            }
+
+            const team2Name = document.createElement('span');
+            team2Name.className = 'team-name';
+            team2Name.textContent = match.team2 || 'TBD';
+
+            const team2Score = document.createElement('span');
+            team2Score.className = 'team-score';
+            team2Score.textContent = match.score2 !== '' && match.score2 !== null && match.score2 !== undefined ? match.score2 : '';
+
+            team2Div.appendChild(team2Name);
+            if (team2Score.textContent !== '') {
+                team2Div.appendChild(team2Score);
+            }
+
+            matchDiv.appendChild(team1Div);
+            matchDiv.appendChild(team2Div);
+
+            return matchDiv;
+        }
+
+        // Auto-refresh every 5 minutes to check for updates
+        setInterval(loadPlayoffData, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
