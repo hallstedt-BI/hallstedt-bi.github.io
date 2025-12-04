@@ -106,7 +106,7 @@
         }
 
         .bracket-team.winner {
-            background-color: #d0e7cc;
+            background-color: #cdebd1;
             font-weight: 600;
         }
 
@@ -186,7 +186,7 @@
             height: 150px;
             background-image: url('./fuego.gif');
             background-repeat: repeat-x;
-            background-size: 150px 150px;
+            background-size: 200px 200px;
             background-position: bottom;
             pointer-events: none;
             z-index: 1000;
@@ -290,10 +290,10 @@
                 });
             });
 
-            // Semifinals: winner from match 1 goes to row 5-6, winner from match 4 goes to row 13-14
+            // Semifinals: Match 1 winner (row 5) vs Match 2 winner (row 7), Match 3 winner (row 11) vs Match 4 winner (row 13)
             const semifinalsRows = [
-                [4, 5],   // Top semifinal (from matches 1-2) - rows 5-6
-                [12, 13]  // Bottom semifinal (from matches 3-4) - rows 13-14
+                [4, 6],   // Top semifinal: Match 1 winner (row 5) vs Match 2 winner (row 7)
+                [10, 12]  // Bottom semifinal: Match 3 winner (row 11) vs Match 4 winner (row 13)
             ];
 
             semifinalsRows.forEach(([row1, row2]) => {
@@ -310,8 +310,8 @@
                 });
             });
 
-            // Finals: winner goes to middle row (around row 9-10)
-            const finalsRows = [[8, 9]];
+            // Finals: winner from top semifinal (row 8) vs winner from bottom semifinal (row 10)
+            const finalsRows = [[7, 9]];
 
             finalsRows.forEach(([row1, row2]) => {
                 const line1 = lines[row1] || [];
