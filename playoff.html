@@ -27,8 +27,8 @@
 
         .section-header {
             margin: 0 0 15px 0;
-            color: #0078d4;
-            border-bottom: 2px solid #0078d4;
+            color: #d40400;
+            border-bottom: 2px solid #d40400;
             padding-bottom: 5px;
             font-size: 1.4rem;
             text-align: center;
@@ -77,10 +77,10 @@
             text-align: center;
             font-size: 1.3rem;
             font-weight: 600;
-            color: #0078d4;
+            color: #d40400;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #0078d4;
+            border-bottom: 2px solid #d40400;
         }
 
         .bracket-match {
@@ -117,7 +117,7 @@
 
         .team-score {
             font-weight: 700;
-            color: #0078d4;
+            color: #d40400;
             margin-left: 15px;
             font-size: 1.2rem;
         }
@@ -319,23 +319,29 @@
             const bracket = document.createElement('div');
             bracket.className = 'bracket-container';
 
-            // Quarterfinals
-            if (playoffData.quarterfinals && playoffData.quarterfinals.length > 0) {
-                const quarterfinalsRound = createRound('Kvartsfinal', playoffData.quarterfinals, 'quarterfinals');
-                bracket.appendChild(quarterfinalsRound);
+            // Quarterfinals - ensure we have 4 matches
+            const quarterfinals = playoffData.quarterfinals || [];
+            while (quarterfinals.length < 4) {
+                quarterfinals.push({ team1: '', score1: '', team2: '', score2: '', winner: 0 });
             }
+            const quarterfinalsRound = createRound('Kvartsfinal', quarterfinals, 'quarterfinals');
+            bracket.appendChild(quarterfinalsRound);
 
-            // Semifinals
-            if (playoffData.semifinals && playoffData.semifinals.length > 0) {
-                const semifinalsRound = createRound('Semifinal', playoffData.semifinals, 'semifinals');
-                bracket.appendChild(semifinalsRound);
+            // Semifinals - ensure we have 2 matches
+            const semifinals = playoffData.semifinals || [];
+            while (semifinals.length < 2) {
+                semifinals.push({ team1: '', score1: '', team2: '', score2: '', winner: 0 });
             }
+            const semifinalsRound = createRound('Semifinal', semifinals, 'semifinals');
+            bracket.appendChild(semifinalsRound);
 
-            // Finals
-            if (playoffData.finals && playoffData.finals.length > 0) {
-                const finalsRound = createRound('Final', playoffData.finals, 'finals');
-                bracket.appendChild(finalsRound);
+            // Finals - ensure we have 1 match
+            const finals = playoffData.finals || [];
+            while (finals.length < 1) {
+                finals.push({ team1: '', score1: '', team2: '', score2: '', winner: 0 });
             }
+            const finalsRound = createRound('Final', finals, 'finals');
+            bracket.appendChild(finalsRound);
 
             bracketContainer.appendChild(bracket);
         }
