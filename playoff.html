@@ -85,7 +85,7 @@
 
         .bracket-match {
             background: white;
-            border: 2px solid #0078d4;
+            border: 2px solid #d40400;
             border-radius: 8px;
             margin: 10px 0;
             overflow: hidden;
@@ -106,7 +106,7 @@
         }
 
         .bracket-team.winner {
-            background-color: #e6f3ff;
+            background-color: #ff8d82;
             font-weight: 600;
         }
 
@@ -241,7 +241,7 @@
             const lines = csvText.split('\n').map(line => line.split(','));
 
             // Parse the structure from CSV
-            // Skip Play in, focus on: Kvartsfinal (3,4), Semifinal (6,7), Final (9,10)
+            // Skip Play in, focus on: Kvartsfinal (3,4), Semifinal (5,6), Final (7,8)
 
             const playoffData = {
                 quarterfinals: [],
@@ -261,19 +261,19 @@
                     });
                 }
 
-                // Semifinal (columns 6-7)
-                if (row[6] && row[6].trim()) {
+                // Semifinal (columns 5-6)
+                if (row[5] && row[5].trim()) {
                     playoffData.semifinals.push({
-                        team: row[6].trim(),
-                        score: row[7] ? row[7].trim() : ''
+                        team: row[5].trim(),
+                        score: row[6] ? row[6].trim() : ''
                     });
                 }
 
-                // Final (columns 9-10)
-                if (row[9] && row[9].trim()) {
+                // Final (columns 7-8)
+                if (row[7] && row[7].trim()) {
                     playoffData.finals.push({
-                        team: row[9].trim(),
-                        score: row[10] ? row[10].trim() : ''
+                        team: row[7].trim(),
+                        score: row[8] ? row[8].trim() : ''
                     });
                 }
             }
