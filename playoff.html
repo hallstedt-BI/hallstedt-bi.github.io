@@ -62,15 +62,46 @@
         .bracket-container {
             display: flex;
             justify-content: center;
+            align-items: stretch;
             gap: 60px;
             margin: 40px 0;
+            min-height: 600px;
         }
 
         .bracket-round {
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
             min-width: 200px;
+            height: 100%;
+        }
+
+        .bracket-matches-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Positioning for tournament tree alignment */
+        .bracket-round.quarterfinals .bracket-matches-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .bracket-round.semifinals .bracket-matches-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-top: calc(25% - 60px);
+            padding-bottom: calc(25% - 60px);
+        }
+
+        .bracket-round.finals .bracket-matches-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .bracket-round-title {
@@ -126,19 +157,6 @@
             background-color: #f8f9fa;
             color: #999;
             font-style: italic;
-        }
-
-        /* Spacing for bracket tree structure */
-        .bracket-round.quarterfinals .bracket-match {
-            margin: 15px 0;
-        }
-
-        .bracket-round.semifinals .bracket-match {
-            margin: 60px 0;
-        }
-
-        .bracket-round.finals .bracket-match {
-            margin: 140px 0;
         }
 
         /* TV-optimized styling */
@@ -405,6 +423,7 @@
             roundDiv.appendChild(titleDiv);
 
             const matchesContainer = document.createElement('div');
+            matchesContainer.className = 'bracket-matches-container';
 
             matches.forEach(match => {
                 const matchDiv = createMatch(match);
