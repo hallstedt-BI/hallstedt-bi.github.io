@@ -78,29 +78,22 @@
         .bracket-matches-container {
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
             flex: 1;
             position: relative;
         }
 
         /* Positioning for tournament tree alignment */
         .bracket-round.quarterfinals .bracket-matches-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            justify-content: space-evenly;
         }
 
         .bracket-round.semifinals .bracket-matches-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding-top: calc(25% - 60px);
-            padding-bottom: calc(25% - 60px);
+            justify-content: space-evenly;
+            padding-top: 12.5%;
+            padding-bottom: 12.5%;
         }
 
         .bracket-round.finals .bracket-matches-container {
-            display: flex;
-            flex-direction: column;
             justify-content: center;
         }
 
