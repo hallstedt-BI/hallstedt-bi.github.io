@@ -20,9 +20,17 @@
         }
 
         .table-container {
-            padding: 40px;
+            padding: 20px 40px;
             overflow-x: auto;
             max-width: 100vw;
+        }
+
+        /* Animation iframe container */
+        #animation-container {
+            width: 100vw;
+            height: 45vh;
+            border: none;
+            display: block;
         }
 
         .section-header {
@@ -64,14 +72,15 @@
             justify-content: center;
             align-items: stretch;
             gap: 60px;
-            margin: 40px 0;
-            height: 800px;
+            margin: 20px 0;
+            height: 45vh;
         }
 
         .bracket-round {
             display: flex;
             flex-direction: column;
             min-width: 200px;
+            flex: 1;
         }
 
         .bracket-matches-container {
@@ -218,6 +227,9 @@
             <h2 class="section-header">Playoff Bracket</h2>
             <div id="bracketContainer" style="display: none;"></div>
         </div>
+
+        <!-- Ping pong animation -->
+        <iframe id="animation-container" src="./pingpong-animation-test.html"></iframe>
     </div>
 
     <!-- Animated GIF border at bottom -->

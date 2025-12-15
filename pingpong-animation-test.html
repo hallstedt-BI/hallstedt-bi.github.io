@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finaldags</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(180deg, #2d5016 0%, #1a3010 100%);
+        }
+
+        /* Ping pong table */
+        .table {
+            position: absolute;
+            bottom: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 450px;
+            height: 225px;
+            background-color: #6b4423;
+            border: 8px solid #4a2f1a;
+            border-radius: 5px;
+        }
+
+        .table::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: white;
+            transform: translateY(-50%);
+        }
+
+        /* Net */
+        .net {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 3px;
+            height: 120px;
+            background-color: white;
+            z-index: 5;
+        }
+
+        /* Players */
+        .player {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.1s ease-out;
+        }
+
+        .player-head {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            z-index: 10;
+        }
+
+        .racket {
+            position: absolute;
+            width: 45px;
+            height: 60px;
+            background-image: url('./racket.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transform-origin: bottom center;
+            transition: transform 0.15s ease-out;
+            left: 50px;
+            top: 20px;
+        }
+
+        /* Player positions - Team 1 on left, Team 2 on right */
+        #player1 {
+            bottom: 40%;
+            left: 15%;
+        }
+
+        #player2 {
+            bottom: 25%;
+            left: 15%;
+        }
+
+        #player3 {
+            bottom: 25%;
+            right: 15%;
+        }
+
+        #player4 {
+            bottom: 40%;
+            right: 15%;
+        }
+
+        /* Ball */
+        .ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            z-index: 15;
+            transition: all 0.05s linear;
+        }
+
+        /* Hit effect */
+        .hit-effect {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #ffeb3b;
+            border-radius: 50%;
+            animation: hit-expand 0.3s ease-out forwards;
+            z-index: 8;
+        }
+
+        @keyframes hit-expand {
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        /* Swing animation */
+        .swinging {
+            animation: swing 0.2s ease-out;
+        }
+
+        @keyframes swing {
+            0% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(-45deg);
+            }
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        /* Shake animation for aggressive hits */
+        .aggressive-hit {
+            animation: shake 0.15s ease-out;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(-5px, 2px);
+            }
+            75% {
+                transform: translate(5px, -2px);
+            }
+        }
+
+        /* Info overlay */
+        .info {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 20;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div class="info">Final!</div>
+
+        <div class="table">
+            <div class="net"></div>
+        </div>
+
+        <!-- Players -->
+        <!-- Team 1: Dara and Lucas (left side) -->
+        <div id="player1" class="player">
+            <div class="player-head" style="background-image: url('./dara.png');"></div>
+            <div class="racket" id="racket1"></div>
+        </div>
+
+        <div id="player2" class="player">
+            <div class="player-head" style="background-image: url('./lucas.png');"></div>
+            <div class="racket" id="racket2"></div>
+        </div>
+
+        <!-- Team 2: Anders and George (right side) -->
+        <div id="player3" class="player">
+            <div class="player-head" style="background-image: url('./anders.png');"></div>
+            <div class="racket" id="racket3"></div>
+        </div>
+
+        <div id="player4" class="player">
+            <div class="player-head" style="background-image: url('./george.png');"></div>
+            <div class="racket" id="racket4"></div>
+        </div>
+
+        <!-- Ball -->
+        <div class="ball" id="ball"></div>
+    </div>
+
+    <script>
+        const ball = document.getElementById('ball');
+
+        // Team 1 (left side): Player 1 (A) and Player 2 (B)
+        // Team 2 (right side): Player 3 (C) and Player 4 (D)
+        // Rally order: A → C → B → D → A (maximize diagonal shots)
+        const players = [
+            {
+                id: 'player1',
+                name: 'A',
+                element: document.getElementById('player1'),
+                racket: document.getElementById('racket1'),
+                position: { x: 15, y: 55 }  // Back left
+            },
+            {
+                id: 'player2',
+                name: 'B',
+                element: document.getElementById('player2'),
+                racket: document.getElementById('racket2'),
+                position: { x: 15, y: 75 }  // Front left
+            },
+            {
+                id: 'player3',
+                name: 'C',
+                element: document.getElementById('player3'),
+                racket: document.getElementById('racket3'),
+                position: { x: 85, y: 70 }  // Mid right
+            },
+            {
+                id: 'player4',
+                name: 'D',
+                element: document.getElementById('player4'),
+                racket: document.getElementById('racket4'),
+                position: { x: 85, y: 60 }  // Back right
+            }
+        ];
+
+        // Legal doubles rally pattern: A → C → B → D → A
+        const rallyOrder = [0, 2, 1, 3]; // Player indices
+        let rallyStep = 0;
+        let ballPosition = { x: 50, y: 50 };
+        let isAnimating = false;
+
+        // Convert viewport percentage to pixels
+        function vwToPx(vw) {
+            return (vw * window.innerWidth) / 100;
+        }
+
+        function vhToPx(vh) {
+            return (vh * window.innerHeight) / 100;
+        }
+
+        // Animate ball from one player to another with table bounce
+        function hitBall() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const currentPlayerIndex = rallyOrder[rallyStep];
+            const nextStep = (rallyStep + 1) % rallyOrder.length;
+            const targetPlayerIndex = rallyOrder[nextStep];
+
+            const currentPlayer = players[currentPlayerIndex];
+            const targetPlayer = players[targetPlayerIndex];
+
+            // Swing animation
+            currentPlayer.racket.classList.add('swinging');
+            currentPlayer.element.classList.add('aggressive-hit');
+
+            setTimeout(() => {
+                currentPlayer.racket.classList.remove('swinging');
+                currentPlayer.element.classList.remove('aggressive-hit');
+            }, 200);
+
+            // Create hit effect
+            createHitEffect(currentPlayer.position.x, currentPlayer.position.y);
+
+            // Animate ball with bounce on opponent's side
+            const startX = currentPlayer.position.x;
+            const startY = currentPlayer.position.y;
+
+            // Calculate bounce position on opponent's side of table
+            // Table is at ~50% x, determine which side to bounce on
+            const bounceX = targetPlayer.position.x > 50 ? 60 : 40; // Right or left side of table
+            const bounceY = 50; // Table height
+
+            const endX = targetPlayer.position.x;
+            const endY = targetPlayer.position.y;
+
+            const totalDuration = 500 + Math.random() * 150;
+            const bounceDuration = totalDuration * 0.5; // Half time to bounce
+            const startTime = Date.now();
+            let hasBounced = false;
+
+            function animateBallMovement() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / totalDuration, 1);
+
+                if (progress < 0.5) {
+                    // First half: player to table bounce
+                    const segmentProgress = progress * 2; // 0 to 1
+                    ballPosition.x = startX + (bounceX - startX) * segmentProgress;
+                    // Arc down to table
+                    const arcHeight = 20;
+                    ballPosition.y = startY + (bounceY - startY) * segmentProgress - Math.sin(segmentProgress * Math.PI) * arcHeight;
+
+                    // Create bounce effect when hitting table
+                    if (segmentProgress > 0.95 && !hasBounced) {
+                        createHitEffect(bounceX, bounceY);
+                        hasBounced = true;
+                    }
+                } else {
+                    // Second half: table bounce to target player
+                    const segmentProgress = (progress - 0.5) * 2; // 0 to 1
+                    ballPosition.x = bounceX + (endX - bounceX) * segmentProgress;
+                    // Arc up from table
+                    const arcHeight = 15;
+                    ballPosition.y = bounceY + (endY - bounceY) * segmentProgress - Math.sin(segmentProgress * Math.PI) * arcHeight;
+                }
+
+                // Update ball position
+                ball.style.left = ballPosition.x + '%';
+                ball.style.top = ballPosition.y + '%';
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateBallMovement);
+                } else {
+                    // Ball reached target
+                    isAnimating = false;
+
+                    // Move to next player in legal rally order
+                    rallyStep = nextStep;
+
+                    // Continue the rally after a short pause
+                    setTimeout(hitBall, 100 + Math.random() * 150);
+                }
+            }
+
+            animateBallMovement();
+        }
+
+        // Create visual hit effect
+        function createHitEffect(x, y) {
+            const effect = document.createElement('div');
+            effect.className = 'hit-effect';
+            effect.style.left = x + '%';
+            effect.style.top = y + '%';
+            document.getElementById('game-container').appendChild(effect);
+
+            setTimeout(() => {
+                effect.remove();
+            }, 300);
+        }
+
+        // Start the game
+        setTimeout(() => {
+            ballPosition = { x: players[0].position.x, y: players[0].position.y };
+            ball.style.left = ballPosition.x + '%';
+            ball.style.top = ballPosition.y + '%';
+            hitBall();
+        }, 500);
+    </script>
+</body>
+</html>
