@@ -332,16 +332,18 @@
         /* Trophy */
         .trophy {
             position: absolute;
-            width: 80px;
+            width: 100px;
             height: 100px;
-            left: 20%;
+            left: 23%;
             top: 35%;
             transform: translateX(-50%) scale(0);
             opacity: 0;
             transition: all 0.8s ease-out;
             z-index: 50;
-            font-size: 80px;
-            text-align: center;
+            background-image: url('./trophy.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
             filter: drop-shadow(0 5px 15px rgba(255, 215, 0, 0.6));
         }
 
@@ -386,7 +388,7 @@
         <div class="ball" id="ball"></div>
 
         <!-- Trophy -->
-        <div class="trophy" id="trophy">🏆</div>
+        <div class="trophy" id="trophy"></div>
     </div>
 
     <script>
