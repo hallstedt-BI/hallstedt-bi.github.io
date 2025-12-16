@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final - Dara Wins!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: transparent;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Ping pong table */
+        .table {
+            position: absolute;
+            bottom: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 450px;
+            height: 225px;
+            background-color: #6b4423;
+            border: 8px solid #4a2f1a;
+            border-radius: 5px;
+        }
+
+        .table::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: white;
+            transform: translateY(-50%);
+        }
+
+        /* Net */
+        .net {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 3px;
+            height: 120px;
+            background-color: white;
+            z-index: 5;
+        }
+
+        /* Players */
+        .player {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Add smooth transition only for victory celebration */
+        .player.celebrating {
+            transition: all 1.2s ease-in-out;
+        }
+
+        .player-head {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            z-index: 10;
+        }
+
+        .racket {
+            position: absolute;
+            width: 45px;
+            height: 60px;
+            background-image: url('./racket.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transform-origin: bottom center;
+            transition: transform 0.15s ease-out;
+            left: 50px;
+            top: 20px;
+        }
+
+        /* Player positions - Team 1 on left, Team 2 on right */
+        #player1 {
+            bottom: 40%;
+            left: 15%;
+        }
+
+        #player2 {
+            bottom: 25%;
+            left: 15%;
+        }
+
+        #player3 {
+            bottom: 25%;
+            right: 15%;
+        }
+
+        #player4 {
+            bottom: 40%;
+            right: 15%;
+        }
+
+        /* Ball */
+        .ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #cccccc;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(150, 150, 150, 0.8);
+            z-index: 15;
+            transition: all 0.05s linear;
+        }
+
+        /* Hit effect */
+        .hit-effect {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #ffeb3b;
+            border-radius: 50%;
+            animation: hit-expand 0.3s ease-out forwards;
+            z-index: 8;
+        }
+
+        /* Smash hit effect - larger and more dramatic */
+        .smash-hit-effect {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 5px solid #ff5722;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 87, 34, 0.8);
+            animation: smash-expand 0.4s ease-out forwards;
+            z-index: 8;
+        }
+
+        @keyframes hit-expand {
+            0% {
+                transform: scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        @keyframes smash-expand {
+            0% {
+                transform: scale(0.7);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        /* Screen shake for smash */
+        .screen-shake {
+            animation: screen-shake-anim 0.3s ease-out;
+        }
+
+        @keyframes screen-shake-anim {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(-8px, 4px);
+            }
+            50% {
+                transform: translate(8px, -4px);
+            }
+            75% {
+                transform: translate(-6px, 3px);
+            }
+        }
+
+        /* Swing animation */
+        .swinging {
+            animation: swing 0.2s ease-out;
+        }
+
+        @keyframes swing {
+            0% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(-45deg);
+            }
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        /* Shake animation for aggressive hits */
+        .aggressive-hit {
+            animation: shake 0.15s ease-out;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(-5px, 2px);
+            }
+            75% {
+                transform: translate(5px, -2px);
+            }
+        }
+
+        /* Crying animation - shaking */
+        .crying-player {
+            animation: crying-shake 0.8s ease-in-out infinite;
+        }
+
+        @keyframes crying-shake {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            10% {
+                transform: translate(-3px, 2px) rotate(-2deg);
+            }
+            20% {
+                transform: translate(3px, -2px) rotate(2deg);
+            }
+            30% {
+                transform: translate(-2px, 3px) rotate(-1deg);
+            }
+            40% {
+                transform: translate(2px, -3px) rotate(1deg);
+            }
+            50% {
+                transform: translate(-3px, -2px) rotate(-2deg);
+            }
+            60% {
+                transform: translate(3px, 2px) rotate(2deg);
+            }
+            70% {
+                transform: translate(-2px, -3px) rotate(-1deg);
+            }
+            80% {
+                transform: translate(2px, 3px) rotate(1deg);
+            }
+            90% {
+                transform: translate(-3px, 2px) rotate(-2deg);
+            }
+        }
+
+        /* Tears */
+        .tear {
+            position: absolute;
+            width: 15px;
+            height: 20px;
+            background-image: url('./tear.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            animation: tear-fall 1.5s ease-in infinite;
+            opacity: 0.8;
+            z-index: 11;
+        }
+
+        @keyframes tear-fall {
+            0% {
+                transform: translateY(0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+        }
+
+        .tear:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        /* Info overlay */
+        .info {
+            display: none;
+        }
+
+        /* Victory positions - all players move up from their positions */
+        #player1.victory-pos {
+            top: 35%;
+            left: 15%;
+            bottom: auto;
+        }
+
+        #player2.victory-pos {
+            top: 35%;
+            left: 25%;
+            bottom: auto;
+        }
+
+        #player3.victory-pos {
+            top: 35%;
+            right: 25%;
+            left: auto;
+            bottom: auto;
+        }
+
+        #player4.victory-pos {
+            top: 35%;
+            right: 15%;
+            left: auto;
+            bottom: auto;
+        }
+
+        /* Trophy */
+        .trophy {
+            position: absolute;
+            width: 80px;
+            height: 100px;
+            left: 23%;
+            top: 35%;
+            transform: translateX(-50%) scale(0);
+            opacity: 0;
+            transition: all 0.8s ease-out;
+            z-index: 50;
+            font-size: 80px;
+            text-align: center;
+            filter: drop-shadow(0 5px 15px rgba(255, 215, 0, 0.6));
+        }
+
+        .trophy.show {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div class="info">Final!</div>
+
+        <div class="table">
+            <div class="net"></div>
+        </div>
+
+        <!-- Players -->
+        <!-- Team 1: Dara and Lucas (left side) -->
+        <div id="player1" class="player">
+            <div class="player-head" style="background-image: url('./dara.png');"></div>
+            <div class="racket" id="racket1"></div>
+        </div>
+
+        <div id="player2" class="player">
+            <div class="player-head" style="background-image: url('./lucas.png');"></div>
+            <div class="racket" id="racket2"></div>
+        </div>
+
+        <!-- Team 2: Anders and George (right side) -->
+        <div id="player3" class="player">
+            <div class="player-head" style="background-image: url('./anders.png');"></div>
+            <div class="racket" id="racket3"></div>
+        </div>
+
+        <div id="player4" class="player">
+            <div class="player-head" style="background-image: url('./george.png');"></div>
+            <div class="racket" id="racket4"></div>
+        </div>
+
+        <!-- Ball -->
+        <div class="ball" id="ball"></div>
+
+        <!-- Trophy -->
+        <div class="trophy" id="trophy">🏆</div>
+    </div>
+
+    <script>
+        const ball = document.getElementById('ball');
+        const gameContainer = document.getElementById('game-container');
+        const trophy = document.getElementById('trophy');
+
+        // Team 1 (left side): Player 0 (Dara) and Player 1 (Lucas)
+        // Team 2 (right side): Player 2 (Anders) and Player 3 (George)
+        // Rally order: Lucas → Anders → Dara (SMASH!) → George (cries)
+        const players = [
+            {
+                id: 'player1',
+                name: 'Dara',
+                element: document.getElementById('player1'),
+                racket: document.getElementById('racket1'),
+                position: { x: 15, y: 55 }  // Back left
+            },
+            {
+                id: 'player2',
+                name: 'Lucas',
+                element: document.getElementById('player2'),
+                racket: document.getElementById('racket2'),
+                position: { x: 15, y: 75 }  // Front left
+            },
+            {
+                id: 'player3',
+                name: 'Anders',
+                element: document.getElementById('player3'),
+                racket: document.getElementById('racket3'),
+                position: { x: 85, y: 70 }  // Mid right
+            },
+            {
+                id: 'player4',
+                name: 'George',
+                element: document.getElementById('player4'),
+                racket: document.getElementById('racket4'),
+                position: { x: 85, y: 60 }  // Back right
+            }
+        ];
+
+        // Final match rally pattern: Lucas → Anders → Dara → (George misses)
+        const rallyOrder = [1, 2, 0]; // Player indices - George not in rally order since he misses
+        let rallyStep = 0;
+        let ballPosition = { x: 50, y: 50 };
+        let isAnimating = false;
+        let georgeCrying = false;
+
+        // Convert viewport percentage to pixels
+        function vwToPx(vw) {
+            return (vw * window.innerWidth) / 100;
+        }
+
+        function vhToPx(vh) {
+            return (vh * window.innerHeight) / 100;
+        }
+
+        // Animate ball from one player to another with table bounce
+        function hitBall() {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const currentPlayerIndex = rallyOrder[rallyStep];
+            const nextStep = (rallyStep + 1) % rallyOrder.length;
+
+            // Check if this is Dara's smash (rallyStep === 2)
+            const isSmash = rallyStep === 2;
+
+            // If it's Dara's smash, target is George (who will miss)
+            const targetPlayerIndex = isSmash ? 3 : rallyOrder[nextStep];
+
+            const currentPlayer = players[currentPlayerIndex];
+            const targetPlayer = players[targetPlayerIndex];
+
+            // Swing animation
+            currentPlayer.racket.classList.add('swinging');
+            currentPlayer.element.classList.add('aggressive-hit');
+
+            setTimeout(() => {
+                currentPlayer.racket.classList.remove('swinging');
+                currentPlayer.element.classList.remove('aggressive-hit');
+            }, 200);
+
+            // Create hit effect (smash effect if it's Dara's turn)
+            if (isSmash) {
+                createSmashHitEffect(currentPlayer.position.x, currentPlayer.position.y);
+                // Add screen shake
+                gameContainer.classList.add('screen-shake');
+                setTimeout(() => {
+                    gameContainer.classList.remove('screen-shake');
+                }, 300);
+            } else {
+                createHitEffect(currentPlayer.position.x, currentPlayer.position.y);
+            }
+
+            // Animate ball with bounce on opponent's side
+            const startX = currentPlayer.position.x;
+            const startY = currentPlayer.position.y;
+
+            // Calculate bounce position on opponent's side of table
+            // Table is at ~50% x, determine which side to bounce on
+            const bounceX = targetPlayer.position.x > 50 ? 60 : 40; // Right or left side of table
+            const bounceY = 50; // Table height
+
+            const endX = targetPlayer.position.x;
+            const endY = targetPlayer.position.y;
+
+            // Smash is faster!
+            const totalDuration = isSmash ? (300 + Math.random() * 100) : (500 + Math.random() * 150);
+            const bounceDuration = totalDuration * 0.5; // Half time to bounce
+            const startTime = Date.now();
+            let hasBounced = false;
+
+            function animateBallMovement() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / totalDuration, 1);
+
+                if (progress < 0.5) {
+                    // First half: player to table bounce
+                    const segmentProgress = progress * 2; // 0 to 1
+                    ballPosition.x = startX + (bounceX - startX) * segmentProgress;
+                    // Arc down to table (higher arc for smash)
+                    const arcHeight = isSmash ? 30 : 20;
+                    ballPosition.y = startY + (bounceY - startY) * segmentProgress - Math.sin(segmentProgress * Math.PI) * arcHeight;
+
+                    // Create bounce effect when hitting table
+                    if (segmentProgress > 0.95 && !hasBounced) {
+                        if (isSmash) {
+                            createSmashHitEffect(bounceX, bounceY);
+                        } else {
+                            createHitEffect(bounceX, bounceY);
+                        }
+                        hasBounced = true;
+                    }
+                } else {
+                    // Second half: table bounce to target player
+                    const segmentProgress = (progress - 0.5) * 2; // 0 to 1
+                    ballPosition.x = bounceX + (endX - bounceX) * segmentProgress;
+                    // Arc up from table
+                    const arcHeight = isSmash ? 20 : 15;
+                    ballPosition.y = bounceY + (endY - bounceY) * segmentProgress - Math.sin(segmentProgress * Math.PI) * arcHeight;
+                }
+
+                // Update ball position
+                ball.style.left = ballPosition.x + '%';
+                ball.style.top = ballPosition.y + '%';
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateBallMovement);
+                } else {
+                    // Ball reached target
+                    isAnimating = false;
+
+                    // Check if this was Dara's smash to George
+                    if (isSmash) {
+                        // George misses the ball
+                        if (!georgeCrying) {
+                            // Wait 1 second, then start celebration
+                            setTimeout(() => {
+                                // George starts crying as celebration begins
+                                addCryingEffect(players[3].element);
+                                georgeCrying = true;
+                                startVictoryCelebration();
+                            }, 1000);
+                        }
+
+                        // Reset to Lucas to start over after a longer pause
+                        rallyStep = 0;
+
+                        // Much longer pause for celebration (1s delay + 1.2s transition + 1.8s display)
+                        setTimeout(() => {
+                            // Reset everything instantly
+                            if (georgeCrying) {
+                                removeCryingEffect(players[3].element);
+                                georgeCrying = false;
+                            }
+                            endVictoryCelebration();
+
+                            // Restart immediately
+                            hitBall();
+                        }, 4000);
+                    } else {
+                        // Normal rally continues
+                        rallyStep = nextStep;
+                        setTimeout(hitBall, 100 + Math.random() * 150);
+                    }
+                }
+            }
+
+            animateBallMovement();
+        }
+
+        // Create visual hit effect
+        function createHitEffect(x, y) {
+            const effect = document.createElement('div');
+            effect.className = 'hit-effect';
+            effect.style.left = x + '%';
+            effect.style.top = y + '%';
+            gameContainer.appendChild(effect);
+
+            setTimeout(() => {
+                effect.remove();
+            }, 300);
+        }
+
+        // Create dramatic smash hit effect
+        function createSmashHitEffect(x, y) {
+            const effect = document.createElement('div');
+            effect.className = 'smash-hit-effect';
+            effect.style.left = x + '%';
+            effect.style.top = y + '%';
+            gameContainer.appendChild(effect);
+
+            setTimeout(() => {
+                effect.remove();
+            }, 400);
+        }
+
+        // Add crying effect to George
+        function addCryingEffect(playerElement) {
+            playerElement.classList.add('crying-player');
+
+            // Add tears
+            const tear1 = document.createElement('div');
+            tear1.className = 'tear';
+            tear1.style.left = '25px';
+            tear1.style.top = '40px';
+
+            const tear2 = document.createElement('div');
+            tear2.className = 'tear';
+            tear2.style.left = '40px';
+            tear2.style.top = '40px';
+
+            playerElement.appendChild(tear1);
+            playerElement.appendChild(tear2);
+        }
+
+        // Remove crying effect from George
+        function removeCryingEffect(playerElement) {
+            playerElement.classList.remove('crying-player');
+
+            // Remove tears
+            const tears = playerElement.querySelectorAll('.tear');
+            tears.forEach(tear => tear.remove());
+        }
+
+        // Start victory celebration - move players and show trophy
+        function startVictoryCelebration() {
+            // Add celebrating class for smooth transitions
+            players.forEach(player => {
+                player.element.classList.add('celebrating');
+            });
+
+            // Small delay to ensure transition is applied
+            setTimeout(() => {
+                players.forEach(player => {
+                    player.element.classList.add('victory-pos');
+                });
+            }, 50);
+
+            // Show trophy after players start moving
+            setTimeout(() => {
+                trophy.classList.add('show');
+            }, 800);
+        }
+
+        // End victory celebration - reset positions instantly
+        function endVictoryCelebration() {
+            // Remove celebrating class first to disable transitions
+            players.forEach(player => {
+                player.element.classList.remove('celebrating');
+            });
+
+            // Reset player positions instantly (no transition)
+            setTimeout(() => {
+                players.forEach(player => {
+                    player.element.classList.remove('victory-pos');
+                });
+            }, 10);
+
+            // Hide trophy
+            trophy.classList.remove('show');
+        }
+
+        // Start the game - Lucas serves first
+        setTimeout(() => {
+            ballPosition = { x: players[1].position.x, y: players[1].position.y };
+            ball.style.left = ballPosition.x + '%';
+            ball.style.top = ballPosition.y + '%';
+            hitBall();
+        }, 500);
+    </script>
+</body>
+</html>
