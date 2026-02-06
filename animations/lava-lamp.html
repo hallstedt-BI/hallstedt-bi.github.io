@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lava Lamp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #1a0a0a 0%, #0a0505 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+            border-radius: 20px;
+            box-shadow:
+                0 0 60px rgba(255, 100, 0, 0.3),
+                inset 0 0 100px rgba(0, 0, 0, 0.5);
+        }
+
+        .info {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: rgba(255, 150, 100, 0.7);
+            font-size: 14px;
+            text-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="lavaLamp"></canvas>
+    <div class="info">Lava Lamp Animation</div>
+
+    <script>
+        const canvas = document.getElementById('lavaLamp');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size to 1080p
+        canvas.width = 1920;
+        canvas.height = 1080;
+
+        // Metaball blob class
+        class Blob {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.radius = 80 + Math.random() * 120;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = -0.3 - Math.random() * 0.5; // Blobs rise upward
+                this.targetRadius = this.radius;
+                this.pulseSpeed = 0.01 + Math.random() * 0.02;
+                this.pulsePhase = Math.random() * Math.PI * 2;
+            }
+
+            update() {
+                // Move the blob
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Bounce off walls
+                if (this.x < 0 || this.x > canvas.width) {
+                    this.vx *= -1;
+                    this.x = Math.max(0, Math.min(canvas.width, this.x));
+                }
+
+                // When blob reaches top, respawn at bottom
+                if (this.y < -this.radius) {
+                    this.y = canvas.height + this.radius;
+                    this.x = Math.random() * canvas.width;
+                }
+
+                // When blob goes too far down
+                if (this.y > canvas.height + this.radius) {
+                    this.y = -this.radius;
+                    this.x = Math.random() * canvas.width;
+                }
+
+                // Pulsing effect
+                this.pulsePhase += this.pulseSpeed;
+                this.radius = this.targetRadius + Math.sin(this.pulsePhase) * 20;
+            }
+        }
+
+        // Create blobs
+        const blobs = [];
+        const numBlobs = 12;
+        for (let i = 0; i < numBlobs; i++) {
+            blobs.push(new Blob());
+        }
+
+        // Metaball rendering using marching squares
+        function calculateMetaballField(x, y) {
+            let sum = 0;
+            for (const blob of blobs) {
+                const dx = x - blob.x;
+                const dy = y - blob.y;
+                const distSq = dx * dx + dy * dy;
+                if (distSq > 0) {
+                    sum += (blob.radius * blob.radius) / distSq;
+                }
+            }
+            return sum;
+        }
+
+        // Color gradient based on field strength
+        function getColor(field) {
+            if (field < 0.5) return null;
+
+            // Fire color palette
+            const intensity = Math.min(field / 3, 1);
+
+            let r, g, b;
+            if (intensity < 0.3) {
+                // Dark red to red
+                r = Math.floor(100 + intensity * 350);
+                g = Math.floor(intensity * 100);
+                b = 0;
+            } else if (intensity < 0.6) {
+                // Red to orange
+                const t = (intensity - 0.3) / 0.3;
+                r = 255;
+                g = Math.floor(100 + t * 100);
+                b = 0;
+            } else if (intensity < 0.85) {
+                // Orange to yellow
+                const t = (intensity - 0.6) / 0.25;
+                r = 255;
+                g = Math.floor(200 + t * 55);
+                b = Math.floor(t * 100);
+            } else {
+                // Yellow to white (hot)
+                const t = (intensity - 0.85) / 0.15;
+                r = 255;
+                g = 255;
+                b = Math.floor(100 + t * 155);
+            }
+
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        // Render the lava lamp
+        function render() {
+            // Clear with dark background
+            ctx.fillStyle = '#0a0000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Create image data for pixel manipulation
+            const imageData = ctx.createImageData(canvas.width, canvas.height);
+            const data = imageData.data;
+
+            // Higher resolution - sample every pixel (step = 1) or every 2 pixels
+            const step = 2;
+
+            // Calculate metaball field for each pixel
+            for (let y = 0; y < canvas.height; y += step) {
+                for (let x = 0; x < canvas.width; x += step) {
+                    const field = calculateMetaballField(x, y);
+                    const color = getColor(field);
+
+                    if (color) {
+                        // Extract RGB values
+                        const match = color.match(/\d+/g);
+                        const r = parseInt(match[0]);
+                        const g = parseInt(match[1]);
+                        const b = parseInt(match[2]);
+
+                        // Fill a small square for performance
+                        for (let dy = 0; dy < step; dy++) {
+                            for (let dx = 0; dx < step; dx++) {
+                                const px = x + dx;
+                                const py = y + dy;
+                                if (px < canvas.width && py < canvas.height) {
+                                    const index = (py * canvas.width + px) * 4;
+                                    data[index] = r;
+                                    data[index + 1] = g;
+                                    data[index + 2] = b;
+                                    data[index + 3] = 255;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+
+            // Apply blur to smooth out any remaining pixelation
+            ctx.filter = 'blur(1px)';
+            ctx.drawImage(canvas, 0, 0);
+            ctx.filter = 'none';
+
+            // Add glow effect
+            ctx.globalCompositeOperation = 'lighter';
+            for (const blob of blobs) {
+                const gradient = ctx.createRadialGradient(
+                    blob.x, blob.y, 0,
+                    blob.x, blob.y, blob.radius
+                );
+                gradient.addColorStop(0, 'rgba(255, 150, 0, 0.1)');
+                gradient.addColorStop(0.5, 'rgba(255, 80, 0, 0.05)');
+                gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
+
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(blob.x, blob.y, blob.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        // Animation loop
+        function animate() {
+            // Update all blobs
+            for (const blob of blobs) {
+                blob.update();
+            }
+
+            // Render
+            render();
+
+            requestAnimationFrame(animate);
+        }
+
+        // Start animation
+        animate();
+
+    </script>
+</body>
+</html>

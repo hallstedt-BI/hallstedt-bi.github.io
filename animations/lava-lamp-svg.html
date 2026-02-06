@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lava Lamp - SVG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #1a0a0a 0%, #0a0505 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        #lavaContainer {
+            width: 1920px;
+            height: 1080px;
+            border-radius: 20px;
+            box-shadow:
+                0 0 60px rgba(255, 100, 0, 0.3),
+                inset 0 0 100px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .info {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: rgba(255, 150, 100, 0.7);
+            font-size: 14px;
+            text-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div id="lavaContainer">
+        <svg id="lavaLamp" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <!-- Nearly solid colors with tiny variations -->
+                <radialGradient id="fireGradient1" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color: #ff5522; stop-opacity: 1" />
+                    <stop offset="100%" style="stop-color: #ff4411; stop-opacity: 1" />
+                </radialGradient>
+
+                <radialGradient id="fireGradient2" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color: #ff6633; stop-opacity: 1" />
+                    <stop offset="100%" style="stop-color: #ff5522; stop-opacity: 1" />
+                </radialGradient>
+
+                <radialGradient id="fireGradient3" cx="50%" cy="50%">
+                    <stop offset="0%" style="stop-color: #ff7744; stop-opacity: 1" />
+                    <stop offset="100%" style="stop-color: #ff6633; stop-opacity: 1" />
+                </radialGradient>
+
+                <!-- Metaball effect filter - stronger merging -->
+                <filter id="gooey">
+                    <!-- Strong blur to create soft edges -->
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="40" result="blur" />
+
+                    <!-- Create sharp edges from blur with aggressive threshold -->
+                    <feColorMatrix in="blur" mode="matrix" values="
+                        1 0 0 0 0
+                        0 1 0 0 0
+                        0 0 1 0 0
+                        0 0 0 35 -15" result="goo" />
+
+                    <!-- Blend with original -->
+                    <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+                </filter>
+
+                <!-- Glow effect -->
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+
+            <!-- Background -->
+            <rect width="1920" height="1080" fill="#0a0000"/>
+
+            <!-- Background light glow layer (behind the blobs) -->
+            <g id="backgroundLights">
+                <!-- Light halos will be added here by JavaScript -->
+            </g>
+
+            <!-- Blobs container with metaball effect -->
+            <g id="blobsContainer" filter="url(#gooey)">
+                <!-- Blobs will be added here by JavaScript -->
+            </g>
+        </svg>
+    </div>
+    <div class="info">Lava Lamp Animation (SVG)</div>
+
+    <script>
+        /**
+         * LAVA LAMP APPROACH:
+         *
+         * The "magic" happens in two parts:
+         * 1. Individual circles animated with physics (position, velocity, size)
+         * 2. SVG filter (the "gooey" filter in <defs>) that merges overlapping shapes
+         *
+         * KEY CONCEPT - Metaballs/Gooey Effect:
+         * The filter does: blur → threshold → composite
+         * - Blur makes circles fuzzy/soft
+         * - ColorMatrix creates a sharp threshold (values > X become solid, < X become transparent)
+         * - This makes overlapping blurred circles merge into liquid-like blobs
+         *
+         * Think of it like: individual drops of water that merge when they touch
+         */
+
+        const svg = document.getElementById('lavaLamp');
+        const blobsContainer = document.getElementById('blobsContainer');
+        const backgroundLights = document.getElementById('backgroundLights');
+
+        class Blob {
+            constructor(id) {
+                this.id = id;
+
+                // Position: random start location
+                this.x = Math.random() * 1920;
+                this.y = Math.random() * 1080;
+
+                // Size: varied blob sizes (60-160px radius)
+                this.radius = 60 + Math.random() * 100;
+
+                // Velocity: horizontal drift + upward rise (like heated wax in lava lamp)
+                this.vx = (Math.random() - 0.5) * 0.8;  // Horizontal: -0.4 to +0.4
+                this.vy = -0.4 - Math.random() * 0.6;    // Vertical: -0.4 to -1.0 (negative = up)
+
+                // Pulsing animation: makes blobs "breathe" in size
+                this.targetRadius = this.radius;
+                this.pulseSpeed = 0.01 + Math.random() * 0.02;  // How fast it pulses
+                this.pulsePhase = Math.random() * Math.PI * 2;   // Start at random point in sine wave
+
+                // Assign one of 3 gradient variations for color variety
+                this.gradient = `fireGradient${Math.floor(Math.random() * 3) + 1}`;
+
+                // Create the actual SVG circle element
+                // Note: Must use createElementNS for SVG (not regular createElement)
+                this.element = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                this.element.setAttribute('fill', `url(#${this.gradient})`);
+                this.element.setAttribute('filter', 'url(#glow)');  // Individual glow
+                blobsContainer.appendChild(this.element);
+
+                // Create background light halo (larger, blurred circle that lights up the background)
+                this.lightElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                this.lightElement.setAttribute('fill', 'rgba(255, 100, 0, 0.2)');  // Orange light
+                this.lightElement.setAttribute('filter', 'url(#glow)');
+                this.lightElement.style.filter = 'blur(40px)';  // Heavy blur for soft light
+                this.lightElement.style.opacity = '0.8';
+                backgroundLights.appendChild(this.lightElement);
+            }
+
+            update() {
+                // PHYSICS: Simple Euler integration (position += velocity)
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // BOUNDARY: Bounce off left/right walls
+                // Tip: You could add drag/friction here for more realistic physics
+                if (this.x < 0 || this.x > 1920) {
+                    this.vx *= -1;  // Reverse horizontal direction
+                    this.x = Math.max(0, Math.min(1920, this.x));  // Clamp to bounds
+                }
+
+                // RESPAWN: When blob reaches top, teleport to bottom (cycle)
+                // This simulates the lava lamp cycle: hot wax rises, cools, falls, repeats
+                if (this.y < -this.radius) {
+                    this.y = 1080 + this.radius;  // Start below bottom
+                    this.x = Math.random() * 1920;  // New random x position
+                    // Randomize color on respawn for variety
+                    this.gradient = `fireGradient${Math.floor(Math.random() * 3) + 1}`;
+                    this.element.setAttribute('fill', `url(#${this.gradient})`);
+                }
+
+                // Fallback: respawn if somehow too far down
+                if (this.y > 1080 + this.radius) {
+                    this.y = -this.radius;
+                    this.x = Math.random() * 1920;
+                }
+
+                // PULSING: Animate size using sine wave
+                // Tip: sin(time) oscillates between -1 and +1, creating smooth "breathing"
+                this.pulsePhase += this.pulseSpeed;
+                this.radius = this.targetRadius + Math.sin(this.pulsePhase) * 15;  // ±15px variation
+
+                // UPDATE DOM: Sync JavaScript state to SVG attributes
+                // This is the key connection between JS logic and visual output
+                this.element.setAttribute('cx', this.x);
+                this.element.setAttribute('cy', this.y);
+                this.element.setAttribute('r', this.radius);
+
+                // Update background light halo to follow the blob (larger radius for wider glow)
+                this.lightElement.setAttribute('cx', this.x);
+                this.lightElement.setAttribute('cy', this.y);
+                this.lightElement.setAttribute('r', this.radius * 2);  // 2x larger for wide light spread
+            }
+        }
+
+        // CREATE BLOBS: Initialize array of blob objects
+        // Tip: More blobs = denser effect but heavier on CPU
+        const blobs = [];
+        const numBlobs = 16;
+        for (let i = 0; i < numBlobs; i++) {
+            blobs.push(new Blob(i));
+        }
+
+        // ANIMATION LOOP: Standard requestAnimationFrame pattern
+        // This runs ~60 times per second (60 FPS)
+        function animate() {
+            // Update physics for all blobs
+            // Each blob updates its own position/size/attributes
+            for (const blob of blobs) {
+                blob.update();
+            }
+
+            // Schedule next frame
+            // Tip: Browser optimizes this - pauses when tab not visible
+            requestAnimationFrame(animate);
+        }
+
+        // Start the animation loop
+        animate();
+
+        /**
+         * CUSTOMIZATION IDEAS:
+         *
+         * 1. Change colors: Edit the radialGradient stop-colors in <defs>
+         * 2. Adjust merging: Tweak feGaussianBlur stdDeviation (higher = more merge)
+         * 3. Threshold: Change feColorMatrix values (35, -15) for blob "stickiness"
+         * 4. Speed: Modify vx/vy multipliers for faster/slower movement
+         * 5. Size: Change radius range (60-160) for bigger/smaller blobs
+         * 6. Density: Adjust numBlobs for more/fewer blobs
+         * 7. Physics: Add gravity, attraction forces, or collision detection
+         *
+         * PRO TIP: The metaball magic is in the SVG filter, not the JavaScript!
+         * The JS just moves circles around. The filter makes them merge.
+         */
+    </script>
+</body>
+</html>
