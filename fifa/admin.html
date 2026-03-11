@@ -175,12 +175,12 @@
     </div>
 
     <script>
-        const REPO = 'hallstedt-bi/hallstedt-bi.github.io';
+        const REPO = 'hallstedt-BI/hallstedt-bi.github.io';
         const FILE_PATH = 'fifa/matches.csv';
         const API = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
 
         // Paste encrypted token here after running setup once. Leave empty to show setup screen.
-        const ENCRYPTED_TOKEN = 'y5J6y39zYJJDFH7YfMml7tWVasZLIiFrZgEico9o/UIrRL1cJyQEC8/ipK5xdPuGEFJ8S2l/ccr+iO+mc0xDu8vBZEgH973mGfshdaHwaIa0PRcF';
+        const ENCRYPTED_TOKEN = 'OqaknlvHsNYs3MyiuNNUeLGkbzqQFc48e/KzR00zGor1vPW2bK3O+MCdNjza9UjX1LrHtOUHNfNv+oohiDspBTWbgtf4mmgzfBMA8J2MAX3OI7fP42JRsrFokm6QA0rym1D9vBJ/R8rBLmjVQ4Q2PGqtRQSn8Jx3qOrQhg7zJH9Tz32nzIA7lFs=';
 
         const FLAGS = {
             'Amanda/Anton': 'pt',
@@ -292,7 +292,7 @@
 
                 if (ghToken) {
                     const apiResp = await fetch(API, {
-                        headers: { Authorization: `token ${ghToken}` }
+                        headers: { Authorization: `Bearer ${ghToken}` }
                     });
                     if (apiResp.ok) {
                         const data = await apiResp.json();
@@ -359,7 +359,7 @@
 
             try {
                 const shaResp = await fetch(API, {
-                    headers: { Authorization: `token ${ghToken}` }
+                    headers: { Authorization: `Bearer ${ghToken}` }
                 });
                 if (!shaResp.ok) throw new Error('Failed to fetch file info');
                 const shaData = await shaResp.json();
@@ -371,7 +371,7 @@
                 const resp = await fetch(API, {
                     method: 'PUT',
                     headers: {
-                        Authorization: `token ${ghToken}`,
+                        Authorization: `Bearer ${ghToken}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
