@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIFA Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #e94560;
+            padding-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .login-screen {
+            padding-top: 25vh;
+            text-align: center;
+        }
+
+        .login-screen input {
+            width: 100%;
+            padding: 12px;
+            background: #16213e;
+            border: 1px solid #1e2a4a;
+            border-radius: 8px;
+            color: #eee;
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .setup-screen {
+            padding-top: 15vh;
+        }
+
+        .setup-screen label {
+            display: block;
+            font-size: 0.8rem;
+            color: #8899aa;
+            margin-bottom: 4px;
+        }
+
+        .setup-screen input, .setup-screen textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: #16213e;
+            border: 1px solid #1e2a4a;
+            border-radius: 6px;
+            color: #eee;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        .setup-screen textarea {
+            height: 80px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            word-break: break-all;
+        }
+
+        .match-row {
+            background: #16213e;
+            border: 1px solid #1e2a4a;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .match-row.saved { border-color: #4ecdc4; }
+
+        .match-row .team {
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .match-row .team:first-child { text-align: right; }
+        .match-row .team:last-child { text-align: left; }
+        .flag { width: 20px; height: 20px; vertical-align: middle; border-radius: 50%; }
+
+        .match-row input[type="number"] {
+            width: 48px;
+            padding: 8px 4px;
+            background: #0f3460;
+            border: 1px solid #1e2a4a;
+            border-radius: 6px;
+            color: #eee;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-align: center;
+            -moz-appearance: textfield;
+        }
+
+        .match-row input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+        .dash { color: #445; font-weight: 700; }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #e94560;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .status {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #8899aa;
+            min-height: 20px;
+        }
+
+        .status.ok { color: #4ecdc4; }
+        .status.err { color: #e94560; }
+    </style>
+</head>
+<body>
+
+    <!-- Login screen -->
+    <div class="screen login-screen" id="loginScreen">
+        <h2>FIFA Admin</h2>
+        <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
+        <button class="btn" onclick="unlock()">Unlock</button>
+        <div class="status" id="loginStatus"></div>
+    </div>
+
+    <!-- One-time setup (only needed to generate the encrypted token) -->
+    <div class="screen setup-screen" id="setupScreen">
+        <h2>One-time setup</h2>
+        <label>GitHub Token</label>
+        <input type="password" id="setupToken" placeholder="ghp_...">
+        <label>Password</label>
+        <input type="password" id="setupPassword" placeholder="superhemligtlosenord">
+        <button class="btn" onclick="generateEncrypted()">Encrypt</button>
+        <div class="status" id="setupStatus"></div>
+        <label style="margin-top:16px">Encrypted token (paste into ENCRYPTED_TOKEN in code)</label>
+        <textarea id="encryptedOutput" readonly></textarea>
+    </div>
+
+    <!-- Main admin screen -->
+    <div class="screen" id="mainScreen">
+        <h2>FIFA Admin</h2>
+        <div id="matchRows"></div>
+        <button class="btn" id="saveBtn" onclick="save()">Save scores</button>
+        <div class="status" id="status"></div>
+    </div>
+
+    <script>
+        const REPO = 'hallstedt-bi/hallstedt-bi.github.io';
+        const FILE_PATH = 'fifa/matches.csv';
+        const API = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
+
+        // Paste encrypted token here after running setup once. Leave empty to show setup screen.
+        const ENCRYPTED_TOKEN = 'y5J6y39zYJJDFH7YfMml7tWVasZLIiFrZgEico9o/UIrRL1cJyQEC8/ipK5xdPuGEFJ8S2l/ccr+iO+mc0xDu8vBZEgH973mGfshdaHwaIa0PRcF';
+
+        const FLAGS = {
+            'Amanda/Anton': 'pt',
+            'Aleks/Stephanie': 'de',
+            'Hyberg/Dara': 'es',
+            'George/Finnström': 'br',
+            'Jonas/Mood': 'ar'
+        };
+
+        function flagImg(team) {
+            const code = FLAGS[team];
+            if (!code) return '';
+            return `<img class="flag" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg" alt="${code}">`;
+        }
+
+        let csvLines = [];
+        let fileSha = '';
+        let ghToken = '';
+
+        // --- Crypto helpers (AES-GCM + PBKDF2) ---
+        async function deriveKey(password, salt) {
+            const enc = new TextEncoder();
+            const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+            return crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+                keyMaterial,
+                { name: 'AES-GCM', length: 256 },
+                false,
+                ['encrypt', 'decrypt']
+            );
+        }
+
+        async function encrypt(text, password) {
+            const enc = new TextEncoder();
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const key = await deriveKey(password, salt);
+            const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text));
+            const buf = new Uint8Array(salt.length + iv.length + ciphertext.byteLength);
+            buf.set(salt, 0);
+            buf.set(iv, salt.length);
+            buf.set(new Uint8Array(ciphertext), salt.length + iv.length);
+            return btoa(String.fromCharCode(...buf));
+        }
+
+        async function decrypt(base64, password) {
+            const buf = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+            const salt = buf.slice(0, 16);
+            const iv = buf.slice(16, 28);
+            const ciphertext = buf.slice(28);
+            const key = await deriveKey(password, salt);
+            const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
+            return new TextDecoder().decode(plaintext);
+        }
+
+        // --- Screens ---
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function init() {
+            if (!ENCRYPTED_TOKEN) {
+                showScreen('setupScreen');
+            } else {
+                showScreen('loginScreen');
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        // --- Setup: encrypt token ---
+        async function generateEncrypted() {
+            const token = document.getElementById('setupToken').value.trim();
+            const password = document.getElementById('setupPassword').value;
+            if (!token || !password) {
+                document.getElementById('setupStatus').textContent = 'Fill in both fields';
+                document.getElementById('setupStatus').className = 'status err';
+                return;
+            }
+            const encrypted = await encrypt(token, password);
+            document.getElementById('encryptedOutput').value = encrypted;
+            document.getElementById('setupStatus').textContent = 'Copy the string above into ENCRYPTED_TOKEN in the code';
+            document.getElementById('setupStatus').className = 'status ok';
+        }
+
+        // --- Login: decrypt token ---
+        async function unlock() {
+            const password = document.getElementById('passwordInput').value;
+            try {
+                ghToken = await decrypt(ENCRYPTED_TOKEN, password);
+                showScreen('mainScreen');
+                loadMatches();
+            } catch (e) {
+                document.getElementById('loginStatus').textContent = 'Wrong password';
+                document.getElementById('loginStatus').className = 'status err';
+            }
+        }
+
+        document.getElementById('passwordInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') unlock();
+        });
+
+        // --- Match loading & saving ---
+        async function loadMatches() {
+            try {
+                const resp = await fetch(`./matches.csv?t=${Date.now()}`);
+                const text = await resp.text();
+                csvLines = text.trim().split('\n');
+
+                if (ghToken) {
+                    const apiResp = await fetch(API, {
+                        headers: { Authorization: `token ${ghToken}` }
+                    });
+                    if (apiResp.ok) {
+                        const data = await apiResp.json();
+                        fileSha = data.sha;
+                    }
+                }
+
+                renderRows();
+            } catch (e) {
+                setStatus('Failed to load matches', 'err');
+            }
+        }
+
+        function renderRows() {
+            const container = document.getElementById('matchRows');
+            container.innerHTML = '';
+
+            for (let i = 1; i < csvLines.length; i++) {
+                const parts = csvLines[i].split(',');
+                if (parts.length < 2) continue;
+
+                const home = parts[0].trim();
+                const away = parts[1].trim();
+                const hs = parts[2] ? parts[2].trim() : '';
+                const as = parts[3] ? parts[3].trim() : '';
+
+                const row = document.createElement('div');
+                row.className = `match-row${hs !== '' ? ' saved' : ''}`;
+                row.innerHTML = `
+                    <span class="team">${home} ${flagImg(home)}</span>
+                    <input type="number" min="0" max="99" value="${hs}" data-line="${i}" data-col="2" placeholder="-">
+                    <span class="dash">-</span>
+                    <input type="number" min="0" max="99" value="${as}" data-line="${i}" data-col="3" placeholder="-">
+                    <span class="team">${flagImg(away)} ${away}</span>
+                `;
+                container.appendChild(row);
+            }
+        }
+
+        function buildCSV() {
+            const inputs = document.querySelectorAll('#matchRows input[type="number"]');
+            const lines = [...csvLines];
+
+            inputs.forEach(input => {
+                const line = parseInt(input.dataset.line);
+                const col = parseInt(input.dataset.col);
+                const parts = lines[line].split(',');
+                parts[col] = input.value;
+                lines[line] = parts.join(',');
+            });
+
+            return lines.join('\n') + '\n';
+        }
+
+        async function save() {
+            if (!ghToken) {
+                setStatus('Not authenticated', 'err');
+                return;
+            }
+
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            setStatus('Saving...');
+
+            try {
+                const shaResp = await fetch(API, {
+                    headers: { Authorization: `token ${ghToken}` }
+                });
+                if (!shaResp.ok) throw new Error('Failed to fetch file info');
+                const shaData = await shaResp.json();
+                fileSha = shaData.sha;
+
+                const newContent = buildCSV();
+                const encoded = btoa(unescape(encodeURIComponent(newContent)));
+
+                const resp = await fetch(API, {
+                    method: 'PUT',
+                    headers: {
+                        Authorization: `token ${ghToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Update FIFA scores',
+                        content: encoded,
+                        sha: fileSha
+                    })
+                });
+
+                if (!resp.ok) {
+                    const err = await resp.json();
+                    throw new Error(err.message || 'Failed to save');
+                }
+
+                const data = await resp.json();
+                fileSha = data.content.sha;
+                setStatus('Saved! Site will redeploy shortly.', 'ok');
+                loadMatches();
+            } catch (e) {
+                setStatus(e.message, 'err');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function setStatus(msg, type = '') {
+            const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className = `status ${type}`;
+        }
+
+        init();
+    </script>
+</body>
+</html>

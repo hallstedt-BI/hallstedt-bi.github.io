@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIFA Tournament</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 24px 32px;
+        }
+
+        .content {
+            display: flex;
+            gap: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .standings-section { flex: 1.2; }
+        .matches-section { flex: 1; }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e94560;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .standings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.05rem;
+        }
+
+        .standings-table th {
+            background: #16213e;
+            color: #8899aa;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid #0f3460;
+        }
+
+        .standings-table th:not(:first-child):not(:nth-child(2)) { text-align: center; }
+
+        .standings-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #1e2a4a;
+        }
+
+        .standings-table td:not(:first-child):not(:nth-child(2)) { text-align: center; }
+        .standings-table tr:hover { background: rgba(233, 69, 96, 0.08); }
+        .standings-table .rank { font-weight: 700; color: #667; width: 36px; }
+        .standings-table .team-name { font-weight: 600; font-size: 1.1rem; white-space: nowrap; }
+        .flag { width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 50%; }
+        .standings-table .points { font-weight: 700; font-size: 1.2rem; color: #e94560; }
+        .standings-table .gd-positive { color: #4ecdc4; }
+        .standings-table .gd-negative { color: #e94560; }
+
+
+
+        .match-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .match-card {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #1e2a4a;
+        }
+
+        .match-card.not-played { opacity: 0.5; }
+
+        .match-team {
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .match-team.home { text-align: right; padding-right: 12px; }
+        .match-team.away { text-align: left; padding-left: 12px; }
+
+        .match-score {
+            background: #0f3460;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            min-width: 70px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .match-card.not-played .match-score { color: #445; }
+        .match-winner { color: #4ecdc4; }
+
+        .progress-bar {
+            margin-top: 16px;
+            background: #16213e;
+            border-radius: 8px;
+            padding: 14px 18px;
+            border: 1px solid #1e2a4a;
+        }
+
+        .progress-bar .label {
+            font-size: 0.85rem;
+            color: #8899aa;
+            margin-bottom: 8px;
+        }
+
+        .progress-track {
+            height: 6px;
+            background: #0f3460;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #4ecdc4);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .flames {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background: url('../fuego.gif') repeat-x bottom;
+            background-size: auto 120px;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @media (max-width: 900px) {
+            body { padding: 12px; }
+            .content { flex-direction: column; gap: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="flames"></div>
+    <div class="content">
+        <div class="standings-section">
+            <div class="section-title">Standings</div>
+            <table class="standings-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Team</th>
+                        <th>P</th>
+                        <th>W</th>
+                        <th>D</th>
+                        <th>L</th>
+                        <th>GF</th>
+                        <th>GA</th>
+                        <th>GD</th>
+                        <th class="points">Pts</th>
+                    </tr>
+                </thead>
+                <tbody id="standingsBody"></tbody>
+            </table>
+        </div>
+
+        <div class="matches-section">
+            <div class="section-title">Matches</div>
+            <div class="match-list" id="matchList"></div>
+            <div class="progress-bar">
+                <div class="label" id="progressLabel">0 / 10 matches played</div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const FLAGS = {
+            'Amanda/Anton': 'pt',
+            'Aleks/Stephanie': 'de',
+            'Hyberg/Dara': 'es',
+            'George/Finnström': 'br',
+            'Jonas/Mood': 'ar'
+        };
+
+        function flagImg(team) {
+            const code = FLAGS[team];
+            if (!code) return '';
+            return `<img class="flag" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg" alt="${code}">`;
+        }
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            const headers = lines[0].split(',');
+            return lines.slice(1).filter(l => l.trim()).map(line => {
+                const values = line.split(',');
+                const obj = {};
+                headers.forEach((h, i) => obj[h.trim()] = (values[i] || '').trim());
+                return obj;
+            });
+        }
+
+        function calculateStandings(matches) {
+            const teams = {};
+
+            function ensure(name) {
+                if (!teams[name]) {
+                    teams[name] = { name, played: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 };
+                }
+            }
+
+            matches.forEach(m => {
+                ensure(m.home);
+                ensure(m.away);
+                if (m.home_score === '' || m.away_score === '') return;
+
+                const hs = parseInt(m.home_score);
+                const as = parseInt(m.away_score);
+                if (isNaN(hs) || isNaN(as)) return;
+
+                const home = teams[m.home];
+                const away = teams[m.away];
+
+                home.played++; away.played++;
+                home.gf += hs; home.ga += as;
+                away.gf += as; away.ga += hs;
+
+                if (hs > as) {
+                    home.wins++; away.losses++;
+                    home.points += 3;
+                } else if (hs < as) {
+                    away.wins++; home.losses++;
+                    away.points += 3;
+                } else {
+                    home.draws++; away.draws++;
+                    home.points += 1; away.points += 1;
+                }
+            });
+
+            Object.values(teams).forEach(t => t.gd = t.gf - t.ga);
+
+            return Object.values(teams).sort((a, b) =>
+                b.points - a.points || b.gd - a.gd || b.gf - a.gf || a.name.localeCompare(b.name)
+            );
+        }
+
+        function renderStandings(standings) {
+            const tbody = document.getElementById('standingsBody');
+            tbody.innerHTML = standings.map((t, i) => {
+                const rank = i + 1;
+
+                const gdClass = t.gd > 0 ? 'gd-positive' : t.gd < 0 ? 'gd-negative' : '';
+                const gdStr = t.gd > 0 ? `+${t.gd}` : t.gd;
+                return `<tr>
+                    <td class="rank">${rank}</td>
+                    <td class="team-name">${flagImg(t.name)}${t.name}</td>
+                    <td>${t.played}</td>
+                    <td>${t.wins}</td>
+                    <td>${t.draws}</td>
+                    <td>${t.losses}</td>
+                    <td>${t.gf}</td>
+                    <td>${t.ga}</td>
+                    <td class="${gdClass}">${gdStr}</td>
+                    <td class="points">${t.points}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderMatches(matches) {
+            const list = document.getElementById('matchList');
+            let played = 0;
+
+            list.innerHTML = matches.map(m => {
+                const hasScore = m.home_score !== '' && m.away_score !== '';
+                if (hasScore) played++;
+                const hs = parseInt(m.home_score);
+                const as = parseInt(m.away_score);
+                const homeWin = hasScore && hs > as;
+                const awayWin = hasScore && hs < as;
+                const scoreText = hasScore ? `${hs} - ${as}` : 'vs';
+
+                return `<div class="match-card ${hasScore ? 'played' : 'not-played'}">
+                    <div class="match-team home ${homeWin ? 'match-winner' : ''}">${m.home} ${flagImg(m.home)}</div>
+                    <div class="match-score">${scoreText}</div>
+                    <div class="match-team away ${awayWin ? 'match-winner' : ''}">${flagImg(m.away)} ${m.away}</div>
+                </div>`;
+            }).join('');
+
+            const total = matches.length;
+            const pct = total > 0 ? (played / total) * 100 : 0;
+            document.getElementById('progressLabel').textContent = `${played} / ${total} matches played`;
+            document.getElementById('progressFill').style.width = `${pct}%`;
+        }
+
+        async function loadData() {
+            try {
+                const resp = await fetch(`./matches.csv?t=${Date.now()}`);
+                if (!resp.ok) throw new Error('Failed to load');
+                const text = await resp.text();
+                const matches = parseCSV(text);
+                const standings = calculateStandings(matches);
+                renderStandings(standings);
+                renderMatches(matches);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        loadData();
+        setInterval(loadData, 30 * 1000);
+    </script>
+</body>
+</html>
