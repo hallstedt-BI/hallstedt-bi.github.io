@@ -70,6 +70,44 @@
 
 
 
+        .latest-game {
+            margin-top: 20px;
+            background: #16213e;
+            border: 1px solid #1e2a4a;
+            border-radius: 8px;
+            padding: 16px 20px;
+        }
+
+        .latest-game .section-title {
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        .latest-game .game {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .latest-game .lg-team {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .latest-game .lg-score {
+            background: #0f3460;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: 4px;
+        }
+
+        .latest-game .lg-winner { color: #4ecdc4; }
+
+        .no-games { color: #445; font-size: 0.9rem; }
+
         .match-list {
             display: flex;
             flex-direction: column;
@@ -79,7 +117,7 @@
         .match-card {
             background: #16213e;
             border-radius: 8px;
-            padding: 12px 16px;
+            padding: 8px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -91,7 +129,7 @@
         .match-team {
             flex: 1;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.75rem;
         }
 
         .match-team.home { text-align: right; padding-right: 12px; }
@@ -179,6 +217,7 @@
                 </thead>
                 <tbody id="standingsBody"></tbody>
             </table>
+            <div class="latest-game" id="latestGame"></div>
         </div>
 
         <div class="matches-section">
@@ -286,6 +325,31 @@
             }).join('');
         }
 
+        function renderLatestGame(matches) {
+            const played = matches.filter(m => m.home_score !== '' && m.away_score !== '');
+            const container = document.getElementById('latestGame');
+
+            if (played.length === 0) {
+                container.innerHTML = `<div class="section-title">Latest Game</div><div class="no-games">No games played yet</div>`;
+                return;
+            }
+
+            const m = played[played.length - 1];
+            const hs = parseInt(m.home_score);
+            const as = parseInt(m.away_score);
+            const homeWin = hs > as;
+            const awayWin = hs < as;
+
+            container.innerHTML = `
+                <div class="section-title">Latest Game</div>
+                <div class="game">
+                    <span class="lg-team ${homeWin ? 'lg-winner' : ''}">${flagImg(m.home)} ${m.home}</span>
+                    <span class="lg-score">${hs} - ${as}</span>
+                    <span class="lg-team ${awayWin ? 'lg-winner' : ''}">${m.away} ${flagImg(m.away)}</span>
+                </div>
+            `;
+        }
+
         function renderMatches(matches) {
             const list = document.getElementById('matchList');
             let played = 0;
@@ -320,6 +384,7 @@
                 const matches = parseCSV(text);
                 const standings = calculateStandings(matches);
                 renderStandings(standings);
+                renderLatestGame(matches);
                 renderMatches(matches);
             } catch (e) {
                 console.error(e);
