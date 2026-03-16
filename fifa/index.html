@@ -326,7 +326,7 @@
         }
 
         function renderLatestGame(matches) {
-            const played = matches.filter(m => m.home_score !== '' && m.away_score !== '');
+            const played = matches.filter(m => m.home_score !== '' && m.away_score !== '' && m.played_order);
             const container = document.getElementById('latestGame');
 
             if (played.length === 0) {
@@ -334,7 +334,7 @@
                 return;
             }
 
-            const m = played[played.length - 1];
+            const m = played.sort((a, b) => parseInt(b.played_order) - parseInt(a.played_order))[0];
             const hs = parseInt(m.home_score);
             const as = parseInt(m.away_score);
             const homeWin = hs > as;

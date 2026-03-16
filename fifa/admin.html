@@ -345,6 +345,28 @@
                 lines[line] = parts.join(',');
             });
 
+            // Auto-assign played_order to newly scored matches
+            let maxOrder = 0;
+            for (let i = 1; i < lines.length; i++) {
+                const parts = lines[i].split(',');
+                const order = parseInt(parts[4]);
+                if (!isNaN(order) && order > maxOrder) maxOrder = order;
+            }
+
+            for (let i = 1; i < lines.length; i++) {
+                const parts = lines[i].split(',');
+                while (parts.length < 5) parts.push('');
+                const hasScore = parts[2].trim() !== '' && parts[3].trim() !== '';
+                const hasOrder = parts[4].trim() !== '';
+                if (hasScore && !hasOrder) {
+                    maxOrder++;
+                    parts[4] = String(maxOrder);
+                } else if (!hasScore) {
+                    parts[4] = '';
+                }
+                lines[i] = parts.join(',');
+            }
+
             return lines.join('\n') + '\n';
         }
 
