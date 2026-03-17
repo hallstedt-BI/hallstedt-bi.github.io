@@ -108,6 +108,48 @@
 
         .no-games { color: #445; font-size: 0.9rem; }
 
+        .scorers-box {
+            margin-top: 20px;
+            background: #16213e;
+            border: 1px solid #1e2a4a;
+            border-radius: 8px;
+            padding: 16px 20px;
+        }
+
+        .scorers-box .section-title {
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        .scorers-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .scorers-table th {
+            color: #8899aa;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #1e2a4a;
+        }
+
+        .scorers-table th:not(:first-child) { text-align: center; }
+
+        .scorers-table td {
+            padding: 5px 8px;
+            border-bottom: 1px solid rgba(30, 42, 74, 0.5);
+        }
+
+        .scorers-table td:not(:first-child) { text-align: center; }
+
+        .scorers-table .goals { font-weight: 700; color: #e94560; }
+        .scorers-table .flag { width: 16px; height: 16px; }
+
         .match-list {
             display: flex;
             flex-direction: column;
@@ -199,7 +241,7 @@
     <div class="flames"></div>
     <div class="content">
         <div class="standings-section">
-            <div class="section-title">Standings</div>
+            <div class="section-title">Tabell</div>
             <table class="standings-table">
                 <thead>
                     <tr>
@@ -217,14 +259,27 @@
                 </thead>
                 <tbody id="standingsBody"></tbody>
             </table>
+            <div class="scorers-box">
+                <div class="section-title">Skytteliga</div>
+                <table class="scorers-table">
+                    <thead>
+                        <tr>
+                            <th>Spelare</th>
+                            <th>Mål</th>
+                            <th>Per Match</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scorersBody"></tbody>
+                </table>
+            </div>
             <div class="latest-game" id="latestGame"></div>
         </div>
 
         <div class="matches-section">
-            <div class="section-title">Matches</div>
+            <div class="section-title">Matcher</div>
             <div class="match-list" id="matchList"></div>
             <div class="progress-bar">
-                <div class="label" id="progressLabel">0 / 10 matches played</div>
+                <div class="label" id="progressLabel">0 / 10 matcher spelade</div>
                 <div class="progress-track">
                     <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                 </div>
@@ -330,7 +385,7 @@
             const container = document.getElementById('latestGame');
 
             if (played.length === 0) {
-                container.innerHTML = `<div class="section-title">Latest Game</div><div class="no-games">No games played yet</div>`;
+                container.innerHTML = `<div class="section-title">Senast Spelade</div><div class="no-games">Inga matcher spelade ännu</div>`;
                 return;
             }
 
@@ -341,7 +396,7 @@
             const awayWin = hs < as;
 
             container.innerHTML = `
-                <div class="section-title">Latest Game</div>
+                <div class="section-title">Senast Spelade</div>
                 <div class="game">
                     <span class="lg-team ${homeWin ? 'lg-winner' : ''}">${flagImg(m.home)} ${m.home}</span>
                     <span class="lg-score">${hs} - ${as}</span>
@@ -372,20 +427,55 @@
 
             const total = matches.length;
             const pct = total > 0 ? (played / total) * 100 : 0;
-            document.getElementById('progressLabel').textContent = `${played} / ${total} matches played`;
+            document.getElementById('progressLabel').textContent = `${played} / ${total} matcher spelade`;
             document.getElementById('progressFill').style.width = `${pct}%`;
+        }
+
+        function renderScorers(goals, matches) {
+            // Count games played per team
+            const teamGames = {};
+            matches.forEach(m => {
+                if (m.home_score === '' || m.away_score === '') return;
+                teamGames[m.home] = (teamGames[m.home] || 0) + 1;
+                teamGames[m.away] = (teamGames[m.away] || 0) + 1;
+            });
+
+            const sorted = goals
+                .map(g => ({
+                    ...g,
+                    goals: parseInt(g.goals) || 0,
+                    gamesPlayed: teamGames[g.team] || 0
+                }))
+                .sort((a, b) => b.goals - a.goals || a.player.localeCompare(b.player));
+
+            const tbody = document.getElementById('scorersBody');
+            tbody.innerHTML = sorted.map(g => {
+                const perGame = g.gamesPlayed > 0 ? (g.goals / g.gamesPlayed).toFixed(1) : '-';
+                return `<tr>
+                    <td>${flagImg(g.team)}${g.player}</td>
+                    <td class="goals">${g.goals}</td>
+                    <td>${perGame}</td>
+                </tr>`;
+            }).join('');
         }
 
         async function loadData() {
             try {
-                const resp = await fetch(`./matches.csv?t=${Date.now()}`);
-                if (!resp.ok) throw new Error('Failed to load');
-                const text = await resp.text();
-                const matches = parseCSV(text);
+                const [matchResp, goalsResp] = await Promise.all([
+                    fetch(`./matches.csv?t=${Date.now()}`),
+                    fetch(`./goals.csv?t=${Date.now()}`)
+                ]);
+                if (!matchResp.ok) throw new Error('Failed to load');
+                const matches = parseCSV(await matchResp.text());
                 const standings = calculateStandings(matches);
                 renderStandings(standings);
                 renderLatestGame(matches);
                 renderMatches(matches);
+
+                if (goalsResp.ok) {
+                    const goals = parseCSV(await goalsResp.text());
+                    renderScorers(goals, matches);
+                }
             } catch (e) {
                 console.error(e);
             }

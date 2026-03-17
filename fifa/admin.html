@@ -114,6 +114,24 @@
 
         .dash { color: #445; font-weight: 700; }
 
+        .goal-row {
+            background: #16213e;
+            border: 1px solid #1e2a4a;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .goal-row .player-name {
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
         .btn {
             width: 100%;
             padding: 14px;
@@ -172,12 +190,19 @@
         <div id="matchRows"></div>
         <button class="btn" id="saveBtn" onclick="save()">Save scores</button>
         <div class="status" id="status"></div>
+
+        <h2 style="margin-top:32px">Goals</h2>
+        <div id="goalRows"></div>
+        <button class="btn" id="saveGoalsBtn" onclick="saveGoals()">Save goals</button>
+        <div class="status" id="goalsStatus"></div>
     </div>
 
     <script>
         const REPO = 'hallstedt-BI/hallstedt-bi.github.io';
         const FILE_PATH = 'fifa/matches.csv';
+        const GOALS_PATH = 'fifa/goals.csv';
         const API = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
+        const GOALS_API = `https://api.github.com/repos/${REPO}/contents/${GOALS_PATH}`;
 
         // Paste encrypted token here after running setup once. Leave empty to show setup screen.
         const ENCRYPTED_TOKEN = 'OqaknlvHsNYs3MyiuNNUeLGkbzqQFc48e/KzR00zGor1vPW2bK3O+MCdNjza9UjX1LrHtOUHNfNv+oohiDspBTWbgtf4mmgzfBMA8J2MAX3OI7fP42JRsrFokm6QA0rym1D9vBJ/R8rBLmjVQ4Q2PGqtRQSn8Jx3qOrQhg7zJH9Tz32nzIA7lFs=';
@@ -198,7 +223,9 @@
         }
 
         let csvLines = [];
+        let goalLines = [];
         let fileSha = '';
+        let goalsSha = '';
         let ghToken = '';
 
         // --- Crypto helpers (AES-GCM + PBKDF2) ---
@@ -287,23 +314,26 @@
         // --- Match loading & saving ---
         async function loadMatches() {
             try {
-                const resp = await fetch(`./matches.csv?t=${Date.now()}`);
-                const text = await resp.text();
-                csvLines = text.trim().split('\n');
+                const [matchResp, goalsResp] = await Promise.all([
+                    fetch(`./matches.csv?t=${Date.now()}`),
+                    fetch(`./goals.csv?t=${Date.now()}`)
+                ]);
+                csvLines = (await matchResp.text()).trim().split('\n');
+                goalLines = (await goalsResp.text()).trim().split('\n');
 
                 if (ghToken) {
-                    const apiResp = await fetch(API, {
-                        headers: { Authorization: `Bearer ${ghToken}` }
-                    });
-                    if (apiResp.ok) {
-                        const data = await apiResp.json();
-                        fileSha = data.sha;
-                    }
+                    const [matchApi, goalsApi] = await Promise.all([
+                        fetch(API, { headers: { Authorization: `Bearer ${ghToken}` } }),
+                        fetch(GOALS_API, { headers: { Authorization: `Bearer ${ghToken}` } })
+                    ]);
+                    if (matchApi.ok) fileSha = (await matchApi.json()).sha;
+                    if (goalsApi.ok) goalsSha = (await goalsApi.json()).sha;
                 }
 
                 renderRows();
+                renderGoalRows();
             } catch (e) {
-                setStatus('Failed to load matches', 'err');
+                setStatus('Failed to load data', 'err');
             }
         }
 
@@ -422,6 +452,98 @@
 
         function setStatus(msg, type = '') {
             const el = document.getElementById('status');
+            el.textContent = msg;
+            el.className = `status ${type}`;
+        }
+
+        // --- Goals ---
+        function renderGoalRows() {
+            const container = document.getElementById('goalRows');
+            container.innerHTML = '';
+
+            for (let i = 1; i < goalLines.length; i++) {
+                const parts = goalLines[i].split(',');
+                if (parts.length < 3) continue;
+
+                const player = parts[0].trim();
+                const team = parts[1].trim();
+                const goals = parts[2] ? parts[2].trim() : '0';
+
+                const row = document.createElement('div');
+                row.className = 'goal-row';
+                row.innerHTML = `
+                    <span class="player-name">${flagImg(team)} ${player}</span>
+                    <input type="number" min="0" max="999" value="${goals}" data-line="${i}" style="width:48px;padding:8px 4px;background:#0f3460;border:1px solid #1e2a4a;border-radius:6px;color:#eee;font-size:1.1rem;font-weight:700;text-align:center;-moz-appearance:textfield;">
+                `;
+                container.appendChild(row);
+            }
+        }
+
+        function buildGoalsCSV() {
+            const inputs = document.querySelectorAll('#goalRows input[type="number"]');
+            const lines = [...goalLines];
+
+            inputs.forEach(input => {
+                const line = parseInt(input.dataset.line);
+                const parts = lines[line].split(',');
+                parts[2] = input.value;
+                lines[line] = parts.join(',');
+            });
+
+            return lines.join('\n') + '\n';
+        }
+
+        async function saveGoals() {
+            if (!ghToken) {
+                setGoalsStatus('Not authenticated', 'err');
+                return;
+            }
+
+            const btn = document.getElementById('saveGoalsBtn');
+            btn.disabled = true;
+            setGoalsStatus('Saving...');
+
+            try {
+                const shaResp = await fetch(GOALS_API, {
+                    headers: { Authorization: `Bearer ${ghToken}` }
+                });
+                if (!shaResp.ok) throw new Error('Failed to fetch file info');
+                goalsSha = (await shaResp.json()).sha;
+
+                const newContent = buildGoalsCSV();
+                const encoded = btoa(unescape(encodeURIComponent(newContent)));
+
+                const resp = await fetch(GOALS_API, {
+                    method: 'PUT',
+                    headers: {
+                        Authorization: `Bearer ${ghToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Update FIFA goals',
+                        content: encoded,
+                        sha: goalsSha
+                    })
+                });
+
+                if (!resp.ok) {
+                    const err = await resp.json();
+                    throw new Error(err.message || 'Failed to save');
+                }
+
+                const data = await resp.json();
+                goalsSha = data.content.sha;
+                setGoalsStatus('Saved!', 'ok');
+                loadMatches();
+            } catch (e) {
+                setGoalsStatus(e.message, 'err');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function setGoalsStatus(msg, type = '') {
+            const el = document.getElementById('goalsStatus');
             el.textContent = msg;
             el.className = `status ${type}`;
         }
