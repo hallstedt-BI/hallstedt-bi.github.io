@@ -560,6 +560,28 @@
         .bet-summary-card.lost { border-color: #ff6b6b; opacity: 0.6; }
         .bet-summary-card.lost .bsc-result { color: #ff6b6b; font-weight: 700; }
 
+        .bsc-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e0e2e8;
+        }
+        .bsc-action-btn {
+            background: none;
+            border: 1px solid #e0e2e8;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: #999;
+            transition: all 0.2s;
+        }
+        .bsc-action-btn:hover { color: #444; border-color: #999; }
+        .bsc-action-btn.danger:hover { color: #ff6b6b; border-color: #ff6b6b; }
+        .bsc-action-btn.primary:hover { color: #2ec4b6; border-color: #2ec4b6; }
+
         /* ── Leaderboard ── */
         .leaderboard {
             margin-top: 32px;
@@ -749,7 +771,7 @@
             <div class="bet-amount">
                 <label>Antal tokens</label>
                 <div class="amount-row">
-                    <input type="range" id="betAmountSlider" min="1" max="10" value="1" oninput="updateBetPreview()">
+                    <input type="range" id="betAmountSlider" min="0.1" max="10" step="0.1" value="1" oninput="updateBetPreview()">
                     <span class="amount-val" id="betAmountVal">1</span>
                 </div>
             </div>
@@ -778,6 +800,7 @@
 
         // ── Constants ──
         const TOTAL_TOKENS = 10;
+        const MIN_ODDS = 1.2; // Floor so even safe bets pay something
         const MATCH_IDS = ['qf1', 'qf2', 'sf1', 'sf2', 'final'];
         const MATCH_LABELS = {
             qf1: 'Kvartsfinal 1',
@@ -914,8 +937,8 @@
             awayWin /= total;
 
             return {
-                homeWin: Math.round((1 / homeWin) * 10) / 10,
-                awayWin: Math.round((1 / awayWin) * 10) / 10,
+                homeWin: Math.max(MIN_ODDS, Math.round((1 / homeWin) * 10) / 10),
+                awayWin: Math.max(MIN_ODDS, Math.round((1 / awayWin) * 10) / 10),
                 homeProb: homeWin,
                 awayProb: awayWin
             };
@@ -941,7 +964,7 @@
                     players.push({
                         name,
                         team: homeTeam,
-                        odds: Math.round((1 / prob) * 10) / 10,
+                        odds: Math.max(MIN_ODDS, Math.round((1 / prob) * 10) / 10),
                         prob
                     });
                 }
@@ -954,7 +977,7 @@
                     players.push({
                         name,
                         team: awayTeam,
-                        odds: Math.round((1 / prob) * 10) / 10,
+                        odds: Math.max(MIN_ODDS, Math.round((1 / prob) * 10) / 10),
                         prob
                     });
                 }
@@ -1403,8 +1426,8 @@
             // Update slider max based on available tokens
             const available = TOTAL_TOKENS - getUsedTokens() + getTokensWon();
             const slider = document.getElementById('betAmountSlider');
-            slider.max = Math.max(1, Math.floor(available));
-            slider.value = 1;
+            slider.max = Math.max(0.1, Math.round(available * 10) / 10);
+            slider.value = Math.min(1, slider.max);
 
             // Reset tabs
             switchBetTab('winner');
@@ -1458,8 +1481,8 @@
         }
 
         function updateBetPreview() {
-            const amount = parseInt(document.getElementById('betAmountSlider').value);
-            document.getElementById('betAmountVal').textContent = amount;
+            const amount = parseFloat(document.getElementById('betAmountSlider').value);
+            document.getElementById('betAmountVal').textContent = amount.toFixed(1).replace(/\.0$/, '');
 
             if (currentBetPick && currentBetOdds) {
                 const payout = Math.round(amount * currentBetOdds * 10) / 10;
@@ -1498,16 +1521,16 @@
         async function placeBet() {
             if (!currentUser || !currentBetMatch || !currentBetPick) return;
 
-            const amount = parseInt(document.getElementById('betAmountSlider').value);
+            const amount = Math.round(parseFloat(document.getElementById('betAmountSlider').value) * 10) / 10;
             const available = TOTAL_TOKENS - getUsedTokens() + getTokensWon();
 
-            if (amount > available) {
+            if (amount > available + 0.001) {
                 document.getElementById('betError').textContent = 'Inte tillräckligt med tokens!';
                 return;
             }
 
-            if (amount < 1) {
-                document.getElementById('betError').textContent = 'Minst 1 token';
+            if (amount < 0.1) {
+                document.getElementById('betError').textContent = 'Minst 0.1 token';
                 return;
             }
 
@@ -1583,12 +1606,23 @@
                         resultText = won ? `Vinst: +${payout} tokens` : 'Förlorad';
                     }
 
+                    const editable = !match.locked && !match.completed;
+                    const safeBetId = betId.replace(/'/g, "\\'");
+                    const safeMatchId = matchId.replace(/'/g, "\\'");
+                    const actions = editable ? `
+                        <div class="bsc-actions">
+                            <button class="bsc-action-btn primary" onclick="openBetPanel('${safeMatchId}')">Ändra</button>
+                            <button class="bsc-action-btn danger" onclick="removeBet('${safeMatchId}', '${safeBetId}')">Ta bort</button>
+                        </div>
+                    ` : '';
+
                     html += `
                         <div class="bet-summary-card ${resultClass}">
                             <div class="bsc-match">${MATCH_LABELS[matchId]}</div>
                             <div class="bsc-pick">${typeLabel}: ${bet.pick}</div>
                             <div class="bsc-details"><span>${bet.amount}</span> tokens @ <span>${bet.odds}x</span></div>
                             ${resultText ? `<div class="bsc-result">${resultText}</div>` : ''}
+                            ${actions}
                         </div>
                     `;
                 });
