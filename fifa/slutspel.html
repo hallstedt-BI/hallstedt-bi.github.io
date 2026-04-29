@@ -948,39 +948,36 @@
             const odds = getMatchOdds(homeTeam, awayTeam);
             const players = [];
 
-            // Get players for each team and their goal share
+            // Get players for each team
             const homeGoals = Object.entries(playerGoals)
                 .filter(([_, p]) => p.team === homeTeam);
             const awayGoals = Object.entries(playerGoals)
                 .filter(([_, p]) => p.team === awayTeam);
 
-            const homeTotal = homeGoals.reduce((s, [_, p]) => s + p.goals, 0) || 1;
-            const awayTotal = awayGoals.reduce((s, [_, p]) => s + p.goals, 0) || 1;
+            // Laplace smoothing: +1 virtual goal to each player so non-scorers still get listed
+            const homeTotal = homeGoals.reduce((s, [_, p]) => s + p.goals + 1, 0) || 1;
+            const awayTotal = awayGoals.reduce((s, [_, p]) => s + p.goals + 1, 0) || 1;
 
             homeGoals.forEach(([name, p]) => {
-                const share = p.goals / homeTotal;
+                const share = (p.goals + 1) / homeTotal;
                 const prob = odds.homeProb * share;
-                if (prob > 0.01) {
-                    players.push({
-                        name,
-                        team: homeTeam,
-                        odds: Math.max(MIN_ODDS, Math.round((1 / prob) * 10) / 10),
-                        prob
-                    });
-                }
+                players.push({
+                    name,
+                    team: homeTeam,
+                    odds: Math.max(MIN_ODDS, Math.round((1 / prob) * 10) / 10),
+                    prob
+                });
             });
 
             awayGoals.forEach(([name, p]) => {
-                const share = p.goals / awayTotal;
+                const share = (p.goals + 1) / awayTotal;
                 const prob = odds.awayProb * share;
-                if (prob > 0.01) {
-                    players.push({
-                        name,
-                        team: awayTeam,
-                        odds: Math.max(MIN_ODDS, Math.round((1 / prob) * 10) / 10),
-                        prob
-                    });
-                }
+                players.push({
+                    name,
+                    team: awayTeam,
+                    odds: Math.max(MIN_ODDS, Math.round((1 / prob) * 10) / 10),
+                    prob
+                });
             });
 
             return players.sort((a, b) => a.odds - b.odds);
