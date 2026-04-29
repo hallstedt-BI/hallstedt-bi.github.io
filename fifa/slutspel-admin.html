@@ -315,8 +315,8 @@
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
             <h2>Admin Login</h2>
-            <input type="password" id="adminPin" placeholder="Admin PIN">
-            <br>
+            <input type="email" id="adminEmail" placeholder="E-post">
+            <input type="password" id="adminPassword" placeholder="Lösenord">
             <button class="btn btn-primary btn-full" onclick="doAdminLogin()">Logga in</button>
             <div class="login-error" id="loginError"></div>
         </div>
@@ -348,34 +348,11 @@
             </div>
         </div>
 
-        <!-- Admin PIN Setup -->
+        <!-- Registered Users -->
         <div class="section">
-            <h2>Admin PIN</h2>
-            <div style="display:flex; gap:12px; align-items:center;">
-                <input type="text" id="newAdminPin" placeholder="Ny admin PIN" style="padding:8px 12px; border:1px solid #e0e2e8; border-radius:6px; background:#eef1f6; color:#eee; font-size:0.9rem; width:200px;">
-                <button class="btn btn-primary" onclick="setAdminPin()">Spara Admin PIN</button>
-            </div>
-            <div id="adminPinStatus"></div>
-        </div>
-
-        <!-- User Setup -->
-        <div class="section">
-            <h2>Spelare &amp; PIN-koder</h2>
-            <p style="color:#999; font-size:0.85rem; margin-bottom:16px;">Skapa PIN-koder för varje spelare. Alla börjar med 10 tokens.</p>
+            <h2>Registrerade Spelare</h2>
+            <p style="color:#999; font-size:0.85rem; margin-bottom:16px;">Spelare registrerar sig själva via betting-sidan. Här ser du listan och kan radera om det behövs.</p>
             <div class="user-grid" id="userGrid"></div>
-            <button class="btn btn-success" onclick="saveAllUsers()">Spara alla PIN-koder</button>
-            <div id="userSaveStatus"></div>
-
-            <details style="margin-top:24px;">
-                <summary style="cursor:pointer; color:#999; font-size:0.85rem;">+ Lägg till extra spelare</summary>
-                <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-                    <input type="text" id="newUserName" placeholder="Namn" style="padding:8px 12px; border:1px solid #e0e2e8; border-radius:6px; background:#eef1f6; color:#444; font-size:0.9rem; width:160px;">
-                    <input type="text" id="newUserPin" placeholder="PIN" maxlength="6" style="padding:8px 12px; border:1px solid #e0e2e8; border-radius:6px; background:#eef1f6; color:#444; font-size:0.9rem; width:100px;">
-                    <button class="btn btn-primary" onclick="addCustomUser()">Lägg till</button>
-                    <button class="btn btn-secondary" onclick="generateRandomPin()" style="font-size:0.8rem;">🎲 Slumpa PIN</button>
-                </div>
-                <div id="addUserStatus"></div>
-            </details>
         </div>
 
         <!-- Initialize Bracket -->
@@ -400,6 +377,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
 
     <script>
@@ -432,8 +410,8 @@
         let slutspelMatches = {};
         let allBets = {};
         let allUsers = {};
-        let adminPin = null;
         let isLoggedIn = false;
+        const ADMIN_EMAIL = 'amanda.hallstedt@boardintelligence.com';
 
         function flagImg(team) {
             const code = FLAGS[team];
@@ -441,44 +419,41 @@
             return `<img class="flag" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg">`;
         }
 
-        // ── Admin Login ──
-        function doAdminLogin() {
-            const pin = document.getElementById('adminPin').value;
+        // ── Admin Login (email/password, must match ADMIN_EMAIL) ──
+        async function doAdminLogin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
             const err = document.getElementById('loginError');
+            err.textContent = '';
 
-            db.ref('slutspel/config/adminPin').once('value').then(snap => {
-                const stored = snap.val();
-                if (!stored) {
-                    // No admin pin set yet - first time setup, allow entry
-                    if (pin === 'setup') {
-                        isLoggedIn = true;
-                        document.getElementById('loginOverlay').classList.add('hidden');
-                        err.textContent = '';
-                    } else {
-                        err.textContent = 'Ingen admin PIN satt. Ange "setup" för första gången.';
-                    }
-                } else if (pin === stored) {
-                    isLoggedIn = true;
-                    adminPin = stored;
-                    document.getElementById('loginOverlay').classList.add('hidden');
-                    err.textContent = '';
-                } else {
-                    err.textContent = 'Fel PIN';
-                }
-            });
-        }
-
-        function setAdminPin() {
-            const pin = document.getElementById('newAdminPin').value;
-            if (!pin || pin.length < 3) {
-                document.getElementById('adminPinStatus').innerHTML = '<div class="status-msg error">PIN måste vara minst 3 tecken</div>';
+            if (!email || !password) { err.textContent = 'Fyll i e-post och lösenord'; return; }
+            if (email.toLowerCase() !== ADMIN_EMAIL) {
+                err.textContent = 'Det här kontot är inte admin';
                 return;
             }
-            db.ref('slutspel/config/adminPin').set(pin).then(() => {
-                adminPin = pin;
-                document.getElementById('adminPinStatus').innerHTML = '<div class="status-msg success">Admin PIN sparad!</div>';
-            });
+
+            try {
+                await firebase.auth().signInWithEmailAndPassword(email, password);
+                // onAuthStateChanged fires below
+            } catch (e) {
+                err.textContent = e.message.replace('Firebase: ', '');
+            }
         }
+
+        async function doLogout() {
+            await firebase.auth().signOut();
+        }
+
+        firebase.auth().onAuthStateChanged(user => {
+            if (user && user.email && user.email.toLowerCase() === ADMIN_EMAIL) {
+                isLoggedIn = true;
+                document.getElementById('loginOverlay').classList.add('hidden');
+            } else {
+                isLoggedIn = false;
+                document.getElementById('loginOverlay').classList.remove('hidden');
+                if (user) firebase.auth().signOut(); // signed in but not admin → kick out
+            }
+        });
 
         // ── Tabs ──
         function switchTab(tab) {
@@ -488,97 +463,40 @@
             document.getElementById('tab-' + tab).classList.add('active');
         }
 
-        // ── User Setup ──
+        // ── Registered Users (read-only with delete) ──
         function renderUserGrid() {
             const grid = document.getElementById('userGrid');
-            const knownNames = new Set(PLAYERS);
-            // Include both predefined players and any custom users from Firebase
-            const allNames = [...PLAYERS, ...Object.keys(allUsers).filter(n => !knownNames.has(n)).sort()];
+            const names = Object.keys(allUsers).sort();
 
-            grid.innerHTML = allNames.map(name => {
-                const existing = allUsers[name];
-                const pin = existing ? existing.pin : '';
-                const isCustom = !knownNames.has(name);
-                const status = existing
-                    ? `<span class="uc-status">${isCustom ? 'Extra' : 'Skapad'}</span>`
-                    : '';
-                const removeBtn = isCustom
-                    ? `<button onclick="removeCustomUser('${name.replace(/'/g, "\\'")}')" style="background:none;border:none;color:#999;cursor:pointer;font-size:1.1rem;padding:0 4px;" title="Ta bort">&times;</button>`
-                    : '';
+            if (!names.length) {
+                grid.innerHTML = '<div style="color:#999;font-size:0.85rem;">Inga registrerade spelare ännu.</div>';
+                return;
+            }
+
+            grid.innerHTML = names.map(name => {
+                const data = allUsers[name];
+                const email = data.email || '(okänd e-post)';
                 return `
                     <div class="user-card">
-                        <span class="uc-name">${name}</span>
-                        <input type="text" id="pin_${name}" value="${pin}" placeholder="PIN">
-                        ${status}
-                        ${removeBtn}
+                        <div style="flex:1;">
+                            <div class="uc-name">${name}</div>
+                            <div style="font-size:0.7rem; color:#999;">${email}</div>
+                        </div>
+                        <button onclick="removeUser('${name.replace(/'/g, "\\'")}')" style="background:none;border:none;color:#999;cursor:pointer;font-size:1.1rem;padding:0 4px;" title="Ta bort">&times;</button>
                     </div>
                 `;
             }).join('');
         }
 
-        function saveAllUsers() {
-            const updates = {};
-            // Save all rendered user inputs (predefined + custom)
-            document.querySelectorAll('#userGrid input[id^="pin_"]').forEach(input => {
-                const name = input.id.substring(4);
-                const pin = input.value.trim();
-                if (pin) {
-                    updates[name] = { pin, tokensTotal: 10 };
+        async function removeUser(name) {
+            if (!confirm(`Ta bort ${name}? Detta raderar även deras bets. (OBS: Firebase Auth-kontot måste tas bort separat i Firebase-konsolen.)`)) return;
+            await db.ref(`slutspel/users/${name}`).remove();
+            const snap = await db.ref('slutspel/bets').once('value');
+            const bets = snap.val() || {};
+            Object.keys(bets).forEach(matchId => {
+                if (bets[matchId][name]) {
+                    db.ref(`slutspel/bets/${matchId}/${name}`).remove();
                 }
-            });
-
-            db.ref('slutspel/users').set(updates).then(() => {
-                document.getElementById('userSaveStatus').innerHTML =
-                    '<div class="status-msg success">Alla PIN-koder sparade!</div>';
-            }).catch(e => {
-                document.getElementById('userSaveStatus').innerHTML =
-                    `<div class="status-msg error">Fel: ${e.message}</div>`;
-            });
-        }
-
-        function generateRandomPin() {
-            const pin = String(Math.floor(1000 + Math.random() * 9000));
-            document.getElementById('newUserPin').value = pin;
-        }
-
-        function addCustomUser() {
-            const name = document.getElementById('newUserName').value.trim();
-            const pin = document.getElementById('newUserPin').value.trim();
-            const status = document.getElementById('addUserStatus');
-
-            if (!name) {
-                status.innerHTML = '<div class="status-msg error">Ange ett namn</div>';
-                return;
-            }
-            if (!pin || pin.length < 3) {
-                status.innerHTML = '<div class="status-msg error">PIN måste vara minst 3 tecken</div>';
-                return;
-            }
-            if (allUsers[name]) {
-                status.innerHTML = '<div class="status-msg error">Användaren finns redan</div>';
-                return;
-            }
-
-            db.ref(`slutspel/users/${name}`).set({ pin, tokensTotal: 10 }).then(() => {
-                document.getElementById('newUserName').value = '';
-                document.getElementById('newUserPin').value = '';
-                status.innerHTML = `<div class="status-msg success">${name} tillagd med PIN ${pin}</div>`;
-            }).catch(e => {
-                status.innerHTML = `<div class="status-msg error">Fel: ${e.message}</div>`;
-            });
-        }
-
-        function removeCustomUser(name) {
-            if (!confirm(`Ta bort ${name}? Detta raderar även deras bets.`)) return;
-            db.ref(`slutspel/users/${name}`).remove();
-            // Also remove their bets
-            db.ref('slutspel/bets').once('value').then(snap => {
-                const bets = snap.val() || {};
-                Object.keys(bets).forEach(matchId => {
-                    if (bets[matchId][name]) {
-                        db.ref(`slutspel/bets/${matchId}/${name}`).remove();
-                    }
-                });
             });
         }
 

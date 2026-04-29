@@ -313,8 +313,8 @@
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
             <h2>FIFA Admin</h2>
-            <input type="password" id="adminPin" placeholder="Admin PIN">
-            <br>
+            <input type="email" id="adminEmail" placeholder="E-post">
+            <input type="password" id="adminPassword" placeholder="Lösenord">
             <button class="btn btn-primary btn-full" onclick="doLogin()">Logga in</button>
             <div class="login-error" id="loginError"></div>
         </div>
@@ -399,6 +399,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
 
     <script>
@@ -428,32 +429,42 @@
             return `<img class="flag" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg">`;
         }
 
-        // ── Login ──
-        function doLogin() {
-            const pin = document.getElementById('adminPin').value;
-            const err = document.getElementById('loginError');
-            err.textContent = 'Kontrollerar...';
+        // ── Login (admin email/password) ──
+        const ADMIN_EMAIL = 'amanda.hallstedt@boardintelligence.com';
 
-            db.ref('slutspel/config/adminPin').once('value').then(snap => {
-                const stored = snap.val();
-                console.log('Admin PIN lookup result:', stored ? '(set)' : '(empty)');
-                if (!stored) {
-                    err.innerHTML = 'Ingen admin PIN satt. Sätt först en i <a href="./slutspel-admin.html" style="color:#ff6b6b">slutspel-admin</a>.';
-                } else if (pin === stored) {
-                    isLoggedIn = true;
-                    document.getElementById('loginOverlay').classList.add('hidden');
-                    err.textContent = '';
-                    setupListeners();
-                } else {
-                    err.textContent = 'Fel PIN';
-                }
-            }).catch(e => {
-                console.error('Firebase login error:', e);
-                err.textContent = 'Firebase-fel: ' + e.message;
-            });
+        async function doLogin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            const err = document.getElementById('loginError');
+            err.textContent = '';
+
+            if (!email || !password) { err.textContent = 'Fyll i e-post och lösenord'; return; }
+            if (email.toLowerCase() !== ADMIN_EMAIL) {
+                err.textContent = 'Det här kontot är inte admin';
+                return;
+            }
+
+            try {
+                await firebase.auth().signInWithEmailAndPassword(email, password);
+                // onAuthStateChanged handles the rest
+            } catch (e) {
+                err.textContent = e.message.replace('Firebase: ', '');
+            }
         }
 
-        document.getElementById('adminPin').addEventListener('keydown', e => {
+        firebase.auth().onAuthStateChanged(user => {
+            if (user && user.email && user.email.toLowerCase() === ADMIN_EMAIL) {
+                isLoggedIn = true;
+                document.getElementById('loginOverlay').classList.add('hidden');
+                setupListeners();
+            } else {
+                isLoggedIn = false;
+                document.getElementById('loginOverlay').classList.remove('hidden');
+                if (user) firebase.auth().signOut();
+            }
+        });
+
+        document.getElementById('adminPassword').addEventListener('keydown', e => {
             if (e.key === 'Enter') doLogin();
         });
 

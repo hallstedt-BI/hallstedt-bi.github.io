@@ -662,16 +662,22 @@
 <body>
     <div class="flames"></div>
 
-    <!-- Login Overlay -->
+    <!-- Login / Signup Overlay -->
     <div class="login-overlay" id="loginOverlay">
         <div class="login-box">
-            <h2>Slutspel Betting</h2>
-            <select id="loginName">
-                <option value="">Välj spelare...</option>
-            </select>
-            <input type="password" id="loginPin" placeholder="PIN-kod" maxlength="6">
-            <button class="btn btn-primary" onclick="doLogin()">Logga in</button>
+            <h2 id="authTitle">Logga in</h2>
+
+            <input type="text" id="signupName" placeholder="Användarnamn" style="display:none;">
+            <input type="email" id="loginEmail" placeholder="E-post">
+            <input type="password" id="loginPassword" placeholder="Lösenord">
+
+            <button class="btn btn-primary" id="authSubmitBtn" onclick="doAuth()">Logga in</button>
             <div class="login-error" id="loginError"></div>
+
+            <div style="margin-top:16px; font-size:0.85rem; color:#999;">
+                <span id="authSwitchText">Har du inget konto?</span>
+                <a href="#" onclick="toggleAuthMode(); return false;" id="authSwitchLink" style="color:#ff6b6b; text-decoration:none; font-weight:600;">Registrera dig</a>
+            </div>
         </div>
     </div>
 
@@ -762,6 +768,7 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
 
     <script>
@@ -1067,52 +1074,68 @@
             // Listen for users
             db.ref('slutspel/users').on('value', snap => {
                 allUsers = snap.val() || {};
-                populateLoginDropdown();
+                renderMyBets();
+                renderLeaderboard();
             });
         }
 
-        // ── Login ──
-        function populateLoginDropdown() {
-            const select = document.getElementById('loginName');
-            const current = select.value;
-            select.innerHTML = '<option value="">Välj spelare...</option>';
-            Object.keys(allUsers).sort().forEach(name => {
-                const opt = document.createElement('option');
-                opt.value = name;
-                opt.textContent = name;
-                select.appendChild(opt);
-            });
-            if (current) select.value = current;
+        // ── Auth (email/password + signup) ──
+        let authMode = 'login'; // or 'signup'
+
+        function toggleAuthMode() {
+            authMode = (authMode === 'login') ? 'signup' : 'login';
+            const isSignup = authMode === 'signup';
+            document.getElementById('authTitle').textContent = isSignup ? 'Registrera dig' : 'Logga in';
+            document.getElementById('signupName').style.display = isSignup ? 'block' : 'none';
+            document.getElementById('authSubmitBtn').textContent = isSignup ? 'Skapa konto' : 'Logga in';
+            document.getElementById('authSwitchText').textContent = isSignup ? 'Har du redan ett konto?' : 'Har du inget konto?';
+            document.getElementById('authSwitchLink').textContent = isSignup ? 'Logga in' : 'Registrera dig';
+            document.getElementById('loginError').textContent = '';
         }
 
-        function doLogin() {
-            const name = document.getElementById('loginName').value;
-            const pin = document.getElementById('loginPin').value;
+        async function doAuth() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
             const err = document.getElementById('loginError');
-
-            if (!name) { err.textContent = 'Välj en spelare'; return; }
-            if (!pin) { err.textContent = 'Ange PIN-kod'; return; }
-
-            const user = allUsers[name];
-            if (!user || user.pin !== pin) {
-                err.textContent = 'Fel PIN-kod';
-                return;
-            }
-
-            currentUser = name;
-            localStorage.setItem('slutspel_user', name);
-            localStorage.setItem('slutspel_pin', pin);
             err.textContent = '';
-            showLoggedIn();
+
+            if (!email || !password) { err.textContent = 'Fyll i e-post och lösenord'; return; }
+
+            try {
+                if (authMode === 'signup') {
+                    const displayName = document.getElementById('signupName').value.trim();
+                    if (!displayName) { err.textContent = 'Välj ett användarnamn'; return; }
+
+                    // Check if username already taken
+                    const existing = await db.ref(`slutspel/users/${displayName}`).once('value');
+                    if (existing.val()) {
+                        err.textContent = 'Användarnamn upptaget';
+                        return;
+                    }
+
+                    const cred = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                    await db.ref(`slutspel/users/${displayName}`).set({
+                        uid: cred.user.uid,
+                        email: cred.user.email,
+                        tokensTotal: TOTAL_TOKENS
+                    });
+                    // onAuthStateChanged will fire and complete login
+                } else {
+                    await firebase.auth().signInWithEmailAndPassword(email, password);
+                    // onAuthStateChanged will fire and complete login
+                }
+            } catch (e) {
+                err.textContent = e.message.replace('Firebase: ', '');
+            }
         }
 
-        function tryAutoLogin() {
-            const name = localStorage.getItem('slutspel_user');
-            const pin = localStorage.getItem('slutspel_pin');
-            if (name && pin && allUsers[name] && allUsers[name].pin === pin) {
-                currentUser = name;
-                showLoggedIn();
+        async function findUserNameByUid(uid) {
+            const snap = await db.ref('slutspel/users').once('value');
+            const users = snap.val() || {};
+            for (const [name, data] of Object.entries(users)) {
+                if (data.uid === uid) return name;
             }
+            return null;
         }
 
         function showLoggedIn() {
@@ -1123,13 +1146,16 @@
             renderMyBets();
         }
 
-        function doLogout() {
+        function showLoggedOut() {
             currentUser = null;
-            localStorage.removeItem('slutspel_user');
-            localStorage.removeItem('slutspel_pin');
             document.getElementById('loginOverlay').classList.remove('hidden');
             document.getElementById('userInfo').style.display = 'none';
-            document.getElementById('loginPin').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        async function doLogout() {
+            await firebase.auth().signOut();
+            // onAuthStateChanged will fire and clear UI
         }
 
         function getUsedTokens() {
@@ -1630,12 +1656,25 @@
             await loadGroupData();
             setupFirebaseListeners();
             renderBracket();
-
-            // Try auto-login after a short delay to let Firebase load users
-            setTimeout(() => {
-                tryAutoLogin();
-            }, 1000);
         }
+
+        // Subscribe to auth state changes - fires once on load with current state
+        firebase.auth().onAuthStateChanged(async user => {
+            if (user) {
+                const name = await findUserNameByUid(user.uid);
+                if (name) {
+                    currentUser = name;
+                    showLoggedIn();
+                } else {
+                    // Authenticated but no user record (signup partial?). Sign out.
+                    console.warn('Authenticated user has no display name record');
+                    await firebase.auth().signOut();
+                    showLoggedOut();
+                }
+            } else {
+                showLoggedOut();
+            }
+        });
 
         init();
     </script>
