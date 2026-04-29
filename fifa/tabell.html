@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIFA Tournament</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            padding: 24px 32px;
+        }
+
+        .content {
+            display: flex;
+            gap: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .standings-section { flex: 1.2; }
+        .matches-section { flex: 1; }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e94560;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .standings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.05rem;
+        }
+
+        .standings-table th {
+            background: #16213e;
+            color: #8899aa;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid #0f3460;
+        }
+
+        .standings-table th:not(:first-child):not(:nth-child(2)) { text-align: center; }
+
+        .standings-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #1e2a4a;
+        }
+
+        .standings-table td:not(:first-child):not(:nth-child(2)) { text-align: center; }
+        .standings-table tr:hover { background: rgba(233, 69, 96, 0.08); }
+        .standings-table .rank { font-weight: 700; color: #667; width: 36px; }
+        .standings-table .team-name { font-weight: 600; font-size: 1.1rem; white-space: nowrap; }
+        .flag { width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 50%; }
+        .standings-table .points { font-weight: 700; font-size: 1.2rem; color: #e94560; }
+        .standings-table .gd-positive { color: #4ecdc4; }
+        .standings-table .gd-negative { color: #e94560; }
+
+
+
+        .latest-game {
+            margin-top: 20px;
+            background: #16213e;
+            border: 1px solid #1e2a4a;
+            border-radius: 8px;
+            padding: 16px 20px;
+        }
+
+        .latest-game .section-title {
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        .latest-game .game {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .latest-game .lg-team {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .latest-game .lg-score {
+            background: #0f3460;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: 4px;
+        }
+
+        .latest-game .lg-winner { color: #4ecdc4; }
+
+        .no-games { color: #445; font-size: 0.9rem; }
+
+        .scorers-box {
+            margin-top: 20px;
+            background: #16213e;
+            border: 1px solid #1e2a4a;
+            border-radius: 8px;
+            padding: 16px 20px;
+        }
+
+        .scorers-box .section-title {
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        .scorers-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .scorers-table th {
+            color: #8899aa;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #1e2a4a;
+        }
+
+        .scorers-table th:not(:first-child) { text-align: center; }
+
+        .scorers-table td {
+            padding: 5px 8px;
+            border-bottom: 1px solid rgba(30, 42, 74, 0.5);
+        }
+
+        .scorers-table td:not(:first-child) { text-align: center; }
+
+        .scorers-table .goals { font-weight: 700; color: #e94560; }
+        .scorers-table .flag { width: 16px; height: 16px; }
+
+        .match-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .match-card {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #1e2a4a;
+        }
+
+        .match-card.not-played { opacity: 0.5; }
+
+        .match-team {
+            flex: 1;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .match-team.home { text-align: right; padding-right: 12px; }
+        .match-team.away { text-align: left; padding-left: 12px; }
+
+        .match-score {
+            background: #0f3460;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            min-width: 70px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .match-card.not-played .match-score { color: #445; }
+        .match-winner { color: #4ecdc4; }
+
+        .progress-bar {
+            margin-top: 16px;
+            background: #16213e;
+            border-radius: 8px;
+            padding: 14px 18px;
+            border: 1px solid #1e2a4a;
+        }
+
+        .progress-bar .label {
+            font-size: 0.85rem;
+            color: #8899aa;
+            margin-bottom: 8px;
+        }
+
+        .progress-track {
+            height: 6px;
+            background: #0f3460;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #e94560, #4ecdc4);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .flames {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background: url('../fuego.gif') repeat-x bottom;
+            background-size: auto 120px;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @media (max-width: 900px) {
+            body { padding: 12px; }
+            .content { flex-direction: column; gap: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="flames"></div>
+    <div class="content">
+        <div class="standings-section">
+            <div class="section-title">Tabell</div>
+            <table class="standings-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Team</th>
+                        <th>P</th>
+                        <th>W</th>
+                        <th>D</th>
+                        <th>L</th>
+                        <th>GF</th>
+                        <th>GA</th>
+                        <th>GD</th>
+                        <th class="points">Pts</th>
+                    </tr>
+                </thead>
+                <tbody id="standingsBody"></tbody>
+            </table>
+            <div class="scorers-box">
+                <div class="section-title">Skytteliga</div>
+                <table class="scorers-table">
+                    <thead>
+                        <tr>
+                            <th>Spelare</th>
+                            <th>Mål</th>
+                            <th>Matchsnitt</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scorersBody"></tbody>
+                </table>
+            </div>
+            <div class="latest-game" id="latestGame"></div>
+        </div>
+
+        <div class="matches-section">
+            <div class="section-title">Matcher</div>
+            <div class="match-list" id="matchList"></div>
+            <div class="progress-bar">
+                <div class="label" id="progressLabel">0 / 10 matcher spelade</div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const FLAGS = {
+            'Amanda/Anton': 'pt',
+            'Aleks/Stephanie': 'de',
+            'Hyberg/Dara': 'es',
+            'George/Finnström': 'br',
+            'Jonas/Mood': 'ar',
+            'Kristian/Silvan': 'fr'
+        };
+
+        function flagImg(team) {
+            const code = FLAGS[team];
+            if (!code) return '';
+            return `<img class="flag" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg" alt="${code}">`;
+        }
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            const headers = lines[0].split(',');
+            return lines.slice(1).filter(l => l.trim()).map(line => {
+                const values = line.split(',');
+                const obj = {};
+                headers.forEach((h, i) => obj[h.trim()] = (values[i] || '').trim());
+                return obj;
+            });
+        }
+
+        function calculateStandings(matches) {
+            const teams = {};
+
+            function ensure(name) {
+                if (!teams[name]) {
+                    teams[name] = { name, played: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 };
+                }
+            }
+
+            matches.forEach(m => {
+                ensure(m.home);
+                ensure(m.away);
+                if (m.home_score === '' || m.away_score === '') return;
+
+                const hs = parseInt(m.home_score);
+                const as = parseInt(m.away_score);
+                if (isNaN(hs) || isNaN(as)) return;
+
+                const home = teams[m.home];
+                const away = teams[m.away];
+
+                home.played++; away.played++;
+                home.gf += hs; home.ga += as;
+                away.gf += as; away.ga += hs;
+
+                if (hs > as) {
+                    home.wins++; away.losses++;
+                    home.points += 3;
+                } else if (hs < as) {
+                    away.wins++; home.losses++;
+                    away.points += 3;
+                } else {
+                    home.draws++; away.draws++;
+                    home.points += 1; away.points += 1;
+                }
+            });
+
+            Object.values(teams).forEach(t => t.gd = t.gf - t.ga);
+
+            return Object.values(teams).sort((a, b) =>
+                b.points - a.points || b.gd - a.gd || b.gf - a.gf || a.name.localeCompare(b.name)
+            );
+        }
+
+        function renderStandings(standings) {
+            const tbody = document.getElementById('standingsBody');
+            tbody.innerHTML = standings.map((t, i) => {
+                const rank = i + 1;
+
+                const gdClass = t.gd > 0 ? 'gd-positive' : t.gd < 0 ? 'gd-negative' : '';
+                const gdStr = t.gd > 0 ? `+${t.gd}` : t.gd;
+                return `<tr>
+                    <td class="rank">${rank}</td>
+                    <td class="team-name">${flagImg(t.name)}${t.name}</td>
+                    <td>${t.played}</td>
+                    <td>${t.wins}</td>
+                    <td>${t.draws}</td>
+                    <td>${t.losses}</td>
+                    <td>${t.gf}</td>
+                    <td>${t.ga}</td>
+                    <td class="${gdClass}">${gdStr}</td>
+                    <td class="points">${t.points}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderLatestGame(matches) {
+            const played = matches.filter(m => m.home_score !== '' && m.away_score !== '' && m.played_order);
+            const container = document.getElementById('latestGame');
+
+            if (played.length === 0) {
+                container.innerHTML = `<div class="section-title">Senast Spelade</div><div class="no-games">Inga matcher spelade ännu</div>`;
+                return;
+            }
+
+            const m = played.sort((a, b) => parseInt(b.played_order) - parseInt(a.played_order))[0];
+            const hs = parseInt(m.home_score);
+            const as = parseInt(m.away_score);
+            const homeWin = hs > as;
+            const awayWin = hs < as;
+
+            container.innerHTML = `
+                <div class="section-title">Senast Spelade</div>
+                <div class="game">
+                    <span class="lg-team ${homeWin ? 'lg-winner' : ''}">${flagImg(m.home)} ${m.home}</span>
+                    <span class="lg-score">${hs} - ${as}</span>
+                    <span class="lg-team ${awayWin ? 'lg-winner' : ''}">${m.away} ${flagImg(m.away)}</span>
+                </div>
+            `;
+        }
+
+        function renderMatches(matches) {
+            const list = document.getElementById('matchList');
+            let played = 0;
+
+            list.innerHTML = matches.map(m => {
+                const hasScore = m.home_score !== '' && m.away_score !== '';
+                if (hasScore) played++;
+                const hs = parseInt(m.home_score);
+                const as = parseInt(m.away_score);
+                const homeWin = hasScore && hs > as;
+                const awayWin = hasScore && hs < as;
+                const scoreText = hasScore ? `${hs} - ${as}` : 'vs';
+
+                return `<div class="match-card ${hasScore ? 'played' : 'not-played'}">
+                    <div class="match-team home ${homeWin ? 'match-winner' : ''}">${m.home} ${flagImg(m.home)}</div>
+                    <div class="match-score">${scoreText}</div>
+                    <div class="match-team away ${awayWin ? 'match-winner' : ''}">${flagImg(m.away)} ${m.away}</div>
+                </div>`;
+            }).join('');
+
+            const total = matches.length;
+            const pct = total > 0 ? (played / total) * 100 : 0;
+            document.getElementById('progressLabel').textContent = `${played} / ${total} matcher spelade`;
+            document.getElementById('progressFill').style.width = `${pct}%`;
+        }
+
+        function renderScorers(goals, matches) {
+            // Count games played per team
+            const teamGames = {};
+            matches.forEach(m => {
+                if (m.home_score === '' || m.away_score === '') return;
+                teamGames[m.home] = (teamGames[m.home] || 0) + 1;
+                teamGames[m.away] = (teamGames[m.away] || 0) + 1;
+            });
+
+            const sorted = goals
+                .map(g => ({
+                    ...g,
+                    goals: parseInt(g.goals) || 0,
+                    gamesPlayed: teamGames[g.team] || 0
+                }))
+                .sort((a, b) => b.goals - a.goals || a.player.localeCompare(b.player));
+
+            const tbody = document.getElementById('scorersBody');
+            tbody.innerHTML = sorted.map(g => {
+                const perGame = g.gamesPlayed > 0 ? (g.goals / g.gamesPlayed).toFixed(1) : '-';
+                return `<tr>
+                    <td>${flagImg(g.team)}${g.player}</td>
+                    <td class="goals">${g.goals}</td>
+                    <td>${perGame}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function loadFromCSV() {
+            const [matchResp, goalsResp] = await Promise.all([
+                fetch(`./matches.csv?t=${Date.now()}`),
+                fetch(`./goals.csv?t=${Date.now()}`)
+            ]);
+            if (!matchResp.ok) throw new Error('Failed to load CSV');
+            const matches = parseCSV(await matchResp.text());
+            const goals = goalsResp.ok ? parseCSV(await goalsResp.text()) : [];
+            return { matches, goals };
+        }
+
+        function renderAll(matches, goals) {
+            const standings = calculateStandings(matches);
+            renderStandings(standings);
+            renderLatestGame(matches);
+            renderMatches(matches);
+            renderScorers(goals, matches);
+        }
+
+        async function loadAndRender() {
+            try {
+                // Try Firebase first
+                const fb = await loadFromFirebaseSnapshot();
+                if (fb && fb.matches.length > 0) {
+                    renderAll(fb.matches, fb.goals);
+                    return;
+                }
+                // Fall back to CSV
+                const csv = await loadFromCSV();
+                renderAll(csv.matches, csv.goals);
+            } catch (e) {
+                console.error('Firebase failed, falling back to CSV:', e);
+                try {
+                    const csv = await loadFromCSV();
+                    renderAll(csv.matches, csv.goals);
+                } catch (csvErr) {
+                    console.error('CSV also failed:', csvErr);
+                }
+            }
+        }
+
+        async function loadFromFirebaseSnapshot() {
+            try {
+                const [matchesSnap, goalsSnap] = await Promise.all([
+                    db.ref('groupStage/matches').once('value'),
+                    db.ref('groupStage/goals').once('value')
+                ]);
+                const matchesData = matchesSnap.val();
+                const goalsData = goalsSnap.val();
+                if (!matchesData) return null;
+
+                const matchesArr = Array.isArray(matchesData)
+                    ? matchesData
+                    : Object.keys(matchesData).sort((a,b) => parseInt(a)-parseInt(b)).map(k => matchesData[k]);
+
+                const matches = matchesArr.map(m => ({
+                    home: m.home || '',
+                    away: m.away || '',
+                    home_score: m.home_score == null ? '' : String(m.home_score),
+                    away_score: m.away_score == null ? '' : String(m.away_score),
+                    played_order: m.played_order == null ? '' : String(m.played_order)
+                }));
+
+                const goals = goalsData
+                    ? Object.entries(goalsData).map(([player, g]) => ({
+                        player,
+                        team: g.team || '',
+                        goals: String(g.goals ?? 0)
+                    }))
+                    : [];
+
+                return { matches, goals };
+            } catch (e) {
+                console.error('Firebase snapshot failed:', e);
+                return null;
+            }
+        }
+
+        // Subscribe to Firebase real-time updates
+        function subscribeToFirebase() {
+            db.ref('groupStage/matches').on('value', () => loadAndRender());
+            db.ref('groupStage/goals').on('value', () => loadAndRender());
+        }
+
+        loadAndRender();
+        subscribeToFirebase();
+    </script>
+</body>
+</html>

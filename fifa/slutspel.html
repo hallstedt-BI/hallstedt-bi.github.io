@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slutspel - FIFA Tournament</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #ffffff;
+            color: #444;
+            min-height: 100vh;
+        }
+
+        /* ── Login Overlay ── */
+        .login-overlay {
+            position: fixed; inset: 0;
+            background: rgba(255, 255, 255, 0.97);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        .login-overlay.hidden { display: none; }
+
+        .login-box {
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            min-width: 320px;
+        }
+
+        .login-box h2 {
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+            color: #ff6b6b;
+        }
+
+        .login-box select, .login-box input {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e2e8;
+            border-radius: 8px;
+            background: #eef1f6;
+            color: #444;
+            font-size: 1rem;
+        }
+
+        .login-box select option { background: #eef1f6; }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #ff6b6b;
+            color: #fff;
+            width: 100%;
+        }
+        .btn-primary:hover { background: #ff5252; }
+
+        .login-error {
+            color: #ff6b6b;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            min-height: 20px;
+        }
+
+        /* ── Header ── */
+        .header {
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ff6b6b;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .header h1 span { color: #ff6b6b; }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .token-display {
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 600;
+        }
+        .token-display .count { color: #2ec4b6; font-size: 1.2rem; }
+
+        .user-name {
+            font-weight: 600;
+            color: #999;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid #ccc;
+            color: #999;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .btn-logout:hover { border-color: #ff6b6b; color: #ff6b6b; }
+
+        /* ── Main Layout ── */
+        .main {
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ── Bracket ── */
+        .bracket-container {
+            overflow-x: auto;
+            padding: 20px 0;
+        }
+
+        .bracket {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            min-width: 900px;
+            justify-content: center;
+        }
+
+        .round {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            min-width: 200px;
+        }
+
+        .round-label {
+            text-align: center;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #999;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .round-matches {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            flex: 1;
+        }
+
+        .round-qf .round-matches { gap: 16px; }
+        .round-sf .round-matches { gap: 80px; }
+
+        .bracket-match {
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 8px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .bracket-match:hover { border-color: #ff6b6b; transform: translateY(-1px); }
+        .bracket-match.locked { border-color: #ff6b6b; }
+        .bracket-match.completed { border-color: #2ec4b6; }
+        .bracket-match.no-teams { opacity: 0.4; cursor: default; }
+        .bracket-match.no-teams:hover { border-color: #e0e2e8; transform: none; }
+
+        .bracket-match .bm-team {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .bracket-match .bm-team + .bm-team {
+            border-top: 1px solid #e0e2e8;
+            padding-top: 6px;
+            margin-top: 2px;
+        }
+
+        .bm-team-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bm-score {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #999;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .bm-team.winner .bm-team-name { color: #2ec4b6; }
+        .bm-team.winner .bm-score { color: #2ec4b6; }
+
+        .bm-status {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px solid #e0e2e8;
+        }
+        .bm-status.open { color: #2ec4b6; }
+        .bm-status.locked { color: #ff6b6b; }
+        .bm-status.tbd { color: #ccc; }
+
+        .bm-bet-indicator {
+            font-size: 0.7rem;
+            color: #ff6b6b;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        .flag { width: 20px; height: 20px; border-radius: 50%; vertical-align: middle; }
+
+        /* ── Connector lines ── */
+        .connectors {
+            width: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .connector-pair {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .conn-line {
+            border-color: #d0d2d8;
+            border-style: solid;
+            border-width: 0;
+        }
+
+        .conn-top {
+            border-right-width: 2px;
+            border-top-width: 2px;
+            height: 50%;
+            margin-bottom: -1px;
+        }
+
+        .conn-bottom {
+            border-right-width: 2px;
+            border-bottom-width: 2px;
+            height: 50%;
+        }
+
+        .conn-horizontal {
+            width: 100%;
+            border-top-width: 2px;
+        }
+
+        /* ── Betting Panel ── */
+        .bet-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 900;
+        }
+        .bet-overlay.hidden { display: none; }
+
+        .bet-panel {
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 12px;
+            padding: 32px;
+            min-width: 400px;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .bet-close {
+            position: absolute;
+            top: 12px; right: 16px;
+            background: none; border: none;
+            color: #999; font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .bet-close:hover { color: #ff6b6b; }
+
+        .bet-panel h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .bet-matchup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .bet-matchup .vs {
+            color: #ccc;
+            font-size: 0.85rem;
+        }
+
+        .bet-section {
+            margin-bottom: 20px;
+        }
+
+        .bet-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .bet-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .bet-option {
+            flex: 1;
+            background: #eef1f6;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .bet-option:hover { border-color: #2ec4b6; }
+        .bet-option.selected { border-color: #2ec4b6; background: rgba(46, 196, 182, 0.15); }
+
+        .bet-option .team-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .bet-option .odds-label {
+            color: #2ec4b6;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* First goal scorer list */
+        .fg-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .fg-option {
+            background: #eef1f6;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fg-option:hover { border-color: #ff6b6b; }
+        .fg-option.selected { border-color: #ff6b6b; background: rgba(255, 107, 107, 0.1); }
+
+        .fg-option .player-name {
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .fg-option .player-odds {
+            color: #ff6b6b;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .bet-amount {
+            margin-top: 16px;
+        }
+
+        .bet-amount label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            font-weight: 600;
+        }
+
+        .amount-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .amount-row input[type="range"] {
+            flex: 1;
+            accent-color: #ff6b6b;
+        }
+
+        .amount-row .amount-val {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #ff6b6b;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .payout-preview {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #999;
+        }
+        .payout-preview .payout-val {
+            color: #2ec4b6;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .btn-place-bet {
+            width: 100%;
+            margin-top: 16px;
+            padding: 14px;
+            background: #2ec4b6;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-place-bet:hover { background: #26b5a7; }
+        .btn-place-bet:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .bet-error {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 8px;
+            min-height: 18px;
+        }
+
+        .existing-bets-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e0e2e8;
+        }
+
+        .existing-bet {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #eef1f6;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+        }
+
+        .existing-bet .eb-info { color: #666; }
+        .existing-bet .eb-amount { color: #ff6b6b; font-weight: 700; }
+
+        .btn-remove-bet {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 2px 6px;
+        }
+        .btn-remove-bet:hover { color: #ff6b6b; }
+
+        /* ── My Bets Summary ── */
+        .my-bets {
+            margin-top: 32px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ff6b6b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .bets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .bet-summary-card {
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 8px;
+            padding: 14px 18px;
+        }
+
+        .bet-summary-card .bsc-match {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #999;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .bet-summary-card .bsc-pick {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .bet-summary-card .bsc-details {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .bet-summary-card .bsc-details span { color: #ff6b6b; font-weight: 600; }
+
+        .bet-summary-card.won { border-color: #2ec4b6; }
+        .bet-summary-card.won .bsc-result { color: #2ec4b6; font-weight: 700; }
+        .bet-summary-card.lost { border-color: #ff6b6b; opacity: 0.6; }
+        .bet-summary-card.lost .bsc-result { color: #ff6b6b; font-weight: 700; }
+
+        /* ── Leaderboard ── */
+        .leaderboard {
+            margin-top: 32px;
+        }
+
+        .lb-table {
+            width: 100%;
+            max-width: 500px;
+            border-collapse: collapse;
+        }
+
+        .lb-table th {
+            background: #f5f7fa;
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid #eef1f6;
+        }
+
+        .lb-table th:last-child { text-align: right; }
+
+        .lb-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #e0e2e8;
+        }
+
+        .lb-table td:last-child {
+            text-align: right;
+            font-weight: 700;
+            color: #2ec4b6;
+            font-size: 1.1rem;
+        }
+
+        .lb-table tr:first-child td { color: #fff; }
+        .lb-table .lb-rank { color: #999; width: 30px; }
+        .lb-table .lb-name { font-weight: 600; }
+
+        .no-bets-msg {
+            color: #ccc;
+            font-size: 0.9rem;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* ── Tabs for bet type ── */
+        .bet-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e0e2e8;
+        }
+
+        .bet-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            background: #eef1f6;
+            color: #999;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .bet-tab.active {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .bet-tab-content { display: none; }
+        .bet-tab-content.active { display: block; }
+
+        .flames {
+            position: fixed;
+            bottom: 0; left: 0;
+            width: 100%; height: 120px;
+            background: url('../fuego.gif') repeat-x bottom;
+            background-size: auto 120px;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        @media (max-width: 900px) {
+            .header { flex-direction: column; gap: 12px; padding: 16px; }
+            .main { padding: 16px; }
+            .bracket { min-width: 700px; }
+            .bet-panel { min-width: auto; margin: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="flames"></div>
+
+    <!-- Login Overlay -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h2>Slutspel Betting</h2>
+            <select id="loginName">
+                <option value="">Välj spelare...</option>
+            </select>
+            <input type="password" id="loginPin" placeholder="PIN-kod" maxlength="6">
+            <button class="btn btn-primary" onclick="doLogin()">Logga in</button>
+            <div class="login-error" id="loginError"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1><span>Slutspel</span> Betting</h1>
+        <div class="user-info" id="userInfo" style="display:none;">
+            <div class="token-display">
+                Tokens: <span class="count" id="tokenCount">10</span> / 10
+            </div>
+            <span class="user-name" id="userName"></span>
+            <button class="btn-logout" onclick="doLogout()">Logga ut</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        <!-- Bracket -->
+        <div class="bracket-container">
+            <div class="bracket" id="bracket"></div>
+        </div>
+
+        <!-- My Bets -->
+        <div class="my-bets" id="myBetsSection">
+            <div class="section-title">Mina Bets</div>
+            <div class="bets-grid" id="myBetsGrid">
+                <div class="no-bets-msg">Inga bets placerade ännu. Klicka på en match ovan!</div>
+            </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div class="leaderboard" id="leaderboardSection">
+            <div class="section-title">Leaderboard</div>
+            <table class="lb-table" id="leaderboardTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Spelare</th>
+                        <th>Tokens</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Betting Panel Overlay -->
+    <div class="bet-overlay hidden" id="betOverlay">
+        <div class="bet-panel">
+            <button class="bet-close" onclick="closeBetPanel()">&times;</button>
+            <h3 id="betPanelTitle">Placera Bet</h3>
+            <div class="bet-matchup" id="betMatchup"></div>
+
+            <div class="bet-tabs">
+                <button class="bet-tab active" onclick="switchBetTab('winner')">Vinnare</button>
+                <button class="bet-tab" onclick="switchBetTab('firstgoal')">Första Mål</button>
+            </div>
+
+            <!-- Winner tab -->
+            <div class="bet-tab-content active" id="tab-winner">
+                <div class="bet-options" id="winnerOptions"></div>
+            </div>
+
+            <!-- First Goal tab -->
+            <div class="bet-tab-content" id="tab-firstgoal">
+                <div class="fg-options" id="firstGoalOptions"></div>
+            </div>
+
+            <div class="bet-amount">
+                <label>Antal tokens</label>
+                <div class="amount-row">
+                    <input type="range" id="betAmountSlider" min="1" max="10" value="1" oninput="updateBetPreview()">
+                    <span class="amount-val" id="betAmountVal">1</span>
+                </div>
+            </div>
+
+            <div class="payout-preview" id="payoutPreview">
+                Vinst: <span class="payout-val">-</span>
+            </div>
+
+            <button class="btn-place-bet" id="btnPlaceBet" onclick="placeBet()" disabled>Placera bet</button>
+            <div class="bet-error" id="betError"></div>
+
+            <div class="existing-bets-section" id="existingBetsSection"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // ── Initialize Firebase ──
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ── Constants ──
+        const TOTAL_TOKENS = 10;
+        const MATCH_IDS = ['qf1', 'qf2', 'sf1', 'sf2', 'final'];
+        const MATCH_LABELS = {
+            qf1: 'Kvartsfinal 1',
+            qf2: 'Kvartsfinal 2',
+            sf1: 'Semifinal 1',
+            sf2: 'Semifinal 2',
+            final: 'Final'
+        };
+
+        const FLAGS = {
+            'Amanda/Anton': 'pt',
+            'Aleks/Stephanie': 'de',
+            'Hyberg/Dara': 'es',
+            'George/Finnström': 'br',
+            'Jonas/Mood': 'ar',
+            'Kristian/Silvan': 'fr'
+        };
+
+        // ── State ──
+        let currentUser = null;
+        let groupStats = {};      // team stats from CSV
+        let playerGoals = {};     // player -> { goals, team }
+        let slutspelMatches = {}; // from Firebase
+        let allBets = {};         // from Firebase
+        let allUsers = {};        // from Firebase
+        let currentBetMatch = null;
+        let currentBetType = 'winner';
+        let currentBetPick = null;
+
+        // ── Helpers ──
+        function flagImg(team) {
+            const code = FLAGS[team];
+            if (!code) return '';
+            return `<img class="flag" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg" alt="${code}">`;
+        }
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            const headers = lines[0].split(',');
+            return lines.slice(1).filter(l => l.trim()).map(line => {
+                const values = line.split(',');
+                const obj = {};
+                headers.forEach((h, i) => obj[h.trim()] = (values[i] || '').trim());
+                return obj;
+            });
+        }
+
+        // ── Poisson odds calculation ──
+        function logFactorial(n) {
+            let s = 0;
+            for (let i = 2; i <= n; i++) s += Math.log(i);
+            return s;
+        }
+
+        function poissonPmf(k, lambda) {
+            if (lambda <= 0) return k === 0 ? 1 : 0;
+            return Math.exp(-lambda + k * Math.log(lambda) - logFactorial(k));
+        }
+
+        function calculateTeamStats(matches) {
+            const teams = {};
+            let totalGoals = 0;
+            let totalGames = 0;
+
+            function ensure(name) {
+                if (!teams[name]) teams[name] = { name, played: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 };
+            }
+
+            matches.forEach(m => {
+                ensure(m.home);
+                ensure(m.away);
+                if (m.home_score === '' || m.away_score === '') return;
+                const hs = parseInt(m.home_score), as = parseInt(m.away_score);
+                if (isNaN(hs) || isNaN(as)) return;
+
+                totalGoals += hs + as;
+                totalGames++;
+
+                const home = teams[m.home], away = teams[m.away];
+                home.played++; away.played++;
+                home.gf += hs; home.ga += as;
+                away.gf += as; away.ga += hs;
+
+                if (hs > as) { home.wins++; away.losses++; home.points += 3; }
+                else if (hs < as) { away.wins++; home.losses++; away.points += 3; }
+                else { home.draws++; away.draws++; home.points++; away.points++; }
+            });
+
+            Object.values(teams).forEach(t => t.gd = t.gf - t.ga);
+
+            const leagueAvg = totalGames > 0 ? totalGoals / (totalGames * 2) : 1;
+
+            // Calculate attack/defense strength
+            Object.values(teams).forEach(t => {
+                if (t.played > 0) {
+                    t.attack = (t.gf / t.played) / leagueAvg;
+                    t.defense = (t.ga / t.played) / leagueAvg;
+                } else {
+                    t.attack = 1;
+                    t.defense = 1;
+                }
+            });
+
+            const sorted = Object.values(teams).sort((a, b) =>
+                b.points - a.points || b.gd - a.gd || b.gf - a.gf || a.name.localeCompare(b.name)
+            );
+
+            return { teams, sorted, leagueAvg };
+        }
+
+        function getMatchOdds(homeTeam, awayTeam) {
+            const home = groupStats.teams[homeTeam];
+            const away = groupStats.teams[awayTeam];
+            if (!home || !away || !groupStats.leagueAvg) return { homeWin: 2, awayWin: 2 };
+
+            const avg = groupStats.leagueAvg;
+            const expHome = home.attack * away.defense * avg;
+            const expAway = away.attack * home.defense * avg;
+
+            let homeWin = 0, draw = 0, awayWin = 0;
+            for (let i = 0; i <= 10; i++) {
+                for (let j = 0; j <= 10; j++) {
+                    const p = poissonPmf(i, expHome) * poissonPmf(j, expAway);
+                    if (i > j) homeWin += p;
+                    else if (i === j) draw += p;
+                    else awayWin += p;
+                }
+            }
+
+            // No draws in slutspel - redistribute
+            const total = homeWin + awayWin;
+            if (total === 0) return { homeWin: 2, awayWin: 2 };
+            homeWin /= total;
+            awayWin /= total;
+
+            return {
+                homeWin: Math.round((1 / homeWin) * 10) / 10,
+                awayWin: Math.round((1 / awayWin) * 10) / 10,
+                homeProb: homeWin,
+                awayProb: awayWin
+            };
+        }
+
+        function getFirstGoalOdds(homeTeam, awayTeam) {
+            const odds = getMatchOdds(homeTeam, awayTeam);
+            const players = [];
+
+            // Get players for each team and their goal share
+            const homeGoals = Object.entries(playerGoals)
+                .filter(([_, p]) => p.team === homeTeam);
+            const awayGoals = Object.entries(playerGoals)
+                .filter(([_, p]) => p.team === awayTeam);
+
+            const homeTotal = homeGoals.reduce((s, [_, p]) => s + p.goals, 0) || 1;
+            const awayTotal = awayGoals.reduce((s, [_, p]) => s + p.goals, 0) || 1;
+
+            homeGoals.forEach(([name, p]) => {
+                const share = p.goals / homeTotal;
+                const prob = odds.homeProb * share;
+                if (prob > 0.01) {
+                    players.push({
+                        name,
+                        team: homeTeam,
+                        odds: Math.round((1 / prob) * 10) / 10,
+                        prob
+                    });
+                }
+            });
+
+            awayGoals.forEach(([name, p]) => {
+                const share = p.goals / awayTotal;
+                const prob = odds.awayProb * share;
+                if (prob > 0.01) {
+                    players.push({
+                        name,
+                        team: awayTeam,
+                        odds: Math.round((1 / prob) * 10) / 10,
+                        prob
+                    });
+                }
+            });
+
+            return players.sort((a, b) => a.odds - b.odds);
+        }
+
+        // ── Load stats: group stage + completed slutspel matches ──
+        async function loadGroupData() {
+            let baseMatches = [];
+            const baseGoals = {};
+
+            // Try Firebase first for group stage
+            try {
+                const [matchesSnap, goalsSnap] = await Promise.all([
+                    db.ref('groupStage/matches').once('value'),
+                    db.ref('groupStage/goals').once('value')
+                ]);
+                const matchesData = matchesSnap.val();
+                const goalsData = goalsSnap.val();
+
+                if (matchesData) {
+                    const matchesArr = Array.isArray(matchesData)
+                        ? matchesData
+                        : Object.keys(matchesData).sort((a,b) => parseInt(a)-parseInt(b)).map(k => matchesData[k]);
+                    baseMatches = matchesArr.map(m => ({
+                        home: m.home || '',
+                        away: m.away || '',
+                        home_score: m.home_score == null ? '' : String(m.home_score),
+                        away_score: m.away_score == null ? '' : String(m.away_score)
+                    }));
+
+                    if (goalsData) {
+                        Object.entries(goalsData).forEach(([player, g]) => {
+                            baseGoals[player] = { goals: parseInt(g.goals) || 0, team: g.team };
+                        });
+                    }
+                }
+            } catch (e) {
+                console.warn('Firebase group data load failed, falling back to CSV:', e);
+            }
+
+            // Fallback to CSV if Firebase had nothing
+            if (!baseMatches.length) {
+                try {
+                    const [matchResp, goalsResp] = await Promise.all([
+                        fetch('./matches.csv?t=' + Date.now()),
+                        fetch('./goals.csv?t=' + Date.now())
+                    ]);
+                    if (matchResp.ok) {
+                        baseMatches = parseCSV(await matchResp.text());
+                    }
+                    if (goalsResp.ok) {
+                        const goals = parseCSV(await goalsResp.text());
+                        goals.forEach(g => {
+                            baseGoals[g.player] = { goals: parseInt(g.goals) || 0, team: g.team };
+                        });
+                    }
+                } catch (e) {
+                    console.error('Failed to load group data:', e);
+                }
+            }
+
+            // Merge in completed slutspel matches (so odds reflect knockout progress)
+            const combinedMatches = [...baseMatches];
+            const combinedGoals = { ...baseGoals };
+
+            try {
+                const ssSnap = await db.ref('slutspel/matches').once('value');
+                const ssData = ssSnap.val() || {};
+                Object.values(ssData).forEach(m => {
+                    if (m.completed && m.home && m.away && m.homeScore != null && m.awayScore != null) {
+                        combinedMatches.push({
+                            home: m.home,
+                            away: m.away,
+                            home_score: String(m.homeScore),
+                            away_score: String(m.awayScore)
+                        });
+                        // First-goal scorer gets +1 to their goal count
+                        if (m.firstGoalScorer && combinedGoals[m.firstGoalScorer]) {
+                            combinedGoals[m.firstGoalScorer] = {
+                                ...combinedGoals[m.firstGoalScorer],
+                                goals: combinedGoals[m.firstGoalScorer].goals + 1
+                            };
+                        }
+                    }
+                });
+            } catch (e) {
+                console.warn('Slutspel data merge failed:', e);
+            }
+
+            // Update global state with combined stats
+            groupStats = calculateTeamStats(combinedMatches);
+            playerGoals = combinedGoals;
+        }
+
+        // ── Firebase listeners ──
+        function setupFirebaseListeners() {
+            // Listen for match updates - reload stats so odds reflect completed matches
+            db.ref('slutspel/matches').on('value', async snap => {
+                slutspelMatches = snap.val() || {};
+                await loadGroupData();
+                renderBracket();
+                renderMyBets();
+                renderLeaderboard();
+            });
+
+            // Listen for all bets
+            db.ref('slutspel/bets').on('value', snap => {
+                allBets = snap.val() || {};
+                renderMyBets();
+                renderLeaderboard();
+                renderBracket();
+            });
+
+            // Listen for users
+            db.ref('slutspel/users').on('value', snap => {
+                allUsers = snap.val() || {};
+                populateLoginDropdown();
+            });
+        }
+
+        // ── Login ──
+        function populateLoginDropdown() {
+            const select = document.getElementById('loginName');
+            const current = select.value;
+            select.innerHTML = '<option value="">Välj spelare...</option>';
+            Object.keys(allUsers).sort().forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                select.appendChild(opt);
+            });
+            if (current) select.value = current;
+        }
+
+        function doLogin() {
+            const name = document.getElementById('loginName').value;
+            const pin = document.getElementById('loginPin').value;
+            const err = document.getElementById('loginError');
+
+            if (!name) { err.textContent = 'Välj en spelare'; return; }
+            if (!pin) { err.textContent = 'Ange PIN-kod'; return; }
+
+            const user = allUsers[name];
+            if (!user || user.pin !== pin) {
+                err.textContent = 'Fel PIN-kod';
+                return;
+            }
+
+            currentUser = name;
+            localStorage.setItem('slutspel_user', name);
+            localStorage.setItem('slutspel_pin', pin);
+            err.textContent = '';
+            showLoggedIn();
+        }
+
+        function tryAutoLogin() {
+            const name = localStorage.getItem('slutspel_user');
+            const pin = localStorage.getItem('slutspel_pin');
+            if (name && pin && allUsers[name] && allUsers[name].pin === pin) {
+                currentUser = name;
+                showLoggedIn();
+            }
+        }
+
+        function showLoggedIn() {
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('userInfo').style.display = 'flex';
+            document.getElementById('userName').textContent = currentUser;
+            updateTokenDisplay();
+            renderMyBets();
+        }
+
+        function doLogout() {
+            currentUser = null;
+            localStorage.removeItem('slutspel_user');
+            localStorage.removeItem('slutspel_pin');
+            document.getElementById('loginOverlay').classList.remove('hidden');
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('loginPin').value = '';
+        }
+
+        function getUsedTokens() {
+            if (!currentUser) return 0;
+            let used = 0;
+            Object.values(allBets).forEach(matchBets => {
+                const userBets = matchBets[currentUser];
+                if (userBets) {
+                    Object.values(userBets).forEach(bet => {
+                        used += bet.amount || 0;
+                    });
+                }
+            });
+            return used;
+        }
+
+        function getTokensWon() {
+            if (!currentUser) return 0;
+            let won = 0;
+            Object.entries(allBets).forEach(([matchId, matchBets]) => {
+                const match = slutspelMatches[matchId];
+                if (!match || !match.completed) return;
+                const userBets = matchBets[currentUser];
+                if (!userBets) return;
+
+                const homeScore = match.homeScore;
+                const awayScore = match.awayScore;
+                const winner = homeScore > awayScore ? match.home : match.away;
+
+                Object.values(userBets).forEach(bet => {
+                    if (bet.type === 'winner' && bet.pick === winner) {
+                        won += bet.amount * bet.odds;
+                    } else if (bet.type === 'firstgoal' && match.firstGoalScorer === bet.pick) {
+                        won += bet.amount * bet.odds;
+                    }
+                });
+            });
+            return Math.round(won * 10) / 10;
+        }
+
+        function updateTokenDisplay() {
+            const used = getUsedTokens();
+            const won = getTokensWon();
+            const remaining = TOTAL_TOKENS - used + won;
+            document.getElementById('tokenCount').textContent = remaining.toFixed(1).replace(/\.0$/, '');
+        }
+
+        // ── Bracket rendering ──
+        function determineBracket() {
+            if (!groupStats.sorted || groupStats.sorted.length < 6) return {};
+
+            const s = groupStats.sorted;
+            return {
+                qf1: { home: s[2].name, away: s[5].name, label: 'Kvartsfinal 1', round: 'qf' },
+                qf2: { home: s[3].name, away: s[4].name, label: 'Kvartsfinal 2', round: 'qf' },
+                sf1: { home: s[0].name, away: null, label: 'Semifinal 1', round: 'sf', awaitsQf: 'qf2' },
+                sf2: { home: s[1].name, away: null, label: 'Semifinal 2', round: 'sf', awaitsQf: 'qf1' },
+                final: { home: null, away: null, label: 'Final', round: 'final', awaitsSf1: 'sf1', awaitsSf2: 'sf2' }
+            };
+        }
+
+        function getResolvedTeams(matchId, bracketInfo) {
+            const fb = slutspelMatches[matchId] || {};
+            const info = bracketInfo[matchId];
+            if (!info) return { home: null, away: null };
+
+            let home = fb.home || info.home;
+            let away = fb.away || info.away;
+
+            // For SFs, resolve QF winner
+            if (info.awaitsQf && !away) {
+                const qf = slutspelMatches[info.awaitsQf];
+                if (qf && qf.completed) {
+                    away = qf.homeScore > qf.awayScore ? qf.home : qf.away;
+                }
+            }
+
+            // For Final, resolve SF winners
+            if (info.awaitsSf1 && !home) {
+                const sf = slutspelMatches[info.awaitsSf1];
+                if (sf && sf.completed) {
+                    home = sf.homeScore > sf.awayScore ? sf.home : sf.away;
+                }
+            }
+            if (info.awaitsSf2 && !away) {
+                const sf = slutspelMatches[info.awaitsSf2];
+                if (sf && sf.completed) {
+                    away = sf.homeScore > sf.awayScore ? sf.home : sf.away;
+                }
+            }
+
+            return { home, away };
+        }
+
+        function renderBracket() {
+            const bracketInfo = determineBracket();
+            const container = document.getElementById('bracket');
+
+            function makeMatchCard(matchId) {
+                const fb = slutspelMatches[matchId] || {};
+                const { home, away } = getResolvedTeams(matchId, bracketInfo);
+                const hasTeams = home && away;
+                const isLocked = fb.locked || false;
+                const isCompleted = fb.completed || false;
+
+                let odds = null;
+                if (hasTeams && !isCompleted) {
+                    odds = getMatchOdds(home, away);
+                }
+
+                let status = '';
+                let statusClass = 'tbd';
+                if (isCompleted) { status = 'Avslutad'; statusClass = ''; }
+                else if (isLocked) { status = 'Pågår - bets stängda'; statusClass = 'locked'; }
+                else if (hasTeams) { status = 'Öppen för bets'; statusClass = 'open'; }
+                else { status = 'Väntar på resultat'; statusClass = 'tbd'; }
+
+                const homeScore = isCompleted || isLocked ? (fb.homeScore ?? '') : '';
+                const awayScore = isCompleted || isLocked ? (fb.awayScore ?? '') : '';
+                const homeWinner = isCompleted && fb.homeScore > fb.awayScore;
+                const awayWinner = isCompleted && fb.awayScore > fb.homeScore;
+
+                // Check if current user has bets on this match
+                let betIndicator = '';
+                if (currentUser && allBets[matchId] && allBets[matchId][currentUser]) {
+                    const userMatchBets = allBets[matchId][currentUser];
+                    const totalBet = Object.values(userMatchBets).reduce((s, b) => s + b.amount, 0);
+                    betIndicator = `<div class="bm-bet-indicator">${totalBet} token${totalBet !== 1 ? 's' : ''} satsade</div>`;
+                }
+
+                const clickable = hasTeams && !isCompleted ? `onclick="openBetPanel('${matchId}')"` : '';
+                const classes = ['bracket-match',
+                    !hasTeams ? 'no-teams' : '',
+                    isLocked ? 'locked' : '',
+                    isCompleted ? 'completed' : ''
+                ].filter(Boolean).join(' ');
+
+                return `
+                    <div class="${classes}" ${clickable}>
+                        <div class="bm-team ${homeWinner ? 'winner' : ''}">
+                            <span class="bm-team-name">${home ? flagImg(home) + ' ' + home : 'TBD'}</span>
+                            <span class="bm-score">${homeScore}</span>
+                        </div>
+                        <div class="bm-team ${awayWinner ? 'winner' : ''}">
+                            <span class="bm-team-name">${away ? flagImg(away) + ' ' + away : 'TBD'}</span>
+                            <span class="bm-score">${awayScore}</span>
+                        </div>
+                        <div class="bm-status ${statusClass}">${status}</div>
+                        ${odds && hasTeams && !isLocked ? `<div style="display:flex;justify-content:space-between;font-size:0.7rem;color:#2ec4b6;margin-top:4px;"><span>${odds.homeWin}x</span><span>${odds.awayWin}x</span></div>` : ''}
+                        ${betIndicator}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = `
+                <!-- QF Column -->
+                <div class="round round-qf">
+                    <div class="round-label">Kvartsfinal</div>
+                    <div class="round-matches">
+                        ${makeMatchCard('qf1')}
+                        <div style="height:40px"></div>
+                        ${makeMatchCard('qf2')}
+                    </div>
+                </div>
+
+                <!-- Connectors QF → SF -->
+                <div class="connectors">
+                    <div class="connector-pair">
+                        <div class="conn-line conn-top" style="border-right-width:2px;border-top-width:2px;height:50%"></div>
+                        <div class="conn-line" style="border-right-width:2px;height:0"></div>
+                    </div>
+                    <div style="flex:0.3"></div>
+                    <div class="connector-pair">
+                        <div class="conn-line" style="border-right-width:2px;height:0"></div>
+                        <div class="conn-line conn-bottom" style="border-right-width:2px;border-bottom-width:2px;height:50%"></div>
+                    </div>
+                </div>
+
+                <!-- SF Column -->
+                <div class="round round-sf">
+                    <div class="round-label">Semifinal</div>
+                    <div class="round-matches">
+                        ${makeMatchCard('sf2')}
+                        ${makeMatchCard('sf1')}
+                    </div>
+                </div>
+
+                <!-- Connectors SF → Final -->
+                <div class="connectors">
+                    <div class="connector-pair">
+                        <div class="conn-line conn-top" style="border-right-width:2px;border-top-width:2px;height:50%"></div>
+                        <div class="conn-line conn-bottom" style="border-right-width:2px;border-bottom-width:2px;height:50%"></div>
+                    </div>
+                </div>
+
+                <!-- Final Column -->
+                <div class="round round-final">
+                    <div class="round-label">Final</div>
+                    <div class="round-matches">
+                        ${makeMatchCard('final')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ── Betting Panel ──
+        function openBetPanel(matchId) {
+            if (!currentUser) return;
+            const fb = slutspelMatches[matchId] || {};
+            if (fb.locked || fb.completed) return;
+
+            const bracketInfo = determineBracket();
+            const { home, away } = getResolvedTeams(matchId, bracketInfo);
+            if (!home || !away) return;
+
+            currentBetMatch = matchId;
+            currentBetPick = null;
+            currentBetType = 'winner';
+
+            document.getElementById('betMatchup').innerHTML =
+                `${flagImg(home)} ${home} <span class="vs">vs</span> ${away} ${flagImg(away)}`;
+
+            // Winner options
+            const odds = getMatchOdds(home, away);
+            document.getElementById('winnerOptions').innerHTML = `
+                <div class="bet-option" onclick="selectBetPick('${home}', this, ${odds.homeWin})">
+                    <div class="team-label">${flagImg(home)} ${home}</div>
+                    <div class="odds-label">${odds.homeWin}x</div>
+                </div>
+                <div class="bet-option" onclick="selectBetPick('${away}', this, ${odds.awayWin})">
+                    <div class="team-label">${flagImg(away)} ${away}</div>
+                    <div class="odds-label">${odds.awayWin}x</div>
+                </div>
+            `;
+
+            // First goal options
+            const fgOdds = getFirstGoalOdds(home, away);
+            document.getElementById('firstGoalOptions').innerHTML = fgOdds.map(p => `
+                <div class="fg-option" onclick="selectBetPick('${p.name}', this, ${p.odds})">
+                    <span class="player-name">${flagImg(p.team)} ${p.name}</span>
+                    <span class="player-odds">${p.odds}x</span>
+                </div>
+            `).join('');
+
+            // Update slider max based on available tokens
+            const available = TOTAL_TOKENS - getUsedTokens() + getTokensWon();
+            const slider = document.getElementById('betAmountSlider');
+            slider.max = Math.max(1, Math.floor(available));
+            slider.value = 1;
+
+            // Reset tabs
+            switchBetTab('winner');
+            updateBetPreview();
+            renderExistingBets(matchId);
+
+            document.getElementById('betOverlay').classList.remove('hidden');
+            document.getElementById('betError').textContent = '';
+            document.getElementById('btnPlaceBet').disabled = true;
+        }
+
+        function closeBetPanel() {
+            document.getElementById('betOverlay').classList.add('hidden');
+            currentBetMatch = null;
+            currentBetPick = null;
+        }
+
+        function switchBetTab(tab) {
+            currentBetType = tab;
+            currentBetPick = null;
+            document.querySelectorAll('.bet-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.bet-tab-content').forEach(t => t.classList.remove('active'));
+
+            if (tab === 'winner') {
+                document.querySelectorAll('.bet-tab')[0].classList.add('active');
+                document.getElementById('tab-winner').classList.add('active');
+            } else {
+                document.querySelectorAll('.bet-tab')[1].classList.add('active');
+                document.getElementById('tab-firstgoal').classList.add('active');
+            }
+
+            // Deselect all options
+            document.querySelectorAll('.bet-option, .fg-option').forEach(o => o.classList.remove('selected'));
+            document.getElementById('btnPlaceBet').disabled = true;
+            updateBetPreview();
+        }
+
+        let currentBetOdds = 0;
+
+        function selectBetPick(pick, el, odds) {
+            currentBetPick = pick;
+            currentBetOdds = odds;
+
+            // Update selection visual
+            const parent = el.parentElement;
+            parent.querySelectorAll('.bet-option, .fg-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+
+            document.getElementById('btnPlaceBet').disabled = false;
+            updateBetPreview();
+        }
+
+        function updateBetPreview() {
+            const amount = parseInt(document.getElementById('betAmountSlider').value);
+            document.getElementById('betAmountVal').textContent = amount;
+
+            if (currentBetPick && currentBetOdds) {
+                const payout = Math.round(amount * currentBetOdds * 10) / 10;
+                document.getElementById('payoutPreview').innerHTML =
+                    `Vinst om rätt: <span class="payout-val">${payout} tokens</span>`;
+            } else {
+                document.getElementById('payoutPreview').innerHTML =
+                    `Vinst: <span class="payout-val">-</span>`;
+            }
+        }
+
+        function renderExistingBets(matchId) {
+            const section = document.getElementById('existingBetsSection');
+            if (!currentUser || !allBets[matchId] || !allBets[matchId][currentUser]) {
+                section.innerHTML = '';
+                return;
+            }
+
+            const bets = allBets[matchId][currentUser];
+            let html = '<div class="bet-section-title">Dina bets på denna match</div>';
+
+            Object.entries(bets).forEach(([betId, bet]) => {
+                const typeLabel = bet.type === 'winner' ? 'Vinnare' : 'Första mål';
+                html += `
+                    <div class="existing-bet">
+                        <span class="eb-info">${typeLabel}: ${bet.pick} @ ${bet.odds}x</span>
+                        <span class="eb-amount">${bet.amount} tokens</span>
+                        <button class="btn-remove-bet" onclick="removeBet('${matchId}', '${betId}')" title="Ta bort">&times;</button>
+                    </div>
+                `;
+            });
+
+            section.innerHTML = html;
+        }
+
+        async function placeBet() {
+            if (!currentUser || !currentBetMatch || !currentBetPick) return;
+
+            const amount = parseInt(document.getElementById('betAmountSlider').value);
+            const available = TOTAL_TOKENS - getUsedTokens() + getTokensWon();
+
+            if (amount > available) {
+                document.getElementById('betError').textContent = 'Inte tillräckligt med tokens!';
+                return;
+            }
+
+            if (amount < 1) {
+                document.getElementById('betError').textContent = 'Minst 1 token';
+                return;
+            }
+
+            // Check match is still open
+            const match = slutspelMatches[currentBetMatch];
+            if (match && (match.locked || match.completed)) {
+                document.getElementById('betError').textContent = 'Denna match är stängd för bets';
+                return;
+            }
+
+            const betData = {
+                type: currentBetType,
+                pick: currentBetPick,
+                amount: amount,
+                odds: currentBetOdds,
+                timestamp: Date.now()
+            };
+
+            const betKey = `${currentBetType}_${currentBetPick.replace(/[/.#$\[\]]/g, '_')}`;
+
+            try {
+                await db.ref(`slutspel/bets/${currentBetMatch}/${currentUser}/${betKey}`).set(betData);
+                document.getElementById('betError').textContent = '';
+                renderExistingBets(currentBetMatch);
+                updateTokenDisplay();
+            } catch (e) {
+                document.getElementById('betError').textContent = 'Kunde inte spara bet: ' + e.message;
+            }
+        }
+
+        async function removeBet(matchId, betId) {
+            if (!currentUser) return;
+            const match = slutspelMatches[matchId];
+            if (match && (match.locked || match.completed)) return;
+
+            try {
+                await db.ref(`slutspel/bets/${matchId}/${currentUser}/${betId}`).remove();
+                updateTokenDisplay();
+                if (currentBetMatch === matchId) renderExistingBets(matchId);
+            } catch (e) {
+                console.error('Failed to remove bet:', e);
+            }
+        }
+
+        // ── My Bets ──
+        function renderMyBets() {
+            if (!currentUser) return;
+            updateTokenDisplay();
+
+            const grid = document.getElementById('myBetsGrid');
+            let html = '';
+            let hasBets = false;
+
+            MATCH_IDS.forEach(matchId => {
+                if (!allBets[matchId] || !allBets[matchId][currentUser]) return;
+                const bets = allBets[matchId][currentUser];
+
+                Object.entries(bets).forEach(([betId, bet]) => {
+                    hasBets = true;
+                    const match = slutspelMatches[matchId] || {};
+                    const typeLabel = bet.type === 'winner' ? 'Vinnare' : 'Första mål';
+                    let resultClass = '';
+                    let resultText = '';
+
+                    if (match.completed) {
+                        const winner = match.homeScore > match.awayScore ? match.home : match.away;
+                        let won = false;
+                        if (bet.type === 'winner') won = bet.pick === winner;
+                        else if (bet.type === 'firstgoal') won = bet.pick === match.firstGoalScorer;
+
+                        resultClass = won ? 'won' : 'lost';
+                        const payout = won ? (bet.amount * bet.odds).toFixed(1) : '0';
+                        resultText = won ? `Vinst: +${payout} tokens` : 'Förlorad';
+                    }
+
+                    html += `
+                        <div class="bet-summary-card ${resultClass}">
+                            <div class="bsc-match">${MATCH_LABELS[matchId]}</div>
+                            <div class="bsc-pick">${typeLabel}: ${bet.pick}</div>
+                            <div class="bsc-details"><span>${bet.amount}</span> tokens @ <span>${bet.odds}x</span></div>
+                            ${resultText ? `<div class="bsc-result">${resultText}</div>` : ''}
+                        </div>
+                    `;
+                });
+            });
+
+            grid.innerHTML = hasBets ? html : '<div class="no-bets-msg">Inga bets placerade ännu. Klicka på en match ovan!</div>';
+        }
+
+        // ── Leaderboard ──
+        function renderLeaderboard() {
+            const tbody = document.getElementById('leaderboardBody');
+            const scores = {};
+
+            // Initialize all users
+            Object.keys(allUsers).forEach(name => {
+                scores[name] = { tokens: TOTAL_TOKENS, betsPlaced: 0 };
+            });
+
+            // Process bets
+            Object.entries(allBets).forEach(([matchId, matchBets]) => {
+                const match = slutspelMatches[matchId] || {};
+                Object.entries(matchBets).forEach(([userName, userBets]) => {
+                    if (!scores[userName]) scores[userName] = { tokens: TOTAL_TOKENS, betsPlaced: 0 };
+
+                    Object.values(userBets).forEach(bet => {
+                        scores[userName].betsPlaced++;
+
+                        if (match.completed) {
+                            // Deduct bet amount
+                            scores[userName].tokens -= bet.amount;
+                            // Add winnings
+                            const winner = match.homeScore > match.awayScore ? match.home : match.away;
+                            let won = false;
+                            if (bet.type === 'winner') won = bet.pick === winner;
+                            else if (bet.type === 'firstgoal') won = bet.pick === match.firstGoalScorer;
+
+                            if (won) {
+                                scores[userName].tokens += bet.amount * bet.odds;
+                            }
+                        } else {
+                            // Tokens are "locked" in the bet
+                            scores[userName].tokens -= bet.amount;
+                        }
+                    });
+                });
+            });
+
+            const sorted = Object.entries(scores)
+                .map(([name, data]) => ({ name, ...data }))
+                .sort((a, b) => b.tokens - a.tokens);
+
+            // Only show bets from other users if the match is locked/completed
+            // For now show everyone's token count (bets are hidden until lock)
+            tbody.innerHTML = sorted.map((s, i) => `
+                <tr>
+                    <td class="lb-rank">${i + 1}</td>
+                    <td class="lb-name">${s.name}</td>
+                    <td>${(Math.round(s.tokens * 10) / 10).toFixed(1).replace(/\.0$/, '')}</td>
+                </tr>
+            `).join('');
+        }
+
+        // ── Init ──
+        async function init() {
+            await loadGroupData();
+            setupFirebaseListeners();
+            renderBracket();
+
+            // Try auto-login after a short delay to let Firebase load users
+            setTimeout(() => {
+                tryAutoLogin();
+            }, 1000);
+        }
+
+        init();
+    </script>
+</body>
+</html>

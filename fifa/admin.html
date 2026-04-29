@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,121 +9,176 @@
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #1a1a2e;
-            color: #eee;
-            padding: 20px;
-            max-width: 500px;
-            margin: 0 auto;
+            background: #ffffff;
+            color: #444;
+            padding: 24px 32px;
         }
 
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        h1 span { color: #ff6b6b; }
+
         h2 {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin-bottom: 16px;
-            border-bottom: 2px solid #e94560;
             padding-bottom: 8px;
+            border-bottom: 2px solid #ff6b6b;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .screen { display: none; }
-        .screen.active { display: block; }
+        /* ── Login ── */
+        .login-overlay {
+            position: fixed; inset: 0;
+            background: #ffffff;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        .login-overlay.hidden { display: none; }
 
-        .login-screen {
-            padding-top: 25vh;
+        .login-box {
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 12px;
+            padding: 40px;
             text-align: center;
+            min-width: 320px;
         }
 
-        .login-screen input {
+        .login-box h2 { border: none; margin-bottom: 20px; color: #ff6b6b; }
+
+        .login-box input {
             width: 100%;
-            padding: 12px;
-            background: #16213e;
-            border: 1px solid #1e2a4a;
-            border-radius: 8px;
-            color: #eee;
-            font-size: 1rem;
-            text-align: center;
-            margin-bottom: 12px;
-        }
-
-        .setup-screen {
-            padding-top: 15vh;
-        }
-
-        .setup-screen label {
-            display: block;
-            font-size: 0.8rem;
-            color: #8899aa;
-            margin-bottom: 4px;
-        }
-
-        .setup-screen input, .setup-screen textarea {
-            width: 100%;
-            padding: 10px 12px;
-            background: #16213e;
-            border: 1px solid #1e2a4a;
-            border-radius: 6px;
-            color: #eee;
-            font-size: 0.9rem;
+            padding: 12px 16px;
             margin-bottom: 16px;
-        }
-
-        .setup-screen textarea {
-            height: 80px;
-            font-family: monospace;
-            font-size: 0.75rem;
-            word-break: break-all;
-        }
-
-        .match-row {
-            background: #16213e;
-            border: 1px solid #1e2a4a;
+            border: 1px solid #e0e2e8;
             border-radius: 8px;
+            background: #eef1f6;
+            color: #444;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: #ff6b6b; color: #fff; }
+        .btn-primary:hover { background: #ff5252; }
+        .btn-success { background: #2ec4b6; color: #fff; }
+        .btn-success:hover { background: #26b5a7; }
+        .btn-secondary { background: #eef1f6; color: #444; border: 1px solid #e0e2e8; }
+        .btn-secondary:hover { background: #f5f7fa; }
+        .btn-full { width: 100%; }
+        .login-error { color: #ff6b6b; font-size: 0.85rem; margin-top: 8px; }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 24px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e0e2e8;
+        }
+
+        .tab-btn {
+            flex: 1;
             padding: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            background: #eef1f6;
+            color: #999;
+            border: none;
+            transition: all 0.2s;
+        }
+        .tab-btn.active { background: #ff6b6b; color: #fff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ── Section ── */
+        .section {
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* ── Match rows ── */
+        .match-row {
+            background: #ffffff;
+            border: 1px solid #e0e2e8;
+            border-radius: 8px;
+            padding: 12px 16px;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
         }
 
-        .match-row.saved { border-color: #4ecdc4; }
+        .match-row.played { border-color: #2ec4b6; background: #f0fbfa; }
+
+        .match-row .order-num {
+            font-size: 0.75rem;
+            color: #999;
+            min-width: 24px;
+            font-weight: 700;
+        }
 
         .match-row .team {
             flex: 1;
             font-weight: 600;
             font-size: 0.9rem;
         }
-
-        .match-row .team:first-child { text-align: right; }
-        .match-row .team:last-child { text-align: left; }
+        .match-row .team.home { text-align: right; }
+        .match-row .team.away { text-align: left; }
         .flag { width: 20px; height: 20px; vertical-align: middle; border-radius: 50%; }
 
         .match-row input[type="number"] {
-            width: 48px;
+            width: 50px;
             padding: 8px 4px;
-            background: #0f3460;
-            border: 1px solid #1e2a4a;
+            background: #eef1f6;
+            border: 1px solid #e0e2e8;
             border-radius: 6px;
-            color: #eee;
+            color: #444;
             font-size: 1.1rem;
             font-weight: 700;
             text-align: center;
             -moz-appearance: textfield;
         }
-
         .match-row input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .match-row .dash { color: #ccc; font-weight: 700; font-size: 1.2rem; }
 
-        .dash { color: #445; font-weight: 700; }
+        /* ── Goals grid ── */
+        .goals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 8px;
+        }
 
         .goal-row {
-            background: #16213e;
-            border: 1px solid #1e2a4a;
+            background: #ffffff;
+            border: 1px solid #e0e2e8;
             border-radius: 8px;
-            padding: 10px 12px;
-            margin-bottom: 6px;
+            padding: 10px 14px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 8px;
+            gap: 10px;
         }
 
         .goal-row .player-name {
@@ -132,423 +187,683 @@
             font-size: 0.9rem;
         }
 
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: #e94560;
-            border: none;
-            border-radius: 8px;
-            color: #fff;
+        .goal-row input[type="number"] {
+            width: 50px;
+            padding: 6px 4px;
+            background: #eef1f6;
+            border: 1px solid #e0e2e8;
+            border-radius: 6px;
+            color: #444;
             font-size: 1rem;
             font-weight: 700;
-            cursor: pointer;
-            margin-top: 16px;
+            text-align: center;
+            -moz-appearance: textfield;
+        }
+        .goal-row input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+        .status-msg {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+        }
+        .status-msg.success { background: rgba(46, 196, 182, 0.12); color: #2ec4b6; }
+        .status-msg.error { background: rgba(255, 107, 107, 0.12); color: #ff6b6b; }
+
+        /* Slutspel match cards */
+        .slutspel-match {
+            background: #ffffff;
+            border: 1px solid #e0e2e8;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .slutspel-match.locked { border-color: #ff6b6b; }
+        .slutspel-match.completed { border-color: #2ec4b6; background: #f0fbfa; }
+
+        .sm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .sm-label {
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
+            color: #999;
+            font-weight: 600;
         }
+        .sm-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .sm-status.open { background: rgba(46, 196, 182, 0.15); color: #2ec4b6; }
+        .sm-status.locked { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; }
+        .sm-status.completed { background: rgba(46, 196, 182, 0.2); color: #2ec4b6; }
+        .sm-status.pending { background: rgba(150, 150, 160, 0.15); color: #999; }
 
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .sm-teams {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        .sm-teams .vs { color: #ccc; font-size: 0.8rem; margin: 0 8px; }
 
-        .status {
+        .sm-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .sm-controls input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #e0e2e8;
+            border-radius: 6px;
+            background: #eef1f6;
+            color: #444;
+            font-size: 1rem;
             text-align: center;
-            margin-top: 12px;
+        }
+        .sm-controls .score-sep { font-weight: 700; font-size: 1.2rem; color: #ccc; }
+        .sm-controls select {
+            padding: 6px 10px;
+            border: 1px solid #e0e2e8;
+            border-radius: 6px;
+            background: #eef1f6;
+            color: #444;
             font-size: 0.85rem;
-            color: #8899aa;
-            min-height: 20px;
+        }
+        .btn-danger { background: #ff6b6b; color: #fff; }
+        .btn-danger:hover { background: #ff5252; }
+
+        .save-bar {
+            position: sticky;
+            bottom: 16px;
+            margin-top: 16px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
         }
 
-        .status.ok { color: #4ecdc4; }
-        .status.err { color: #e94560; }
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 12px;
+            color: #444;
+        }
+
+        .empty-state .btn {
+            margin-top: 16px;
+        }
     </style>
 </head>
 <body>
-
-    <!-- Login screen -->
-    <div class="screen login-screen" id="loginScreen">
-        <h2>FIFA Admin</h2>
-        <input type="password" id="passwordInput" placeholder="Password" autocomplete="off">
-        <button class="btn" onclick="unlock()">Unlock</button>
-        <div class="status" id="loginStatus"></div>
+    <!-- Login -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h2>FIFA Admin</h2>
+            <input type="password" id="adminPin" placeholder="Admin PIN">
+            <br>
+            <button class="btn btn-primary btn-full" onclick="doLogin()">Logga in</button>
+            <div class="login-error" id="loginError"></div>
+        </div>
     </div>
 
-    <!-- One-time setup (only needed to generate the encrypted token) -->
-    <div class="screen setup-screen" id="setupScreen">
-        <h2>One-time setup</h2>
-        <label>GitHub Token</label>
-        <input type="password" id="setupToken" placeholder="ghp_...">
-        <label>Password</label>
-        <input type="password" id="setupPassword" placeholder="superhemligtlosenord">
-        <button class="btn" onclick="generateEncrypted()">Encrypt</button>
-        <div class="status" id="setupStatus"></div>
-        <label style="margin-top:16px">Encrypted token (paste into ENCRYPTED_TOKEN in code)</label>
-        <textarea id="encryptedOutput" readonly></textarea>
+    <h1><span>FIFA</span> Admin</h1>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('slutspel')">Slutspel</button>
+        <button class="tab-btn" onclick="switchTab('goals')">Mål</button>
+        <button class="tab-btn" onclick="switchTab('setup')">Setup</button>
+        <button class="tab-btn" onclick="switchTab('matches')">Gruppspel</button>
     </div>
 
-    <!-- Main admin screen -->
-    <div class="screen" id="mainScreen">
-        <h2>FIFA Admin</h2>
-        <div id="matchRows"></div>
-        <button class="btn" id="saveBtn" onclick="save()">Save scores</button>
-        <div class="status" id="status"></div>
-
-        <h2 style="margin-top:32px">Goals</h2>
-        <div id="goalRows"></div>
-        <button class="btn" id="saveGoalsBtn" onclick="saveGoals()">Save goals</button>
-        <div class="status" id="goalsStatus"></div>
+    <!-- Slutspel Tab -->
+    <div class="tab-content active" id="tab-slutspel">
+        <div class="section">
+            <h2>Slutspelsmatcher</h2>
+            <p style="color:#999; font-size:0.85rem; margin-bottom:16px;">Lås bets innan match startar, mata in resultat efter. Vinnaren går vidare i bracketen automatiskt.</p>
+            <div id="slutspelMatchList">
+                <div class="empty-state">
+                    <h3>Bracket inte initierad</h3>
+                    <p>Gå till <a href="./slutspel-admin.html" style="color:#ff6b6b">slutspel-admin</a> och klicka "Skapa Bracket från Grupptabell" först.</p>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Group Stage Tab -->
+    <div class="tab-content" id="tab-matches">
+        <div class="section">
+            <h2>Gruppspelsmatcher</h2>
+            <div id="matchList">
+                <div class="empty-state">
+                    <h3>Ingen data</h3>
+                    <p>Importera från CSV i Setup-fliken för att komma igång.</p>
+                </div>
+            </div>
+            <div class="save-bar">
+                <button class="btn btn-success" onclick="saveMatches()" id="saveMatchesBtn">Spara matcher</button>
+            </div>
+            <div id="matchesStatus"></div>
+        </div>
+    </div>
+
+    <!-- Goals Tab -->
+    <div class="tab-content" id="tab-goals">
+        <div class="section">
+            <h2>Skytteliga</h2>
+            <div class="goals-grid" id="goalsGrid"></div>
+            <div class="save-bar">
+                <button class="btn btn-success" onclick="saveGoals()" id="saveGoalsBtn">Spara mål</button>
+            </div>
+            <div id="goalsStatus"></div>
+        </div>
+    </div>
+
+    <!-- Setup Tab -->
+    <div class="tab-content" id="tab-setup">
+        <div class="section">
+            <h2>Importera från CSV</h2>
+            <p style="color:#999; font-size:0.85rem; margin-bottom:16px;">Läser <code>matches.csv</code> och <code>goals.csv</code> och skriver datan till Firebase. Behövs bara första gången.</p>
+            <button class="btn btn-primary" onclick="importFromCSV()">Importera CSV → Firebase</button>
+            <div id="importStatus"></div>
+        </div>
+
+        <div class="section">
+            <h2>Exportera till CSV</h2>
+            <p style="color:#999; font-size:0.85rem; margin-bottom:16px;">Laddar ner aktuell Firebase-data som CSV-filer (för backup).</p>
+            <button class="btn btn-secondary" onclick="exportMatches()">⬇ matches.csv</button>
+            <button class="btn btn-secondary" onclick="exportGoals()">⬇ goals.csv</button>
+        </div>
+
+        <div class="section">
+            <h2>Rensa data</h2>
+            <p style="color:#999; font-size:0.85rem; margin-bottom:16px;">Tar bort all gruppspelsdata från Firebase. Kan inte ångras!</p>
+            <button class="btn btn-primary" onclick="clearAllData()" style="background:#ff5252;">⚠️ Rensa all gruppspelsdata</button>
+            <div id="clearStatus"></div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
 
     <script>
-        const REPO = 'hallstedt-BI/hallstedt-bi.github.io';
-        const FILE_PATH = 'fifa/matches.csv';
-        const GOALS_PATH = 'fifa/goals.csv';
-        const API = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
-        const GOALS_API = `https://api.github.com/repos/${REPO}/contents/${GOALS_PATH}`;
-
-        // Paste encrypted token here after running setup once. Leave empty to show setup screen.
-        const ENCRYPTED_TOKEN = 'QRajF6I//nSpcuia7xL1QmY9xN3wbs5TT19a/dhupwrttPYbiMWkygS0MSC7cMMqmgDgWCtBNX++Bmd4wvgLIa8bRfLNjO39IppJB70VJjOhT8XMCWWhxhTQnLC+KUhY54/d4AUwa29YYBcyDeNRFSyWvdcP5AcoZynefFr3J2Tb6dBp+4VWunA=';
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
         const FLAGS = {
-            'Amanda/Anton': 'pt',
-            'Aleks/Stephanie': 'de',
-            'Hyberg/Dara': 'es',
-            'George/Finnström': 'br',
-            'Jonas/Mood': 'ar',
-            'Kristian/Silvan': 'fr'
+            'Amanda/Anton': 'pt', 'Aleks/Stephanie': 'de', 'Hyberg/Dara': 'es',
+            'George/Finnström': 'br', 'Jonas/Mood': 'ar', 'Kristian/Silvan': 'fr'
+        };
+
+        let isLoggedIn = false;
+        let groupMatches = [];
+        let groupGoals = {};
+        let slutspelMatches = {};
+
+        const MATCH_IDS = ['qf1', 'qf2', 'sf1', 'sf2', 'final'];
+        const MATCH_LABELS = {
+            qf1: 'Kvartsfinal 1', qf2: 'Kvartsfinal 2',
+            sf1: 'Semifinal 1', sf2: 'Semifinal 2',
+            final: 'Final'
         };
 
         function flagImg(team) {
             const code = FLAGS[team];
             if (!code) return '';
-            return `<img class="flag" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg" alt="${code}">`;
+            return `<img class="flag" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg">`;
         }
 
-        let csvLines = [];
-        let goalLines = [];
-        let fileSha = '';
-        let goalsSha = '';
-        let ghToken = '';
+        // ── Login ──
+        function doLogin() {
+            const pin = document.getElementById('adminPin').value;
+            const err = document.getElementById('loginError');
+            err.textContent = 'Kontrollerar...';
 
-        // --- Crypto helpers (AES-GCM + PBKDF2) ---
-        async function deriveKey(password, salt) {
-            const enc = new TextEncoder();
-            const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
-            return crypto.subtle.deriveKey(
-                { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
-                keyMaterial,
-                { name: 'AES-GCM', length: 256 },
-                false,
-                ['encrypt', 'decrypt']
-            );
+            db.ref('slutspel/config/adminPin').once('value').then(snap => {
+                const stored = snap.val();
+                console.log('Admin PIN lookup result:', stored ? '(set)' : '(empty)');
+                if (!stored) {
+                    err.innerHTML = 'Ingen admin PIN satt. Sätt först en i <a href="./slutspel-admin.html" style="color:#ff6b6b">slutspel-admin</a>.';
+                } else if (pin === stored) {
+                    isLoggedIn = true;
+                    document.getElementById('loginOverlay').classList.add('hidden');
+                    err.textContent = '';
+                    setupListeners();
+                } else {
+                    err.textContent = 'Fel PIN';
+                }
+            }).catch(e => {
+                console.error('Firebase login error:', e);
+                err.textContent = 'Firebase-fel: ' + e.message;
+            });
         }
 
-        async function encrypt(text, password) {
-            const enc = new TextEncoder();
-            const salt = crypto.getRandomValues(new Uint8Array(16));
-            const iv = crypto.getRandomValues(new Uint8Array(12));
-            const key = await deriveKey(password, salt);
-            const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(text));
-            const buf = new Uint8Array(salt.length + iv.length + ciphertext.byteLength);
-            buf.set(salt, 0);
-            buf.set(iv, salt.length);
-            buf.set(new Uint8Array(ciphertext), salt.length + iv.length);
-            return btoa(String.fromCharCode(...buf));
-        }
-
-        async function decrypt(base64, password) {
-            const buf = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-            const salt = buf.slice(0, 16);
-            const iv = buf.slice(16, 28);
-            const ciphertext = buf.slice(28);
-            const key = await deriveKey(password, salt);
-            const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
-            return new TextDecoder().decode(plaintext);
-        }
-
-        // --- Screens ---
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function init() {
-            if (!ENCRYPTED_TOKEN) {
-                showScreen('setupScreen');
-            } else {
-                showScreen('loginScreen');
-                document.getElementById('passwordInput').focus();
-            }
-        }
-
-        // --- Setup: encrypt token ---
-        async function generateEncrypted() {
-            const token = document.getElementById('setupToken').value.trim();
-            const password = document.getElementById('setupPassword').value;
-            if (!token || !password) {
-                document.getElementById('setupStatus').textContent = 'Fill in both fields';
-                document.getElementById('setupStatus').className = 'status err';
-                return;
-            }
-            const encrypted = await encrypt(token, password);
-            document.getElementById('encryptedOutput').value = encrypted;
-            document.getElementById('setupStatus').textContent = 'Copy the string above into ENCRYPTED_TOKEN in the code';
-            document.getElementById('setupStatus').className = 'status ok';
-        }
-
-        // --- Login: decrypt token ---
-        async function unlock() {
-            const password = document.getElementById('passwordInput').value;
-            try {
-                ghToken = await decrypt(ENCRYPTED_TOKEN, password);
-                showScreen('mainScreen');
-                loadMatches();
-            } catch (e) {
-                document.getElementById('loginStatus').textContent = 'Wrong password';
-                document.getElementById('loginStatus').className = 'status err';
-            }
-        }
-
-        document.getElementById('passwordInput').addEventListener('keydown', e => {
-            if (e.key === 'Enter') unlock();
+        document.getElementById('adminPin').addEventListener('keydown', e => {
+            if (e.key === 'Enter') doLogin();
         });
 
-        // --- Match loading & saving ---
-        async function loadMatches() {
-            try {
-                const [matchResp, goalsResp] = await Promise.all([
-                    fetch(`./matches.csv?t=${Date.now()}`),
-                    fetch(`./goals.csv?t=${Date.now()}`)
-                ]);
-                csvLines = (await matchResp.text()).trim().split('\n');
-                goalLines = (await goalsResp.text()).trim().split('\n');
-
-                if (ghToken) {
-                    const [matchApi, goalsApi] = await Promise.all([
-                        fetch(API, { headers: { Authorization: `Bearer ${ghToken}` } }),
-                        fetch(GOALS_API, { headers: { Authorization: `Bearer ${ghToken}` } })
-                    ]);
-                    if (matchApi.ok) fileSha = (await matchApi.json()).sha;
-                    if (goalsApi.ok) goalsSha = (await goalsApi.json()).sha;
-                }
-
-                renderRows();
-                renderGoalRows();
-            } catch (e) {
-                setStatus('Failed to load data', 'err');
-            }
+        // ── Tabs ──
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
         }
 
-        function renderRows() {
-            const container = document.getElementById('matchRows');
-            container.innerHTML = '';
-
-            for (let i = 1; i < csvLines.length; i++) {
-                const parts = csvLines[i].split(',');
-                if (parts.length < 2) continue;
-
-                const home = parts[0].trim();
-                const away = parts[1].trim();
-                const hs = parts[2] ? parts[2].trim() : '';
-                const as = parts[3] ? parts[3].trim() : '';
-
-                const row = document.createElement('div');
-                row.className = `match-row${hs !== '' ? ' saved' : ''}`;
-                row.innerHTML = `
-                    <span class="team">${home} ${flagImg(home)}</span>
-                    <input type="number" min="0" max="99" value="${hs}" data-line="${i}" data-col="2" placeholder="-">
-                    <span class="dash">-</span>
-                    <input type="number" min="0" max="99" value="${as}" data-line="${i}" data-col="3" placeholder="-">
-                    <span class="team">${flagImg(away)} ${away}</span>
-                `;
-                container.appendChild(row);
-            }
-        }
-
-        function buildCSV() {
-            const inputs = document.querySelectorAll('#matchRows input[type="number"]');
-            const lines = [...csvLines];
-
-            inputs.forEach(input => {
-                const line = parseInt(input.dataset.line);
-                const col = parseInt(input.dataset.col);
-                const parts = lines[line].split(',');
-                parts[col] = input.value;
-                lines[line] = parts.join(',');
+        // ── Firebase listeners ──
+        function setupListeners() {
+            db.ref('groupStage/matches').on('value', snap => {
+                const data = snap.val();
+                groupMatches = data ? (Array.isArray(data) ? data : Object.keys(data).sort((a,b) => parseInt(a)-parseInt(b)).map(k => data[k])) : [];
+                renderMatches();
             });
 
-            // Auto-assign played_order to newly scored matches
-            let maxOrder = 0;
-            for (let i = 1; i < lines.length; i++) {
-                const parts = lines[i].split(',');
-                const order = parseInt(parts[4]);
-                if (!isNaN(order) && order > maxOrder) maxOrder = order;
-            }
+            db.ref('groupStage/goals').on('value', snap => {
+                groupGoals = snap.val() || {};
+                renderGoals();
+            });
 
-            for (let i = 1; i < lines.length; i++) {
-                const parts = lines[i].split(',');
-                while (parts.length < 5) parts.push('');
-                const hasScore = parts[2].trim() !== '' && parts[3].trim() !== '';
-                const hasOrder = parts[4].trim() !== '';
-                if (hasScore && !hasOrder) {
-                    maxOrder++;
-                    parts[4] = String(maxOrder);
-                } else if (!hasScore) {
-                    parts[4] = '';
-                }
-                lines[i] = parts.join(',');
-            }
-
-            return lines.join('\n') + '\n';
+            db.ref('slutspel/matches').on('value', snap => {
+                slutspelMatches = snap.val() || {};
+                renderSlutspel();
+            });
         }
 
-        async function save() {
-            if (!ghToken) {
-                setStatus('Not authenticated', 'err');
+        // ── Slutspel match management ──
+        function getPlayersForTeam(teamName) {
+            if (!teamName) return [];
+            return teamName.split('/');
+        }
+
+        function renderSlutspel() {
+            const container = document.getElementById('slutspelMatchList');
+            if (!Object.keys(slutspelMatches).length) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Bracket inte initierad</h3>
+                        <p>Gå till <a href="./slutspel-admin.html" style="color:#ff6b6b">slutspel-admin</a> och klicka "Skapa Bracket från Grupptabell" först.</p>
+                    </div>
+                `;
                 return;
             }
 
-            const btn = document.getElementById('saveBtn');
-            btn.disabled = true;
-            setStatus('Saving...');
+            let html = '';
+            MATCH_IDS.forEach(matchId => {
+                const match = slutspelMatches[matchId] || {};
+                const home = match.home || 'TBD';
+                const away = match.away || 'TBD';
+                const hasTeams = match.home && match.away;
+
+                let statusText = 'Väntar';
+                let statusClass = 'pending';
+                if (match.completed) { statusText = 'Avslutad'; statusClass = 'completed'; }
+                else if (match.locked) { statusText = 'Låst / Pågår'; statusClass = 'locked'; }
+                else if (hasTeams) { statusText = 'Öppen'; statusClass = 'open'; }
+
+                const homePlayers = match.home ? getPlayersForTeam(match.home) : [];
+                const awayPlayers = match.away ? getPlayersForTeam(match.away) : [];
+                const allPlayers = [...homePlayers, ...awayPlayers];
+
+                const wrapClass = ['slutspel-match',
+                    match.locked && !match.completed ? 'locked' : '',
+                    match.completed ? 'completed' : ''
+                ].filter(Boolean).join(' ');
+
+                html += `
+                    <div class="${wrapClass}">
+                        <div class="sm-header">
+                            <span class="sm-label">${MATCH_LABELS[matchId]}</span>
+                            <span class="sm-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="sm-teams">
+                            ${flagImg(home)} ${home}
+                            <span class="vs">vs</span>
+                            ${away} ${flagImg(away)}
+                        </div>
+                        ${hasTeams ? `
+                            <div class="sm-controls">
+                                ${!match.locked && !match.completed ? `
+                                    <button class="btn btn-danger" onclick="lockSlutspelMatch('${matchId}')">Lås bets &amp; starta match</button>
+                                ` : ''}
+                                ${match.locked && !match.completed ? `
+                                    <input type="number" id="ss_home_${matchId}" min="0" value="${match.homeScore ?? ''}" placeholder="0">
+                                    <span class="score-sep">-</span>
+                                    <input type="number" id="ss_away_${matchId}" min="0" value="${match.awayScore ?? ''}" placeholder="0">
+                                    <div>
+                                        <label style="font-size:0.75rem;color:#999;">Första mål: </label>
+                                        <select id="ss_fg_${matchId}">
+                                            <option value="">Välj...</option>
+                                            ${allPlayers.map(p => `<option value="${p}" ${match.firstGoalScorer === p ? 'selected' : ''}>${p}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-success" onclick="saveSlutspelResult('${matchId}')">Spara resultat</button>
+                                    <button class="btn btn-secondary" onclick="unlockSlutspelMatch('${matchId}')">Lås upp</button>
+                                ` : ''}
+                                ${match.completed ? `
+                                    <div style="font-size:1.2rem;font-weight:700;">${match.homeScore} - ${match.awayScore}</div>
+                                    <div style="font-size:0.8rem;color:#999;">Första mål: ${match.firstGoalScorer || '-'}</div>
+                                    <button class="btn btn-secondary" onclick="reopenSlutspelMatch('${matchId}')">Öppna igen</button>
+                                ` : ''}
+                            </div>
+                        ` : `
+                            <div style="color:#ccc;font-size:0.85rem;">Väntar på att föregående matcher ska spelas klart</div>
+                        `}
+                        <div id="ss_status_${matchId}"></div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        async function lockSlutspelMatch(matchId) {
+            try {
+                await db.ref(`slutspel/matches/${matchId}/locked`).set(true);
+                showSlutspelStatus(matchId, 'Bets stängda! Matchen kan börja.', 'success');
+            } catch (e) {
+                showSlutspelStatus(matchId, 'Fel: ' + e.message, 'error');
+            }
+        }
+
+        async function unlockSlutspelMatch(matchId) {
+            try {
+                await db.ref(`slutspel/matches/${matchId}/locked`).set(false);
+                showSlutspelStatus(matchId, 'Matchen upplåst, bets öppna igen.', 'success');
+            } catch (e) {
+                showSlutspelStatus(matchId, 'Fel: ' + e.message, 'error');
+            }
+        }
+
+        async function saveSlutspelResult(matchId) {
+            const homeScore = parseInt(document.getElementById(`ss_home_${matchId}`).value);
+            const awayScore = parseInt(document.getElementById(`ss_away_${matchId}`).value);
+            const firstGoal = document.getElementById(`ss_fg_${matchId}`).value;
+
+            if (isNaN(homeScore) || isNaN(awayScore)) {
+                showSlutspelStatus(matchId, 'Ange giltiga resultat', 'error');
+                return;
+            }
+            if (homeScore === awayScore) {
+                showSlutspelStatus(matchId, 'Oavgjort är inte möjligt i slutspel!', 'error');
+                return;
+            }
+
+            const match = slutspelMatches[matchId];
+            const winner = homeScore > awayScore ? match.home : match.away;
+            const updates = { homeScore, awayScore, firstGoalScorer: firstGoal || null, completed: true, winner };
 
             try {
-                const shaResp = await fetch(API, {
-                    headers: { Authorization: `Bearer ${ghToken}` }
-                });
-                if (!shaResp.ok) throw new Error('Failed to fetch file info');
-                const shaData = await shaResp.json();
-                fileSha = shaData.sha;
-
-                const newContent = buildCSV();
-                const encoded = btoa(unescape(encodeURIComponent(newContent)));
-
-                const resp = await fetch(API, {
-                    method: 'PUT',
-                    headers: {
-                        Authorization: `Bearer ${ghToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: 'Update FIFA scores',
-                        content: encoded,
-                        sha: fileSha
-                    })
-                });
-
-                if (!resp.ok) {
-                    const err = await resp.json();
-                    throw new Error(err.message || 'Failed to save');
-                }
-
-                const data = await resp.json();
-                fileSha = data.content.sha;
-                setStatus('Saved! Site will redeploy shortly.', 'ok');
-                loadMatches();
+                await db.ref(`slutspel/matches/${matchId}`).update(updates);
+                await advanceBracket(matchId, winner);
+                showSlutspelStatus(matchId, `Resultat sparat! ${winner} vinner.`, 'success');
             } catch (e) {
-                setStatus(e.message, 'err');
+                showSlutspelStatus(matchId, 'Fel: ' + e.message, 'error');
+            }
+        }
+
+        async function advanceBracket(matchId, winner) {
+            if (matchId === 'qf1') await db.ref('slutspel/matches/sf2/away').set(winner);
+            if (matchId === 'qf2') await db.ref('slutspel/matches/sf1/away').set(winner);
+            if (matchId === 'sf1') await db.ref('slutspel/matches/final/home').set(winner);
+            if (matchId === 'sf2') await db.ref('slutspel/matches/final/away').set(winner);
+        }
+
+        async function reopenSlutspelMatch(matchId) {
+            try {
+                await db.ref(`slutspel/matches/${matchId}`).update({
+                    completed: false, locked: true,
+                    homeScore: null, awayScore: null,
+                    firstGoalScorer: null, winner: null
+                });
+                showSlutspelStatus(matchId, 'Matchen öppnad igen', 'success');
+            } catch (e) {
+                showSlutspelStatus(matchId, 'Fel: ' + e.message, 'error');
+            }
+        }
+
+        function showSlutspelStatus(matchId, msg, type) {
+            const el = document.getElementById(`ss_status_${matchId}`);
+            if (!el) return;
+            el.innerHTML = `<div class="status-msg ${type}">${msg}</div>`;
+            setTimeout(() => { if (el) el.innerHTML = ''; }, 5000);
+        }
+
+        // ── Render Matches ──
+        function renderMatches() {
+            const container = document.getElementById('matchList');
+            if (!groupMatches.length) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Ingen data</h3>
+                        <p>Importera från CSV i Setup-fliken för att komma igång.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort: played matches by played_order, then unplayed
+            const indexed = groupMatches.map((m, i) => ({ ...m, idx: i }));
+            const played = indexed.filter(m => m.played_order != null && m.played_order !== '').sort((a, b) => parseInt(a.played_order) - parseInt(b.played_order));
+            const unplayed = indexed.filter(m => m.played_order == null || m.played_order === '');
+            const sorted = [...played, ...unplayed];
+
+            container.innerHTML = sorted.map(m => {
+                const hasScore = m.home_score != null && m.home_score !== '' && m.away_score != null && m.away_score !== '';
+                return `
+                    <div class="match-row ${hasScore ? 'played' : ''}">
+                        <span class="order-num">${m.played_order || ''}</span>
+                        <span class="team home">${m.home || ''} ${flagImg(m.home)}</span>
+                        <input type="number" min="0" max="99" value="${m.home_score ?? ''}" data-idx="${m.idx}" data-field="home_score" placeholder="-">
+                        <span class="dash">-</span>
+                        <input type="number" min="0" max="99" value="${m.away_score ?? ''}" data-idx="${m.idx}" data-field="away_score" placeholder="-">
+                        <span class="team away">${flagImg(m.away)} ${m.away || ''}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function saveMatches() {
+            const inputs = document.querySelectorAll('#matchList input[type="number"]');
+            const updates = JSON.parse(JSON.stringify(groupMatches));
+
+            inputs.forEach(input => {
+                const idx = parseInt(input.dataset.idx);
+                const field = input.dataset.field;
+                const val = input.value.trim();
+                updates[idx][field] = val === '' ? null : parseInt(val);
+            });
+
+            // Auto-assign played_order for newly scored matches
+            let maxOrder = 0;
+            updates.forEach(m => {
+                const o = parseInt(m.played_order);
+                if (!isNaN(o) && o > maxOrder) maxOrder = o;
+            });
+
+            updates.forEach(m => {
+                const hasScore = m.home_score != null && m.away_score != null;
+                const hasOrder = m.played_order != null && m.played_order !== '';
+                if (hasScore && !hasOrder) {
+                    maxOrder++;
+                    m.played_order = maxOrder;
+                } else if (!hasScore) {
+                    m.played_order = null;
+                }
+            });
+
+            const btn = document.getElementById('saveMatchesBtn');
+            btn.disabled = true;
+
+            try {
+                await db.ref('groupStage/matches').set(updates);
+                showStatus('matchesStatus', 'Matcher sparade!', 'success');
+            } catch (e) {
+                showStatus('matchesStatus', 'Fel: ' + e.message, 'error');
             } finally {
                 btn.disabled = false;
             }
         }
 
-        function setStatus(msg, type = '') {
-            const el = document.getElementById('status');
-            el.textContent = msg;
-            el.className = `status ${type}`;
-        }
-
-        // --- Goals ---
-        function renderGoalRows() {
-            const container = document.getElementById('goalRows');
-            container.innerHTML = '';
-
-            for (let i = 1; i < goalLines.length; i++) {
-                const parts = goalLines[i].split(',');
-                if (parts.length < 3) continue;
-
-                const player = parts[0].trim();
-                const team = parts[1].trim();
-                const goals = parts[2] ? parts[2].trim() : '0';
-
-                const row = document.createElement('div');
-                row.className = 'goal-row';
-                row.innerHTML = `
-                    <span class="player-name">${flagImg(team)} ${player}</span>
-                    <input type="number" min="0" max="999" value="${goals}" data-line="${i}" style="width:48px;padding:8px 4px;background:#0f3460;border:1px solid #1e2a4a;border-radius:6px;color:#eee;font-size:1.1rem;font-weight:700;text-align:center;-moz-appearance:textfield;">
-                `;
-                container.appendChild(row);
+        // ── Render Goals ──
+        function renderGoals() {
+            const grid = document.getElementById('goalsGrid');
+            const players = Object.keys(groupGoals).sort();
+            if (!players.length) {
+                grid.innerHTML = '<div class="empty-state"><p>Ingen data — importera från CSV.</p></div>';
+                return;
             }
-        }
 
-        function buildGoalsCSV() {
-            const inputs = document.querySelectorAll('#goalRows input[type="number"]');
-            const lines = [...goalLines];
-
-            inputs.forEach(input => {
-                const line = parseInt(input.dataset.line);
-                const parts = lines[line].split(',');
-                parts[2] = input.value;
-                lines[line] = parts.join(',');
-            });
-
-            return lines.join('\n') + '\n';
+            grid.innerHTML = players.map(player => {
+                const data = groupGoals[player];
+                return `
+                    <div class="goal-row">
+                        <span class="player-name">${flagImg(data.team)} ${player}</span>
+                        <input type="number" min="0" max="999" value="${data.goals ?? 0}" data-player="${player}">
+                    </div>
+                `;
+            }).join('');
         }
 
         async function saveGoals() {
-            if (!ghToken) {
-                setGoalsStatus('Not authenticated', 'err');
-                return;
-            }
+            const inputs = document.querySelectorAll('#goalsGrid input[type="number"]');
+            const updates = JSON.parse(JSON.stringify(groupGoals));
+
+            inputs.forEach(input => {
+                const player = input.dataset.player;
+                const val = parseInt(input.value) || 0;
+                if (updates[player]) updates[player].goals = val;
+            });
 
             const btn = document.getElementById('saveGoalsBtn');
             btn.disabled = true;
-            setGoalsStatus('Saving...');
 
             try {
-                const shaResp = await fetch(GOALS_API, {
-                    headers: { Authorization: `Bearer ${ghToken}` }
-                });
-                if (!shaResp.ok) throw new Error('Failed to fetch file info');
-                goalsSha = (await shaResp.json()).sha;
-
-                const newContent = buildGoalsCSV();
-                const encoded = btoa(unescape(encodeURIComponent(newContent)));
-
-                const resp = await fetch(GOALS_API, {
-                    method: 'PUT',
-                    headers: {
-                        Authorization: `Bearer ${ghToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: 'Update FIFA goals',
-                        content: encoded,
-                        sha: goalsSha
-                    })
-                });
-
-                if (!resp.ok) {
-                    const err = await resp.json();
-                    throw new Error(err.message || 'Failed to save');
-                }
-
-                const data = await resp.json();
-                goalsSha = data.content.sha;
-                setGoalsStatus('Saved!', 'ok');
-                loadMatches();
+                await db.ref('groupStage/goals').set(updates);
+                showStatus('goalsStatus', 'Mål sparade!', 'success');
             } catch (e) {
-                setGoalsStatus(e.message, 'err');
+                showStatus('goalsStatus', 'Fel: ' + e.message, 'error');
             } finally {
                 btn.disabled = false;
             }
         }
 
-        function setGoalsStatus(msg, type = '') {
-            const el = document.getElementById('goalsStatus');
-            el.textContent = msg;
-            el.className = `status ${type}`;
+        // ── CSV Import ──
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1).filter(l => l.trim()).map(line => {
+                const values = line.split(',');
+                const obj = {};
+                headers.forEach((h, i) => obj[h] = (values[i] || '').trim());
+                return obj;
+            });
         }
 
-        init();
+        async function importFromCSV() {
+            const status = document.getElementById('importStatus');
+            try {
+                showStatus('importStatus', 'Laddar CSV-filer...', '');
+
+                const [matchResp, goalsResp] = await Promise.all([
+                    fetch('./matches.csv?t=' + Date.now()),
+                    fetch('./goals.csv?t=' + Date.now())
+                ]);
+
+                if (!matchResp.ok || !goalsResp.ok) throw new Error('Kunde inte ladda CSV');
+
+                const matches = parseCSV(await matchResp.text()).map(m => ({
+                    home: m.home,
+                    away: m.away,
+                    home_score: m.home_score === '' ? null : parseInt(m.home_score),
+                    away_score: m.away_score === '' ? null : parseInt(m.away_score),
+                    played_order: m.played_order === '' ? null : parseInt(m.played_order)
+                }));
+
+                const goalsArr = parseCSV(await goalsResp.text());
+                const goals = {};
+                goalsArr.forEach(g => {
+                    goals[g.player] = { team: g.team, goals: parseInt(g.goals) || 0 };
+                });
+
+                await Promise.all([
+                    db.ref('groupStage/matches').set(matches),
+                    db.ref('groupStage/goals').set(goals)
+                ]);
+
+                showStatus('importStatus', `Importerade ${matches.length} matcher och ${Object.keys(goals).length} spelare!`, 'success');
+            } catch (e) {
+                showStatus('importStatus', 'Fel: ' + e.message, 'error');
+            }
+        }
+
+        // ── CSV Export ──
+        function downloadCSV(content, filename) {
+            const blob = new Blob([content], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportMatches() {
+            const lines = ['home,away,home_score,away_score,played_order'];
+            groupMatches.forEach(m => {
+                lines.push([
+                    m.home || '',
+                    m.away || '',
+                    m.home_score ?? '',
+                    m.away_score ?? '',
+                    m.played_order ?? ''
+                ].join(','));
+            });
+            downloadCSV(lines.join('\n') + '\n', 'matches.csv');
+        }
+
+        function exportGoals() {
+            const lines = ['player,team,goals'];
+            Object.keys(groupGoals).forEach(player => {
+                const g = groupGoals[player];
+                lines.push([player, g.team || '', g.goals ?? 0].join(','));
+            });
+            downloadCSV(lines.join('\n') + '\n', 'goals.csv');
+        }
+
+        // ── Clear ──
+        async function clearAllData() {
+            if (!confirm('Verkligen ta bort all gruppspelsdata? Kan inte ångras.')) return;
+            if (!confirm('Helt säker? Detta är permanent.')) return;
+            try {
+                await db.ref('groupStage').remove();
+                showStatus('clearStatus', 'Data borttagen', 'success');
+            } catch (e) {
+                showStatus('clearStatus', 'Fel: ' + e.message, 'error');
+            }
+        }
+
+        function showStatus(elId, msg, type) {
+            const el = document.getElementById(elId);
+            el.innerHTML = `<div class="status-msg ${type}">${msg}</div>`;
+            if (type === 'success') {
+                setTimeout(() => { if (el) el.innerHTML = ''; }, 4000);
+            }
+        }
     </script>
 </body>
 </html>

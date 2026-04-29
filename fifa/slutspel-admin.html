@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slutspel Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #ffffff;
+            color: #444;
+            padding: 24px 32px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        h1 span { color: #ff6b6b; }
+
+        h2 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ff6b6b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ── Login ── */
+        .login-overlay {
+            position: fixed; inset: 0;
+            background: rgba(255, 255, 255, 0.97);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        .login-overlay.hidden { display: none; }
+
+        .login-box {
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            min-width: 320px;
+        }
+
+        .login-box h2 { border: none; margin-bottom: 20px; color: #ff6b6b; }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e2e8;
+            border-radius: 8px;
+            background: #eef1f6;
+            color: #444;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary { background: #ff6b6b; color: #fff; }
+        .btn-primary:hover { background: #ff5252; }
+        .btn-success { background: #2ec4b6; color: #ffffff; }
+        .btn-success:hover { background: #26b5a7; }
+        .btn-danger { background: #ff6b6b; color: #fff; }
+        .btn-danger:hover { background: #ff5252; }
+        .btn-secondary { background: #eef1f6; color: #444; border: 1px solid #e0e2e8; }
+        .btn-secondary:hover { background: #f5f7fa; }
+        .btn-full { width: 100%; }
+        .login-error { color: #ff6b6b; font-size: 0.85rem; margin-top: 8px; }
+
+        /* ── Sections ── */
+        .section {
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* ── Setup Users ── */
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .user-card {
+            background: #eef1f6;
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-card .uc-name {
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .user-card input {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid #e0e2e8;
+            border-radius: 6px;
+            background: #f5f7fa;
+            color: #444;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .user-card .uc-status {
+            font-size: 0.75rem;
+            color: #2ec4b6;
+        }
+
+        /* ── Match Management ── */
+        .match-admin {
+            background: #eef1f6;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .ma-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .ma-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            font-weight: 600;
+        }
+
+        .ma-teams {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        .ma-teams .vs { color: #ccc; font-size: 0.8rem; margin: 0 8px; }
+
+        .flag { width: 20px; height: 20px; border-radius: 50%; vertical-align: middle; }
+
+        .ma-status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .ma-status.open { background: rgba(46, 196, 182, 0.15); color: #2ec4b6; }
+        .ma-status.locked { background: rgba(255, 107, 107, 0.15); color: #ff6b6b; }
+        .ma-status.completed { background: rgba(46, 196, 182, 0.2); color: #2ec4b6; }
+        .ma-status.pending { background: rgba(150, 150, 160, 0.15); color: #999; }
+
+        .ma-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .ma-controls input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #e0e2e8;
+            border-radius: 6px;
+            background: #f5f7fa;
+            color: #444;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .ma-controls .score-sep {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+
+        .ma-first-goal {
+            margin-top: 10px;
+        }
+
+        .ma-first-goal select {
+            padding: 6px 10px;
+            border: 1px solid #e0e2e8;
+            border-radius: 6px;
+            background: #f5f7fa;
+            color: #444;
+            font-size: 0.85rem;
+        }
+
+        /* ── Bets Overview ── */
+        .bets-overview-match {
+            margin-bottom: 20px;
+        }
+
+        .bo-match-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ff6b6b;
+        }
+
+        .bo-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .bo-table th {
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e0e2e8;
+        }
+
+        .bo-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid rgba(224, 226, 232, 0.5);
+        }
+
+        .status-msg {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+        }
+        .status-msg.success { background: rgba(46, 196, 182, 0.12); color: #2ec4b6; }
+        .status-msg.error { background: rgba(255, 107, 107, 0.12); color: #ff6b6b; }
+
+        /* ── Firebase Setup Instructions ── */
+        .setup-instructions {
+            background: #eef1f6;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .setup-instructions ol {
+            padding-left: 20px;
+        }
+
+        .setup-instructions code {
+            background: #f5f7fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .setup-instructions a { color: #2ec4b6; }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 24px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e0e2e8;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            background: #eef1f6;
+            color: #999;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active { background: #ff6b6b; color: #fff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <!-- Login -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h2>Admin Login</h2>
+            <input type="password" id="adminPin" placeholder="Admin PIN">
+            <br>
+            <button class="btn btn-primary btn-full" onclick="doAdminLogin()">Logga in</button>
+            <div class="login-error" id="loginError"></div>
+        </div>
+    </div>
+
+    <h1><span>Slutspel</span> Admin</h1>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('setup')">Setup</button>
+        <button class="tab-btn" onclick="switchTab('matches')">Matcher</button>
+        <button class="tab-btn" onclick="switchTab('bets')">Bets Översikt</button>
+    </div>
+
+    <!-- Setup Tab -->
+    <div class="tab-content active" id="tab-setup">
+        <!-- Firebase Setup -->
+        <div class="section">
+            <h2>Firebase Setup</h2>
+            <div class="setup-instructions">
+                <ol>
+                    <li>Gå till <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a></li>
+                    <li>Klicka "Add project" och skapa ett nytt projekt</li>
+                    <li>Gå till Build → Realtime Database → Create Database</li>
+                    <li>Välj region (europe-west1) och "Start in test mode"</li>
+                    <li>Gå till Project Settings (kugghjulet) → General → Your apps → Web app (&#60;/&#62;)</li>
+                    <li>Registrera en app och kopiera <code>firebaseConfig</code> objektet</li>
+                    <li>Klistra in värdena i <code>firebase-config.js</code></li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Admin PIN Setup -->
+        <div class="section">
+            <h2>Admin PIN</h2>
+            <div style="display:flex; gap:12px; align-items:center;">
+                <input type="text" id="newAdminPin" placeholder="Ny admin PIN" style="padding:8px 12px; border:1px solid #e0e2e8; border-radius:6px; background:#eef1f6; color:#eee; font-size:0.9rem; width:200px;">
+                <button class="btn btn-primary" onclick="setAdminPin()">Spara Admin PIN</button>
+            </div>
+            <div id="adminPinStatus"></div>
+        </div>
+
+        <!-- User Setup -->
+        <div class="section">
+            <h2>Spelare &amp; PIN-koder</h2>
+            <p style="color:#999; font-size:0.85rem; margin-bottom:16px;">Skapa PIN-koder för varje spelare. Alla börjar med 10 tokens.</p>
+            <div class="user-grid" id="userGrid"></div>
+            <button class="btn btn-success" onclick="saveAllUsers()">Spara alla PIN-koder</button>
+            <div id="userSaveStatus"></div>
+
+            <details style="margin-top:24px;">
+                <summary style="cursor:pointer; color:#999; font-size:0.85rem;">+ Lägg till extra spelare</summary>
+                <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                    <input type="text" id="newUserName" placeholder="Namn" style="padding:8px 12px; border:1px solid #e0e2e8; border-radius:6px; background:#eef1f6; color:#444; font-size:0.9rem; width:160px;">
+                    <input type="text" id="newUserPin" placeholder="PIN" maxlength="6" style="padding:8px 12px; border:1px solid #e0e2e8; border-radius:6px; background:#eef1f6; color:#444; font-size:0.9rem; width:100px;">
+                    <button class="btn btn-primary" onclick="addCustomUser()">Lägg till</button>
+                    <button class="btn btn-secondary" onclick="generateRandomPin()" style="font-size:0.8rem;">🎲 Slumpa PIN</button>
+                </div>
+                <div id="addUserStatus"></div>
+            </details>
+        </div>
+
+        <!-- Initialize Bracket -->
+        <div class="section">
+            <h2>Initiera Bracket</h2>
+            <p style="color:#999; font-size:0.85rem; margin-bottom:16px;">Läser tabellen från gruppspelet och skapar slutspelsmatcher automatiskt.</p>
+            <button class="btn btn-primary" onclick="initializeBracket()">Skapa Bracket från Grupptabell</button>
+            <div id="bracketInitStatus"></div>
+        </div>
+    </div>
+
+    <!-- Matches Tab -->
+    <div class="tab-content" id="tab-matches">
+        <div id="matchAdminList"></div>
+    </div>
+
+    <!-- Bets Overview Tab -->
+    <div class="tab-content" id="tab-bets">
+        <div id="betsOverview"></div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const PLAYERS = [
+            'Amanda', 'Anton', 'Aleks', 'Stephanie',
+            'Hyberg', 'Dara', 'George', 'Finnström',
+            'Jonas', 'Mood', 'Kristian', 'Silvan'
+        ];
+
+        const TEAMS = [
+            'Amanda/Anton', 'Aleks/Stephanie', 'Hyberg/Dara',
+            'George/Finnström', 'Jonas/Mood', 'Kristian/Silvan'
+        ];
+
+        const FLAGS = {
+            'Amanda/Anton': 'pt', 'Aleks/Stephanie': 'de', 'Hyberg/Dara': 'es',
+            'George/Finnström': 'br', 'Jonas/Mood': 'ar', 'Kristian/Silvan': 'fr'
+        };
+
+        const MATCH_IDS = ['qf1', 'qf2', 'sf1', 'sf2', 'final'];
+        const MATCH_LABELS = {
+            qf1: 'Kvartsfinal 1', qf2: 'Kvartsfinal 2',
+            sf1: 'Semifinal 1', sf2: 'Semifinal 2',
+            final: 'Final'
+        };
+
+        let slutspelMatches = {};
+        let allBets = {};
+        let allUsers = {};
+        let adminPin = null;
+        let isLoggedIn = false;
+
+        function flagImg(team) {
+            const code = FLAGS[team];
+            if (!code) return '';
+            return `<img class="flag" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg">`;
+        }
+
+        // ── Admin Login ──
+        function doAdminLogin() {
+            const pin = document.getElementById('adminPin').value;
+            const err = document.getElementById('loginError');
+
+            db.ref('slutspel/config/adminPin').once('value').then(snap => {
+                const stored = snap.val();
+                if (!stored) {
+                    // No admin pin set yet - first time setup, allow entry
+                    if (pin === 'setup') {
+                        isLoggedIn = true;
+                        document.getElementById('loginOverlay').classList.add('hidden');
+                        err.textContent = '';
+                    } else {
+                        err.textContent = 'Ingen admin PIN satt. Ange "setup" för första gången.';
+                    }
+                } else if (pin === stored) {
+                    isLoggedIn = true;
+                    adminPin = stored;
+                    document.getElementById('loginOverlay').classList.add('hidden');
+                    err.textContent = '';
+                } else {
+                    err.textContent = 'Fel PIN';
+                }
+            });
+        }
+
+        function setAdminPin() {
+            const pin = document.getElementById('newAdminPin').value;
+            if (!pin || pin.length < 3) {
+                document.getElementById('adminPinStatus').innerHTML = '<div class="status-msg error">PIN måste vara minst 3 tecken</div>';
+                return;
+            }
+            db.ref('slutspel/config/adminPin').set(pin).then(() => {
+                adminPin = pin;
+                document.getElementById('adminPinStatus').innerHTML = '<div class="status-msg success">Admin PIN sparad!</div>';
+            });
+        }
+
+        // ── Tabs ──
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        // ── User Setup ──
+        function renderUserGrid() {
+            const grid = document.getElementById('userGrid');
+            const knownNames = new Set(PLAYERS);
+            // Include both predefined players and any custom users from Firebase
+            const allNames = [...PLAYERS, ...Object.keys(allUsers).filter(n => !knownNames.has(n)).sort()];
+
+            grid.innerHTML = allNames.map(name => {
+                const existing = allUsers[name];
+                const pin = existing ? existing.pin : '';
+                const isCustom = !knownNames.has(name);
+                const status = existing
+                    ? `<span class="uc-status">${isCustom ? 'Extra' : 'Skapad'}</span>`
+                    : '';
+                const removeBtn = isCustom
+                    ? `<button onclick="removeCustomUser('${name.replace(/'/g, "\\'")}')" style="background:none;border:none;color:#999;cursor:pointer;font-size:1.1rem;padding:0 4px;" title="Ta bort">&times;</button>`
+                    : '';
+                return `
+                    <div class="user-card">
+                        <span class="uc-name">${name}</span>
+                        <input type="text" id="pin_${name}" value="${pin}" placeholder="PIN">
+                        ${status}
+                        ${removeBtn}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function saveAllUsers() {
+            const updates = {};
+            // Save all rendered user inputs (predefined + custom)
+            document.querySelectorAll('#userGrid input[id^="pin_"]').forEach(input => {
+                const name = input.id.substring(4);
+                const pin = input.value.trim();
+                if (pin) {
+                    updates[name] = { pin, tokensTotal: 10 };
+                }
+            });
+
+            db.ref('slutspel/users').set(updates).then(() => {
+                document.getElementById('userSaveStatus').innerHTML =
+                    '<div class="status-msg success">Alla PIN-koder sparade!</div>';
+            }).catch(e => {
+                document.getElementById('userSaveStatus').innerHTML =
+                    `<div class="status-msg error">Fel: ${e.message}</div>`;
+            });
+        }
+
+        function generateRandomPin() {
+            const pin = String(Math.floor(1000 + Math.random() * 9000));
+            document.getElementById('newUserPin').value = pin;
+        }
+
+        function addCustomUser() {
+            const name = document.getElementById('newUserName').value.trim();
+            const pin = document.getElementById('newUserPin').value.trim();
+            const status = document.getElementById('addUserStatus');
+
+            if (!name) {
+                status.innerHTML = '<div class="status-msg error">Ange ett namn</div>';
+                return;
+            }
+            if (!pin || pin.length < 3) {
+                status.innerHTML = '<div class="status-msg error">PIN måste vara minst 3 tecken</div>';
+                return;
+            }
+            if (allUsers[name]) {
+                status.innerHTML = '<div class="status-msg error">Användaren finns redan</div>';
+                return;
+            }
+
+            db.ref(`slutspel/users/${name}`).set({ pin, tokensTotal: 10 }).then(() => {
+                document.getElementById('newUserName').value = '';
+                document.getElementById('newUserPin').value = '';
+                status.innerHTML = `<div class="status-msg success">${name} tillagd med PIN ${pin}</div>`;
+            }).catch(e => {
+                status.innerHTML = `<div class="status-msg error">Fel: ${e.message}</div>`;
+            });
+        }
+
+        function removeCustomUser(name) {
+            if (!confirm(`Ta bort ${name}? Detta raderar även deras bets.`)) return;
+            db.ref(`slutspel/users/${name}`).remove();
+            // Also remove their bets
+            db.ref('slutspel/bets').once('value').then(snap => {
+                const bets = snap.val() || {};
+                Object.keys(bets).forEach(matchId => {
+                    if (bets[matchId][name]) {
+                        db.ref(`slutspel/bets/${matchId}/${name}`).remove();
+                    }
+                });
+            });
+        }
+
+        // ── Initialize Bracket from CSV ──
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            const headers = lines[0].split(',');
+            return lines.slice(1).filter(l => l.trim()).map(line => {
+                const values = line.split(',');
+                const obj = {};
+                headers.forEach((h, i) => obj[h.trim()] = (values[i] || '').trim());
+                return obj;
+            });
+        }
+
+        async function initializeBracket() {
+            const status = document.getElementById('bracketInitStatus');
+            try {
+                // Try Firebase first
+                let matches = null;
+                try {
+                    const snap = await db.ref('groupStage/matches').once('value');
+                    const data = snap.val();
+                    if (data) {
+                        const arr = Array.isArray(data) ? data : Object.keys(data).sort((a,b) => parseInt(a)-parseInt(b)).map(k => data[k]);
+                        matches = arr.map(m => ({
+                            home: m.home || '',
+                            away: m.away || '',
+                            home_score: m.home_score == null ? '' : String(m.home_score),
+                            away_score: m.away_score == null ? '' : String(m.away_score)
+                        }));
+                    }
+                } catch (e) {
+                    console.warn('Firebase load failed, falling back to CSV:', e);
+                }
+
+                // Fallback to CSV
+                if (!matches) {
+                    const resp = await fetch('./matches.csv?t=' + Date.now());
+                    if (!resp.ok) throw new Error('Kunde inte ladda data');
+                    matches = parseCSV(await resp.text());
+                }
+
+                // Calculate standings
+                const teams = {};
+                function ensure(name) {
+                    if (!teams[name]) teams[name] = { name, played: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 };
+                }
+
+                matches.forEach(m => {
+                    ensure(m.home); ensure(m.away);
+                    if (m.home_score === '' || m.away_score === '') return;
+                    const hs = parseInt(m.home_score), as = parseInt(m.away_score);
+                    if (isNaN(hs) || isNaN(as)) return;
+                    const h = teams[m.home], a = teams[m.away];
+                    h.played++; a.played++;
+                    h.gf += hs; h.ga += as; a.gf += as; a.ga += hs;
+                    if (hs > as) { h.wins++; a.losses++; h.points += 3; }
+                    else if (hs < as) { a.wins++; h.losses++; a.points += 3; }
+                    else { h.draws++; a.draws++; h.points++; a.points++; }
+                });
+
+                Object.values(teams).forEach(t => t.gd = t.gf - t.ga);
+                const sorted = Object.values(teams).sort((a, b) =>
+                    b.points - a.points || b.gd - a.gd || b.gf - a.gf || a.name.localeCompare(b.name)
+                );
+
+                if (sorted.length < 6) throw new Error('Behöver minst 6 lag');
+
+                const bracketData = {
+                    qf1: { home: sorted[2].name, away: sorted[5].name, locked: false, completed: false },
+                    qf2: { home: sorted[3].name, away: sorted[4].name, locked: false, completed: false },
+                    sf1: { home: sorted[0].name, away: null, locked: false, completed: false },
+                    sf2: { home: sorted[1].name, away: null, locked: false, completed: false },
+                    final: { home: null, away: null, locked: false, completed: false }
+                };
+
+                await db.ref('slutspel/matches').set(bracketData);
+
+                status.innerHTML = `
+                    <div class="status-msg success">
+                        Bracket skapad!<br>
+                        1: ${sorted[0].name} (${sorted[0].points}p) → Direkt till SF1<br>
+                        2: ${sorted[1].name} (${sorted[1].points}p) → Direkt till SF2<br>
+                        3: ${sorted[2].name} (${sorted[2].points}p) → KF1 vs ${sorted[5].name}<br>
+                        4: ${sorted[3].name} (${sorted[3].points}p) → KF2 vs ${sorted[4].name}<br>
+                        5: ${sorted[4].name} (${sorted[4].points}p) → KF2<br>
+                        6: ${sorted[5].name} (${sorted[5].points}p) → KF1
+                    </div>`;
+            } catch (e) {
+                status.innerHTML = `<div class="status-msg error">${e.message}</div>`;
+            }
+        }
+
+        // ── Match Admin ──
+        function getPlayersForTeam(teamName) {
+            if (!teamName) return [];
+            const parts = teamName.split('/');
+            return parts;
+        }
+
+        function renderMatchAdmin() {
+            const container = document.getElementById('matchAdminList');
+            let html = '';
+
+            MATCH_IDS.forEach(matchId => {
+                const match = slutspelMatches[matchId] || {};
+                const home = match.home || 'TBD';
+                const away = match.away || 'TBD';
+                const hasTeams = match.home && match.away;
+
+                let statusText = 'Väntar';
+                let statusClass = 'pending';
+                if (match.completed) { statusText = 'Avslutad'; statusClass = 'completed'; }
+                else if (match.locked) { statusText = 'Låst / Pågår'; statusClass = 'locked'; }
+                else if (hasTeams) { statusText = 'Öppen'; statusClass = 'open'; }
+
+                // Get all players for first goal dropdown
+                const homePlayers = match.home ? getPlayersForTeam(match.home) : [];
+                const awayPlayers = match.away ? getPlayersForTeam(match.away) : [];
+                const allPlayers = [...homePlayers, ...awayPlayers];
+
+                html += `
+                    <div class="match-admin" id="ma-${matchId}">
+                        <div class="ma-header">
+                            <span class="ma-label">${MATCH_LABELS[matchId]}</span>
+                            <span class="ma-status ${statusClass}">${statusText}</span>
+                        </div>
+                        <div class="ma-teams">
+                            ${flagImg(home)} ${home}
+                            <span class="vs">vs</span>
+                            ${away} ${flagImg(away)}
+                        </div>
+
+                        ${hasTeams ? `
+                            <div class="ma-controls">
+                                ${!match.locked && !match.completed ? `
+                                    <button class="btn btn-danger" onclick="lockMatch('${matchId}')">
+                                        Lås bets &amp; starta match
+                                    </button>
+                                ` : ''}
+
+                                ${match.locked && !match.completed ? `
+                                    <input type="number" id="score_home_${matchId}" min="0" value="${match.homeScore ?? ''}" placeholder="0">
+                                    <span class="score-sep">-</span>
+                                    <input type="number" id="score_away_${matchId}" min="0" value="${match.awayScore ?? ''}" placeholder="0">
+
+                                    <div class="ma-first-goal">
+                                        <label style="font-size:0.75rem;color:#999;">Första mål: </label>
+                                        <select id="fg_${matchId}">
+                                            <option value="">Välj...</option>
+                                            ${allPlayers.map(p => `<option value="${p}" ${match.firstGoalScorer === p ? 'selected' : ''}>${p}</option>`).join('')}
+                                        </select>
+                                    </div>
+
+                                    <button class="btn btn-success" onclick="saveMatchResult('${matchId}')">
+                                        Spara resultat
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="unlockMatch('${matchId}')">
+                                        Lås upp
+                                    </button>
+                                ` : ''}
+
+                                ${match.completed ? `
+                                    <div style="font-size:1.2rem;font-weight:700;">
+                                        ${match.homeScore} - ${match.awayScore}
+                                    </div>
+                                    <div style="font-size:0.8rem;color:#999;">
+                                        Första mål: ${match.firstGoalScorer || '-'}
+                                    </div>
+                                    <button class="btn btn-secondary" onclick="reopenMatch('${matchId}')">
+                                        Öppna igen
+                                    </button>
+                                ` : ''}
+                            </div>
+                        ` : `
+                            <div style="color:#ccc;font-size:0.85rem;">
+                                Väntar på att föregående matcher ska spelas klart
+                            </div>
+                        `}
+
+                        <div id="status-${matchId}"></div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        async function lockMatch(matchId) {
+            try {
+                await db.ref(`slutspel/matches/${matchId}/locked`).set(true);
+                showMatchStatus(matchId, 'Bets stängda! Matchen kan börja.', 'success');
+            } catch (e) {
+                showMatchStatus(matchId, 'Fel: ' + e.message, 'error');
+            }
+        }
+
+        async function unlockMatch(matchId) {
+            try {
+                await db.ref(`slutspel/matches/${matchId}/locked`).set(false);
+                showMatchStatus(matchId, 'Matchen upplåst, bets öppna igen.', 'success');
+            } catch (e) {
+                showMatchStatus(matchId, 'Fel: ' + e.message, 'error');
+            }
+        }
+
+        async function saveMatchResult(matchId) {
+            const homeScore = parseInt(document.getElementById(`score_home_${matchId}`).value);
+            const awayScore = parseInt(document.getElementById(`score_away_${matchId}`).value);
+            const firstGoal = document.getElementById(`fg_${matchId}`).value;
+
+            if (isNaN(homeScore) || isNaN(awayScore)) {
+                showMatchStatus(matchId, 'Ange giltiga resultat', 'error');
+                return;
+            }
+
+            if (homeScore === awayScore) {
+                showMatchStatus(matchId, 'Oavgjort är inte möjligt i slutspel!', 'error');
+                return;
+            }
+
+            const match = slutspelMatches[matchId];
+            const winner = homeScore > awayScore ? match.home : match.away;
+
+            const updates = {
+                homeScore,
+                awayScore,
+                firstGoalScorer: firstGoal || null,
+                completed: true,
+                winner
+            };
+
+            try {
+                await db.ref(`slutspel/matches/${matchId}`).update(updates);
+
+                // Advance bracket
+                await advanceBracket(matchId, winner);
+
+                showMatchStatus(matchId, `Resultat sparat! ${winner} vinner.`, 'success');
+            } catch (e) {
+                showMatchStatus(matchId, 'Fel: ' + e.message, 'error');
+            }
+        }
+
+        async function advanceBracket(matchId, winner) {
+            // QF1 winner → SF2 away
+            if (matchId === 'qf1') {
+                await db.ref('slutspel/matches/sf2/away').set(winner);
+            }
+            // QF2 winner → SF1 away
+            if (matchId === 'qf2') {
+                await db.ref('slutspel/matches/sf1/away').set(winner);
+            }
+            // SF1 winner → Final home
+            if (matchId === 'sf1') {
+                await db.ref('slutspel/matches/final/home').set(winner);
+            }
+            // SF2 winner → Final away
+            if (matchId === 'sf2') {
+                await db.ref('slutspel/matches/final/away').set(winner);
+            }
+        }
+
+        async function reopenMatch(matchId) {
+            try {
+                await db.ref(`slutspel/matches/${matchId}`).update({
+                    completed: false,
+                    locked: true,
+                    homeScore: null,
+                    awayScore: null,
+                    firstGoalScorer: null,
+                    winner: null
+                });
+                showMatchStatus(matchId, 'Matchen öppnad igen', 'success');
+            } catch (e) {
+                showMatchStatus(matchId, 'Fel: ' + e.message, 'error');
+            }
+        }
+
+        function showMatchStatus(matchId, msg, type) {
+            document.getElementById(`status-${matchId}`).innerHTML =
+                `<div class="status-msg ${type}">${msg}</div>`;
+            setTimeout(() => {
+                const el = document.getElementById(`status-${matchId}`);
+                if (el) el.innerHTML = '';
+            }, 5000);
+        }
+
+        // ── Bets Overview ──
+        function renderBetsOverview() {
+            const container = document.getElementById('betsOverview');
+            let html = '';
+
+            MATCH_IDS.forEach(matchId => {
+                const match = slutspelMatches[matchId] || {};
+                const matchBets = allBets[matchId];
+                if (!matchBets) return;
+
+                const home = match.home || 'TBD';
+                const away = match.away || 'TBD';
+                const showBets = match.locked || match.completed;
+
+                html += `<div class="bets-overview-match">`;
+                html += `<div class="bo-match-title">${MATCH_LABELS[matchId]}: ${home} vs ${away}</div>`;
+
+                if (!showBets) {
+                    // Count bets without revealing details
+                    let betCount = 0;
+                    Object.values(matchBets).forEach(ub => {
+                        betCount += Object.keys(ub).length;
+                    });
+                    html += `<p style="color:#999;font-size:0.85rem;">${betCount} bets placerade (dolda tills matchen startar)</p>`;
+                } else {
+                    html += `<table class="bo-table"><thead><tr>
+                        <th>Spelare</th><th>Typ</th><th>Val</th><th>Tokens</th><th>Odds</th><th>Resultat</th>
+                    </tr></thead><tbody>`;
+
+                    Object.entries(matchBets).forEach(([userName, userBets]) => {
+                        Object.values(userBets).forEach(bet => {
+                            let result = '-';
+                            if (match.completed) {
+                                const winner = match.homeScore > match.awayScore ? match.home : match.away;
+                                let won = false;
+                                if (bet.type === 'winner') won = bet.pick === winner;
+                                else if (bet.type === 'firstgoal') won = bet.pick === match.firstGoalScorer;
+                                result = won
+                                    ? `<span style="color:#2ec4b6;font-weight:700">+${(bet.amount * bet.odds).toFixed(1)}</span>`
+                                    : `<span style="color:#ff6b6b">-${bet.amount}</span>`;
+                            }
+
+                            html += `<tr>
+                                <td>${userName}</td>
+                                <td>${bet.type === 'winner' ? 'Vinnare' : 'Första mål'}</td>
+                                <td>${bet.pick}</td>
+                                <td>${bet.amount}</td>
+                                <td>${bet.odds}x</td>
+                                <td>${result}</td>
+                            </tr>`;
+                        });
+                    });
+
+                    html += '</tbody></table>';
+                }
+
+                html += '</div>';
+            });
+
+            if (!html) html = '<p style="color:#ccc;">Inga bets ännu.</p>';
+            container.innerHTML = html;
+        }
+
+        // ── Firebase Listeners ──
+        function setupListeners() {
+            db.ref('slutspel/matches').on('value', snap => {
+                slutspelMatches = snap.val() || {};
+                renderMatchAdmin();
+                renderBetsOverview();
+            });
+
+            db.ref('slutspel/bets').on('value', snap => {
+                allBets = snap.val() || {};
+                renderBetsOverview();
+            });
+
+            db.ref('slutspel/users').on('value', snap => {
+                allUsers = snap.val() || {};
+                renderUserGrid();
+            });
+        }
+
+        // ── Init ──
+        setupListeners();
+        renderUserGrid();
+    </script>
+</body>
+</html>

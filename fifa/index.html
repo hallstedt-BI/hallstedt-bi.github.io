@@ -1,301 +1,410 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FIFA Tournament</title>
+    <title>FIFA Tournament — Slutspel</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #1a1a2e;
-            color: #eee;
-            padding: 24px 32px;
+            background: #ffffff;
+            color: #444;
+            min-height: 100vh;
         }
 
-        .content {
+        .header {
+            padding: 20px 32px;
             display: flex;
-            gap: 32px;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ff6b6b;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .header h1 span { color: #ff6b6b; }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+        }
+        .nav-links a {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.08);
+        }
+        .nav-links a.primary {
+            background: #ff6b6b;
+            color: #fff;
+        }
+        .nav-links a.primary:hover {
+            background: #ff5252;
+            color: #fff;
+        }
+
+        .main {
+            padding: 32px;
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        .standings-section { flex: 1.2; }
-        .matches-section { flex: 1; }
-
-        .section-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #e94560;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        /* ── Bracket ── */
+        .bracket-container {
+            overflow-x: auto;
+            padding: 20px 0;
         }
 
-        .standings-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 1.05rem;
-        }
-
-        .standings-table th {
-            background: #16213e;
-            color: #8899aa;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            padding: 10px 14px;
-            text-align: left;
-            border-bottom: 2px solid #0f3460;
-        }
-
-        .standings-table th:not(:first-child):not(:nth-child(2)) { text-align: center; }
-
-        .standings-table td {
-            padding: 12px 14px;
-            border-bottom: 1px solid #1e2a4a;
-        }
-
-        .standings-table td:not(:first-child):not(:nth-child(2)) { text-align: center; }
-        .standings-table tr:hover { background: rgba(233, 69, 96, 0.08); }
-        .standings-table .rank { font-weight: 700; color: #667; width: 36px; }
-        .standings-table .team-name { font-weight: 600; font-size: 1.1rem; white-space: nowrap; }
-        .flag { width: 24px; height: 24px; vertical-align: middle; margin-right: 6px; border-radius: 50%; }
-        .standings-table .points { font-weight: 700; font-size: 1.2rem; color: #e94560; }
-        .standings-table .gd-positive { color: #4ecdc4; }
-        .standings-table .gd-negative { color: #e94560; }
-
-
-
-        .latest-game {
-            margin-top: 20px;
-            background: #16213e;
-            border: 1px solid #1e2a4a;
-            border-radius: 8px;
-            padding: 16px 20px;
-        }
-
-        .latest-game .section-title {
-            font-size: 1rem;
-            margin-bottom: 12px;
-        }
-
-        .latest-game .game {
+        .bracket {
             display: flex;
             align-items: center;
+            gap: 60px;
+            min-width: 1100px;
             justify-content: center;
-            gap: 16px;
         }
 
-        .latest-game .lg-team {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .latest-game .lg-score {
-            background: #0f3460;
-            padding: 8px 20px;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 1.4rem;
-            letter-spacing: 4px;
-        }
-
-        .latest-game .lg-winner { color: #4ecdc4; }
-
-        .no-games { color: #445; font-size: 0.9rem; }
-
-        .scorers-box {
-            margin-top: 20px;
-            background: #16213e;
-            border: 1px solid #1e2a4a;
-            border-radius: 8px;
-            padding: 16px 20px;
-        }
-
-        .scorers-box .section-title {
-            font-size: 1rem;
-            margin-bottom: 12px;
-        }
-
-        .scorers-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-
-        .scorers-table th {
-            color: #8899aa;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.65rem;
-            letter-spacing: 1px;
-            padding: 6px 8px;
-            text-align: left;
-            border-bottom: 1px solid #1e2a4a;
-        }
-
-        .scorers-table th:not(:first-child) { text-align: center; }
-
-        .scorers-table td {
-            padding: 5px 8px;
-            border-bottom: 1px solid rgba(30, 42, 74, 0.5);
-        }
-
-        .scorers-table td:not(:first-child) { text-align: center; }
-
-        .scorers-table .goals { font-weight: 700; color: #e94560; }
-        .scorers-table .flag { width: 16px; height: 16px; }
-
-        .match-list {
+        .round {
             display: flex;
             flex-direction: column;
+            align-items: stretch;
+            min-width: 220px;
+        }
+
+        .round-label {
+            text-align: center;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #999;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .round-matches {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            flex: 1;
+        }
+
+        .round-qf .round-matches { gap: 16px; }
+        .round-sf .round-matches { gap: 80px; }
+
+        .bracket-match {
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 8px;
+            padding: 14px 16px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .bracket-match.locked { border-color: #ff6b6b; border-width: 2px; }
+        .bracket-match.completed { border-color: #2ec4b6; background: #f0fbfa; border-width: 2px; }
+        .bracket-match.no-teams { opacity: 0.5; }
+
+        .bracket-match .bm-team {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+        }
+
+        .bracket-match .bm-team + .bm-team {
+            border-top: 1px solid #e0e2e8;
+            padding-top: 8px;
+            margin-top: 4px;
+        }
+
+        .bm-team-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
             gap: 8px;
         }
 
-        .match-card {
-            background: #16213e;
-            border-radius: 8px;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid #1e2a4a;
-        }
-
-        .match-card.not-played { opacity: 0.5; }
-
-        .match-team {
-            flex: 1;
-            font-weight: 600;
-            font-size: 0.75rem;
-        }
-
-        .match-team.home { text-align: right; padding-right: 12px; }
-        .match-team.away { text-align: left; padding-left: 12px; }
-
-        .match-score {
-            background: #0f3460;
-            padding: 6px 14px;
-            border-radius: 6px;
+        .bm-score {
             font-weight: 700;
             font-size: 1.1rem;
-            min-width: 70px;
+            color: #999;
+            min-width: 24px;
             text-align: center;
-            letter-spacing: 2px;
         }
 
-        .match-card.not-played .match-score { color: #445; }
-        .match-winner { color: #4ecdc4; }
+        .bm-team.winner .bm-team-name { color: #2ec4b6; }
+        .bm-team.winner .bm-score { color: #2ec4b6; }
+        .bm-team.loser .bm-team-name { color: #999; }
+        .bm-team.loser .bm-score { color: #999; }
 
-        .progress-bar {
-            margin-top: 16px;
-            background: #16213e;
-            border-radius: 8px;
-            padding: 14px 18px;
-            border: 1px solid #1e2a4a;
+        .bm-status {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #e0e2e8;
         }
+        .bm-status.open { color: #2ec4b6; }
+        .bm-status.locked { color: #ff6b6b; font-weight: 700; }
+        .bm-status.tbd { color: #ccc; }
+        .bm-status.completed { color: #2ec4b6; font-weight: 700; }
 
-        .progress-bar .label {
-            font-size: 0.85rem;
-            color: #8899aa;
+        .bm-first-goal {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 4px;
+        }
+        .bm-first-goal strong { color: #ff6b6b; }
+
+        .flag { width: 22px; height: 22px; border-radius: 50%; vertical-align: middle; }
+
+        /* ── Champion banner ── */
+        .champion {
+            margin-top: 32px;
+            padding: 24px;
+            background: linear-gradient(90deg, #fff5f5, #f0fbfa);
+            border: 2px solid #2ec4b6;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+        }
+        .champion.show { display: block; }
+        .champion .crown {
+            font-size: 2rem;
             margin-bottom: 8px;
         }
-
-        .progress-track {
-            height: 6px;
-            background: #0f3460;
-            border-radius: 4px;
-            overflow: hidden;
+        .champion .label {
+            font-size: 0.8rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+        .champion .name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2ec4b6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .champion .name .flag {
+            width: 32px; height: 32px;
         }
 
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #e94560, #4ecdc4);
-            border-radius: 4px;
-            transition: width 0.5s ease;
+        /* ── Leaderboard ── */
+        .leaderboard {
+            margin-top: 32px;
         }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ff6b6b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lb-table {
+            width: 100%;
+            max-width: 500px;
+            border-collapse: collapse;
+        }
+
+        .lb-table th {
+            background: #f5f7fa;
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid #eef1f6;
+        }
+
+        .lb-table th:last-child { text-align: right; }
+
+        .lb-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #e0e2e8;
+        }
+
+        .lb-table td:last-child {
+            text-align: right;
+            font-weight: 700;
+            color: #2ec4b6;
+            font-size: 1.1rem;
+        }
+
+        .lb-table tr:first-child td { font-weight: 700; }
+        .lb-table .lb-rank { color: #999; width: 30px; }
+        .lb-table .lb-name { font-weight: 600; }
 
         .flames {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 120px;
+            bottom: 0; left: 0;
+            width: 100%; height: 120px;
             background: url('../fuego.gif') repeat-x bottom;
             background-size: auto 120px;
             pointer-events: none;
             z-index: 999;
         }
 
+        .empty-state {
+            padding: 60px 32px;
+            text-align: center;
+            color: #999;
+        }
+        .empty-state h2 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: #444;
+        }
+
+        /* ── Skytteliga ── */
+        .scorers-box {
+            margin: 32px auto 0;
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 8px;
+            padding: 20px 24px;
+            max-width: 500px;
+        }
+        .scorers-box .section-title { font-size: 1rem; }
+
+        .scorers-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .scorers-table th {
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e2e8;
+        }
+        .scorers-table th:not(:first-child) { text-align: center; }
+        .scorers-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(224, 226, 232, 0.5);
+        }
+        .scorers-table td:not(:first-child) { text-align: center; }
+        .scorers-table .goals { font-weight: 700; color: #ff6b6b; }
+        .scorers-table .flag { width: 18px; height: 18px; }
+
         @media (max-width: 900px) {
-            body { padding: 12px; }
-            .content { flex-direction: column; gap: 24px; }
+            .header { flex-direction: column; gap: 12px; padding: 16px; }
+            .main { padding: 16px; }
+            .bracket { min-width: 700px; }
+            .nav-links { flex-wrap: wrap; justify-content: center; }
         }
     </style>
 </head>
 <body>
     <div class="flames"></div>
-    <div class="content">
-        <div class="standings-section">
-            <div class="section-title">Tabell</div>
-            <table class="standings-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Team</th>
-                        <th>P</th>
-                        <th>W</th>
-                        <th>D</th>
-                        <th>L</th>
-                        <th>GF</th>
-                        <th>GA</th>
-                        <th>GD</th>
-                        <th class="points">Pts</th>
-                    </tr>
-                </thead>
-                <tbody id="standingsBody"></tbody>
-            </table>
-            <div class="scorers-box">
-                <div class="section-title">Skytteliga</div>
-                <table class="scorers-table">
-                    <thead>
-                        <tr>
-                            <th>Spelare</th>
-                            <th>Mål</th>
-                            <th>Matchsnitt</th>
-                        </tr>
-                    </thead>
-                    <tbody id="scorersBody"></tbody>
-                </table>
-            </div>
-            <div class="latest-game" id="latestGame"></div>
-        </div>
 
-        <div class="matches-section">
-            <div class="section-title">Matcher</div>
-            <div class="match-list" id="matchList"></div>
-            <div class="progress-bar">
-                <div class="label" id="progressLabel">0 / 10 matcher spelade</div>
-                <div class="progress-track">
-                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
-                </div>
-            </div>
+    <div class="header">
+        <h1><span>FIFA</span> Slutspel</h1>
+        <div class="nav-links">
+            <a href="./tabell.html">Gruppspelstabell</a>
+            <a href="./slutspel.html" class="primary">Lägg bets</a>
         </div>
     </div>
 
+    <div class="main">
+        <div class="bracket-container">
+            <div class="bracket" id="bracket">
+                <div class="empty-state">
+                    <h2>Bracket inte initierad</h2>
+                    <p>Vänta tills slutspelet är inställt.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="champion" id="champion">
+            <div class="crown">🏆</div>
+            <div class="label">Mästare</div>
+            <div class="name" id="championName"></div>
+        </div>
+
+        <div class="leaderboard" id="leaderboardSection" style="display:none;">
+            <div class="section-title">Token Leaderboard</div>
+            <table class="lb-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Spelare</th>
+                        <th>Tokens</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody"></tbody>
+            </table>
+        </div>
+
+        <div class="scorers-box" id="scorersBox" style="display:none;">
+            <div class="section-title">Skytteliga</div>
+            <table class="scorers-table">
+                <thead>
+                    <tr>
+                        <th>Spelare</th>
+                        <th>Mål</th>
+                        <th>Matchsnitt</th>
+                    </tr>
+                </thead>
+                <tbody id="scorersBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
     <script>
-        const FLAGS = {
-            'Amanda/Anton': 'pt',
-            'Aleks/Stephanie': 'de',
-            'Hyberg/Dara': 'es',
-            'George/Finnström': 'br',
-            'Jonas/Mood': 'ar',
-            'Kristian/Silvan': 'fr'
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const TOTAL_TOKENS = 10;
+        const MATCH_IDS = ['qf1', 'qf2', 'sf1', 'sf2', 'final'];
+        const MATCH_LABELS = {
+            qf1: 'Kvartsfinal 1', qf2: 'Kvartsfinal 2',
+            sf1: 'Semifinal 1', sf2: 'Semifinal 2',
+            final: 'Final'
         };
+
+        const FLAGS = {
+            'Amanda/Anton': 'pt', 'Aleks/Stephanie': 'de', 'Hyberg/Dara': 'es',
+            'George/Finnström': 'br', 'Jonas/Mood': 'ar', 'Kristian/Silvan': 'fr'
+        };
+
+        let slutspelMatches = {};
+        let allBets = {};
+        let allUsers = {};
 
         function flagImg(team) {
             const code = FLAGS[team];
@@ -303,144 +412,173 @@
             return `<img class="flag" src="https://hatscripts.github.io/circle-flags/flags/${code}.svg" alt="${code}">`;
         }
 
-        function parseCSV(text) {
-            const lines = text.trim().split('\n');
-            const headers = lines[0].split(',');
-            return lines.slice(1).filter(l => l.trim()).map(line => {
-                const values = line.split(',');
-                const obj = {};
-                headers.forEach((h, i) => obj[h.trim()] = (values[i] || '').trim());
-                return obj;
-            });
-        }
+        function makeMatchCard(matchId) {
+            const match = slutspelMatches[matchId] || {};
+            const home = match.home;
+            const away = match.away;
+            const hasTeams = home && away;
+            const isLocked = match.locked && !match.completed;
+            const isCompleted = match.completed;
 
-        function calculateStandings(matches) {
-            const teams = {};
+            let status = '';
+            let statusClass = 'tbd';
+            if (isCompleted) { status = 'Avslutad'; statusClass = 'completed'; }
+            else if (isLocked) { status = 'Pågår'; statusClass = 'locked'; }
+            else if (hasTeams) { status = 'Kommande'; statusClass = 'open'; }
+            else { status = 'TBD'; statusClass = 'tbd'; }
 
-            function ensure(name) {
-                if (!teams[name]) {
-                    teams[name] = { name, played: 0, wins: 0, draws: 0, losses: 0, gf: 0, ga: 0, gd: 0, points: 0 };
-                }
-            }
+            const homeScore = (isCompleted || isLocked) && match.homeScore != null ? match.homeScore : '';
+            const awayScore = (isCompleted || isLocked) && match.awayScore != null ? match.awayScore : '';
+            const homeWinner = isCompleted && match.homeScore > match.awayScore;
+            const awayWinner = isCompleted && match.awayScore > match.homeScore;
 
-            matches.forEach(m => {
-                ensure(m.home);
-                ensure(m.away);
-                if (m.home_score === '' || m.away_score === '') return;
+            const classes = ['bracket-match',
+                !hasTeams ? 'no-teams' : '',
+                isLocked ? 'locked' : '',
+                isCompleted ? 'completed' : ''
+            ].filter(Boolean).join(' ');
 
-                const hs = parseInt(m.home_score);
-                const as = parseInt(m.away_score);
-                if (isNaN(hs) || isNaN(as)) return;
-
-                const home = teams[m.home];
-                const away = teams[m.away];
-
-                home.played++; away.played++;
-                home.gf += hs; home.ga += as;
-                away.gf += as; away.ga += hs;
-
-                if (hs > as) {
-                    home.wins++; away.losses++;
-                    home.points += 3;
-                } else if (hs < as) {
-                    away.wins++; home.losses++;
-                    away.points += 3;
-                } else {
-                    home.draws++; away.draws++;
-                    home.points += 1; away.points += 1;
-                }
-            });
-
-            Object.values(teams).forEach(t => t.gd = t.gf - t.ga);
-
-            return Object.values(teams).sort((a, b) =>
-                b.points - a.points || b.gd - a.gd || b.gf - a.gf || a.name.localeCompare(b.name)
-            );
-        }
-
-        function renderStandings(standings) {
-            const tbody = document.getElementById('standingsBody');
-            tbody.innerHTML = standings.map((t, i) => {
-                const rank = i + 1;
-
-                const gdClass = t.gd > 0 ? 'gd-positive' : t.gd < 0 ? 'gd-negative' : '';
-                const gdStr = t.gd > 0 ? `+${t.gd}` : t.gd;
-                return `<tr>
-                    <td class="rank">${rank}</td>
-                    <td class="team-name">${flagImg(t.name)}${t.name}</td>
-                    <td>${t.played}</td>
-                    <td>${t.wins}</td>
-                    <td>${t.draws}</td>
-                    <td>${t.losses}</td>
-                    <td>${t.gf}</td>
-                    <td>${t.ga}</td>
-                    <td class="${gdClass}">${gdStr}</td>
-                    <td class="points">${t.points}</td>
-                </tr>`;
-            }).join('');
-        }
-
-        function renderLatestGame(matches) {
-            const played = matches.filter(m => m.home_score !== '' && m.away_score !== '' && m.played_order);
-            const container = document.getElementById('latestGame');
-
-            if (played.length === 0) {
-                container.innerHTML = `<div class="section-title">Senast Spelade</div><div class="no-games">Inga matcher spelade ännu</div>`;
-                return;
-            }
-
-            const m = played.sort((a, b) => parseInt(b.played_order) - parseInt(a.played_order))[0];
-            const hs = parseInt(m.home_score);
-            const as = parseInt(m.away_score);
-            const homeWin = hs > as;
-            const awayWin = hs < as;
-
-            container.innerHTML = `
-                <div class="section-title">Senast Spelade</div>
-                <div class="game">
-                    <span class="lg-team ${homeWin ? 'lg-winner' : ''}">${flagImg(m.home)} ${m.home}</span>
-                    <span class="lg-score">${hs} - ${as}</span>
-                    <span class="lg-team ${awayWin ? 'lg-winner' : ''}">${m.away} ${flagImg(m.away)}</span>
+            return `
+                <div class="${classes}">
+                    <div class="bm-team ${homeWinner ? 'winner' : (awayWinner ? 'loser' : '')}">
+                        <span class="bm-team-name">${home ? flagImg(home) + ' ' + home : 'TBD'}</span>
+                        <span class="bm-score">${homeScore}</span>
+                    </div>
+                    <div class="bm-team ${awayWinner ? 'winner' : (homeWinner ? 'loser' : '')}">
+                        <span class="bm-team-name">${away ? flagImg(away) + ' ' + away : 'TBD'}</span>
+                        <span class="bm-score">${awayScore}</span>
+                    </div>
+                    <div class="bm-status ${statusClass}">${status}</div>
+                    ${isCompleted && match.firstGoalScorer ? `<div class="bm-first-goal">Första mål: <strong>${match.firstGoalScorer}</strong></div>` : ''}
                 </div>
             `;
         }
 
-        function renderMatches(matches) {
-            const list = document.getElementById('matchList');
-            let played = 0;
+        function renderBracket() {
+            const container = document.getElementById('bracket');
+            if (!Object.keys(slutspelMatches).length) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h2>Bracket inte initierad</h2>
+                        <p>Vänta tills slutspelet är inställt.</p>
+                    </div>
+                `;
+                return;
+            }
 
-            list.innerHTML = matches.map(m => {
-                const hasScore = m.home_score !== '' && m.away_score !== '';
-                if (hasScore) played++;
-                const hs = parseInt(m.home_score);
-                const as = parseInt(m.away_score);
-                const homeWin = hasScore && hs > as;
-                const awayWin = hasScore && hs < as;
-                const scoreText = hasScore ? `${hs} - ${as}` : 'vs';
+            container.innerHTML = `
+                <div class="round round-qf">
+                    <div class="round-label">Kvartsfinal</div>
+                    <div class="round-matches">
+                        ${makeMatchCard('qf1')}
+                        <div style="height:40px"></div>
+                        ${makeMatchCard('qf2')}
+                    </div>
+                </div>
 
-                return `<div class="match-card ${hasScore ? 'played' : 'not-played'}">
-                    <div class="match-team home ${homeWin ? 'match-winner' : ''}">${m.home} ${flagImg(m.home)}</div>
-                    <div class="match-score">${scoreText}</div>
-                    <div class="match-team away ${awayWin ? 'match-winner' : ''}">${flagImg(m.away)} ${m.away}</div>
-                </div>`;
-            }).join('');
+                <div class="round round-sf">
+                    <div class="round-label">Semifinal</div>
+                    <div class="round-matches">
+                        ${makeMatchCard('sf2')}
+                        ${makeMatchCard('sf1')}
+                    </div>
+                </div>
 
-            const total = matches.length;
-            const pct = total > 0 ? (played / total) * 100 : 0;
-            document.getElementById('progressLabel').textContent = `${played} / ${total} matcher spelade`;
-            document.getElementById('progressFill').style.width = `${pct}%`;
+                <div class="round round-final">
+                    <div class="round-label">Final</div>
+                    <div class="round-matches">
+                        ${makeMatchCard('final')}
+                    </div>
+                </div>
+            `;
+
+            // Champion banner
+            const finalMatch = slutspelMatches.final;
+            const championDiv = document.getElementById('champion');
+            if (finalMatch && finalMatch.completed && finalMatch.winner) {
+                championDiv.classList.add('show');
+                document.getElementById('championName').innerHTML = `${flagImg(finalMatch.winner)} ${finalMatch.winner}`;
+            } else {
+                championDiv.classList.remove('show');
+            }
         }
 
-        function renderScorers(goals, matches) {
-            // Count games played per team
+        function renderLeaderboard() {
+            const tbody = document.getElementById('leaderboardBody');
+            const section = document.getElementById('leaderboardSection');
+
+            const userNames = Object.keys(allUsers);
+            if (!userNames.length) {
+                section.style.display = 'none';
+                return;
+            }
+
+            const scores = {};
+            userNames.forEach(name => {
+                scores[name] = TOTAL_TOKENS;
+            });
+
+            Object.entries(allBets).forEach(([matchId, matchBets]) => {
+                const match = slutspelMatches[matchId] || {};
+                Object.entries(matchBets).forEach(([userName, userBets]) => {
+                    if (!scores[userName]) scores[userName] = TOTAL_TOKENS;
+                    Object.values(userBets).forEach(bet => {
+                        scores[userName] -= bet.amount;
+                        if (match.completed) {
+                            const winner = match.homeScore > match.awayScore ? match.home : match.away;
+                            let won = false;
+                            if (bet.type === 'winner') won = bet.pick === winner;
+                            else if (bet.type === 'firstgoal') won = bet.pick === match.firstGoalScorer;
+                            if (won) scores[userName] += bet.amount * bet.odds;
+                        }
+                    });
+                });
+            });
+
+            const sorted = Object.entries(scores)
+                .map(([name, tokens]) => ({ name, tokens }))
+                .sort((a, b) => b.tokens - a.tokens);
+
+            // Only show leaderboard if there's actual betting activity
+            const totalBets = Object.values(allBets).reduce((sum, m) =>
+                sum + Object.values(m).reduce((s, u) => s + Object.keys(u).length, 0), 0);
+
+            if (totalBets === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            tbody.innerHTML = sorted.map((s, i) => `
+                <tr>
+                    <td class="lb-rank">${i + 1}</td>
+                    <td class="lb-name">${s.name}</td>
+                    <td>${(Math.round(s.tokens * 10) / 10).toFixed(1).replace(/\.0$/, '')}</td>
+                </tr>
+            `).join('');
+        }
+
+        // ── Skytteliga (top scorers) ──
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1).filter(l => l.trim()).map(line => {
+                const values = line.split(',');
+                const obj = {};
+                headers.forEach((h, i) => obj[h] = (values[i] || '').trim());
+                return obj;
+            });
+        }
+
+        function renderScorers(goalsList, matches) {
             const teamGames = {};
             matches.forEach(m => {
-                if (m.home_score === '' || m.away_score === '') return;
+                if (m.home_score === '' || m.home_score == null || m.away_score === '' || m.away_score == null) return;
                 teamGames[m.home] = (teamGames[m.home] || 0) + 1;
                 teamGames[m.away] = (teamGames[m.away] || 0) + 1;
             });
 
-            const sorted = goals
+            const sorted = goalsList
                 .map(g => ({
                     ...g,
                     goals: parseInt(g.goals) || 0,
@@ -449,40 +587,85 @@
                 .sort((a, b) => b.goals - a.goals || a.player.localeCompare(b.player));
 
             const tbody = document.getElementById('scorersBody');
+            const box = document.getElementById('scorersBox');
+            if (!sorted.length) { box.style.display = 'none'; return; }
+            box.style.display = 'block';
             tbody.innerHTML = sorted.map(g => {
                 const perGame = g.gamesPlayed > 0 ? (g.goals / g.gamesPlayed).toFixed(1) : '-';
                 return `<tr>
-                    <td>${flagImg(g.team)}${g.player}</td>
+                    <td>${flagImg(g.team)} ${g.player}</td>
                     <td class="goals">${g.goals}</td>
                     <td>${perGame}</td>
                 </tr>`;
             }).join('');
         }
 
-        async function loadData() {
+        async function loadGroupStageForScorers() {
+            // Try Firebase first
             try {
-                const [matchResp, goalsResp] = await Promise.all([
-                    fetch(`./matches.csv?t=${Date.now()}`),
-                    fetch(`./goals.csv?t=${Date.now()}`)
+                const [matchesSnap, goalsSnap] = await Promise.all([
+                    db.ref('groupStage/matches').once('value'),
+                    db.ref('groupStage/goals').once('value')
                 ]);
-                if (!matchResp.ok) throw new Error('Failed to load');
-                const matches = parseCSV(await matchResp.text());
-                const standings = calculateStandings(matches);
-                renderStandings(standings);
-                renderLatestGame(matches);
-                renderMatches(matches);
+                const matchesData = matchesSnap.val();
+                const goalsData = goalsSnap.val();
 
-                if (goalsResp.ok) {
-                    const goals = parseCSV(await goalsResp.text());
+                if (matchesData) {
+                    const arr = Array.isArray(matchesData)
+                        ? matchesData
+                        : Object.keys(matchesData).sort((a,b) => parseInt(a)-parseInt(b)).map(k => matchesData[k]);
+                    const matches = arr.map(m => ({
+                        home: m.home || '',
+                        away: m.away || '',
+                        home_score: m.home_score == null ? '' : String(m.home_score),
+                        away_score: m.away_score == null ? '' : String(m.away_score)
+                    }));
+                    const goals = goalsData
+                        ? Object.entries(goalsData).map(([player, g]) => ({ player, team: g.team || '', goals: String(g.goals ?? 0) }))
+                        : [];
                     renderScorers(goals, matches);
+                    return;
                 }
             } catch (e) {
-                console.error(e);
+                console.warn('Firebase scorers load failed, falling back to CSV:', e);
+            }
+
+            // Fallback to CSV
+            try {
+                const [matchResp, goalsResp] = await Promise.all([
+                    fetch('./matches.csv?t=' + Date.now()),
+                    fetch('./goals.csv?t=' + Date.now())
+                ]);
+                const matches = matchResp.ok ? parseCSV(await matchResp.text()) : [];
+                const goals = goalsResp.ok ? parseCSV(await goalsResp.text()) : [];
+                renderScorers(goals, matches);
+            } catch (e) {
+                console.error('Failed to load scorers:', e);
             }
         }
 
-        loadData();
-        setInterval(loadData, 30 * 1000);
+        // Live listeners
+        db.ref('slutspel/matches').on('value', snap => {
+            slutspelMatches = snap.val() || {};
+            renderBracket();
+            renderLeaderboard();
+        });
+
+        db.ref('slutspel/bets').on('value', snap => {
+            allBets = snap.val() || {};
+            renderLeaderboard();
+        });
+
+        db.ref('slutspel/users').on('value', snap => {
+            allUsers = snap.val() || {};
+            renderLeaderboard();
+        });
+
+        // Live updates to skytteliga when group stage data changes
+        db.ref('groupStage/matches').on('value', () => loadGroupStageForScorers());
+        db.ref('groupStage/goals').on('value', () => loadGroupStageForScorers());
+
+        loadGroupStageForScorers();
     </script>
 </body>
 </html>
