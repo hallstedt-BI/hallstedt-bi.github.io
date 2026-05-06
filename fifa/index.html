@@ -58,8 +58,22 @@
 
         .main {
             padding: 32px;
-            max-width: 1400px;
+            max-width: 1700px;
             margin: 0 auto;
+        }
+
+        .bottom-row {
+            margin-top: 32px;
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .bottom-col {
+            flex: 1 1 400px;
+            max-width: 600px;
         }
 
         /* ── Bracket ── */
@@ -226,7 +240,6 @@
 
         .lb-table {
             width: 100%;
-            max-width: 500px;
             border-collapse: collapse;
         }
 
@@ -283,12 +296,10 @@
 
         /* ── Skytteliga ── */
         .scorers-box {
-            margin: 32px auto 0;
             background: #f5f7fa;
             border: 1px solid #e0e2e8;
             border-radius: 8px;
             padding: 20px 24px;
-            max-width: 500px;
         }
         .scorers-box .section-title { font-size: 1rem; }
 
@@ -351,32 +362,34 @@
             <div class="name" id="championName"></div>
         </div>
 
-        <div class="leaderboard" id="leaderboardSection" style="display:none;">
-            <div class="section-title">Token Leaderboard</div>
-            <table class="lb-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Spelare</th>
-                        <th>Tokens</th>
-                    </tr>
-                </thead>
-                <tbody id="leaderboardBody"></tbody>
-            </table>
-        </div>
+        <div class="bottom-row">
+            <div class="bottom-col" id="leaderboardSection" style="display:none;">
+                <div class="section-title">Tokens</div>
+                <table class="lb-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Spelare</th>
+                            <th>Tokens</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody"></tbody>
+                </table>
+            </div>
 
-        <div class="scorers-box" id="scorersBox" style="display:none;">
-            <div class="section-title">Skytteliga</div>
-            <table class="scorers-table">
-                <thead>
-                    <tr>
-                        <th>Spelare</th>
-                        <th>Mål</th>
-                        <th>Matchsnitt</th>
-                    </tr>
-                </thead>
-                <tbody id="scorersBody"></tbody>
-            </table>
+            <div class="bottom-col scorers-box" id="scorersBox" style="display:none;">
+                <div class="section-title">Skytteliga</div>
+                <table class="scorers-table">
+                    <thead>
+                        <tr>
+                            <th>Spelare</th>
+                            <th>Mål</th>
+                            <th>Matchsnitt</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scorersBody"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
