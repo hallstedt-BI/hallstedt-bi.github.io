@@ -562,12 +562,20 @@
                                             ${allPlayers.map(p => `<option value="${p}" ${match.firstGoalScorer === p ? 'selected' : ''}>${p}</option>`).join('')}
                                         </select>
                                     </div>
+                                    <div>
+                                        <label style="font-size:0.75rem;color:#999;">Vinnare (vid straffar): </label>
+                                        <select id="ss_winner_${matchId}">
+                                            <option value="">Auto (efter resultat)</option>
+                                            <option value="${match.home}" ${match.winner === match.home ? 'selected' : ''}>${match.home}</option>
+                                            <option value="${match.away}" ${match.winner === match.away ? 'selected' : ''}>${match.away}</option>
+                                        </select>
+                                    </div>
                                     <button class="btn btn-success" onclick="saveSlutspelResult('${matchId}')">Spara resultat</button>
                                     <button class="btn btn-secondary" onclick="unlockSlutspelMatch('${matchId}')">Lås upp</button>
                                 ` : ''}
                                 ${match.completed ? `
-                                    <div style="font-size:1.2rem;font-weight:700;">${match.homeScore} - ${match.awayScore}</div>
-                                    <div style="font-size:0.8rem;color:#999;">Första mål: ${match.firstGoalScorer || '-'}</div>
+                                    <div style="font-size:1.2rem;font-weight:700;">${match.homeScore} - ${match.awayScore}${match.homeScore === match.awayScore ? ' (straffar)' : ''}</div>
+                                    <div style="font-size:0.8rem;color:#999;">Vinnare: ${match.winner || '-'}${match.firstGoalScorer ? ' · Första mål: ' + match.firstGoalScorer : ''}</div>
                                     <button class="btn btn-secondary" onclick="reopenSlutspelMatch('${matchId}')">Öppna igen</button>
                                 ` : ''}
                             </div>
@@ -604,24 +612,33 @@
             const homeScore = parseInt(document.getElementById(`ss_home_${matchId}`).value);
             const awayScore = parseInt(document.getElementById(`ss_away_${matchId}`).value);
             const firstGoal = document.getElementById(`ss_fg_${matchId}`).value;
+            const manualWinner = document.getElementById(`ss_winner_${matchId}`).value;
 
             if (isNaN(homeScore) || isNaN(awayScore)) {
                 showSlutspelStatus(matchId, 'Ange giltiga resultat', 'error');
                 return;
             }
-            if (homeScore === awayScore) {
-                showSlutspelStatus(matchId, 'Oavgjort är inte möjligt i slutspel!', 'error');
-                return;
-            }
 
             const match = slutspelMatches[matchId];
-            const winner = homeScore > awayScore ? match.home : match.away;
+            let winner;
+            if (homeScore === awayScore) {
+                if (!manualWinner) {
+                    showSlutspelStatus(matchId, 'Vid lika resultat: välj vinnare (straffar)', 'error');
+                    return;
+                }
+                winner = manualWinner;
+            } else {
+                // Manual override still respected if set, otherwise auto by score
+                winner = manualWinner || (homeScore > awayScore ? match.home : match.away);
+            }
+
             const updates = { homeScore, awayScore, firstGoalScorer: firstGoal || null, completed: true, winner };
 
             try {
                 await db.ref(`slutspel/matches/${matchId}`).update(updates);
                 await advanceBracket(matchId, winner);
-                showSlutspelStatus(matchId, `Resultat sparat! ${winner} vinner.`, 'success');
+                const suffix = homeScore === awayScore ? ' (på straffar)' : '';
+                showSlutspelStatus(matchId, `Resultat sparat! ${winner} vinner${suffix}.`, 'success');
             } catch (e) {
                 showSlutspelStatus(matchId, 'Fel: ' + e.message, 'error');
             }

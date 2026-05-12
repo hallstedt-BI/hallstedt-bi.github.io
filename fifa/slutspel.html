@@ -1203,7 +1203,7 @@
 
                 const homeScore = match.homeScore;
                 const awayScore = match.awayScore;
-                const winner = homeScore > awayScore ? match.home : match.away;
+                const winner = match.winner || (homeScore > awayScore ? match.home : match.away);
 
                 Object.values(userBets).forEach(bet => {
                     if (bet.type === 'winner' && bet.pick === winner) {
@@ -1593,7 +1593,7 @@
                     let resultText = '';
 
                     if (match.completed) {
-                        const winner = match.homeScore > match.awayScore ? match.home : match.away;
+                        const winner = match.winner || (match.homeScore > match.awayScore ? match.home : match.away);
                         let won = false;
                         if (bet.type === 'winner') won = bet.pick === winner;
                         else if (bet.type === 'firstgoal') won = bet.pick === match.firstGoalScorer;
@@ -1651,7 +1651,7 @@
                             // Deduct bet amount
                             scores[userName].tokens -= bet.amount;
                             // Add winnings
-                            const winner = match.homeScore > match.awayScore ? match.home : match.away;
+                            const winner = match.winner || (match.homeScore > match.awayScore ? match.home : match.away);
                             let won = false;
                             if (bet.type === 'winner') won = bet.pick === winner;
                             else if (bet.type === 'firstgoal') won = bet.pick === match.firstGoalScorer;

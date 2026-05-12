@@ -442,8 +442,12 @@
 
             const homeScore = (isCompleted || isLocked) && match.homeScore != null ? match.homeScore : '';
             const awayScore = (isCompleted || isLocked) && match.awayScore != null ? match.awayScore : '';
-            const homeWinner = isCompleted && match.homeScore > match.awayScore;
-            const awayWinner = isCompleted && match.awayScore > match.homeScore;
+            const resolvedWinner = match.winner || (isCompleted && match.homeScore !== match.awayScore
+                ? (match.homeScore > match.awayScore ? match.home : match.away)
+                : null);
+            const homeWinner = isCompleted && resolvedWinner === match.home;
+            const awayWinner = isCompleted && resolvedWinner === match.away;
+            const wasPenalties = isCompleted && match.homeScore === match.awayScore;
 
             const classes = ['bracket-match',
                 !hasTeams ? 'no-teams' : '',
@@ -461,7 +465,7 @@
                         <span class="bm-team-name">${away ? flagImg(away) + ' ' + away : 'TBD'}</span>
                         <span class="bm-score">${awayScore}</span>
                     </div>
-                    <div class="bm-status ${statusClass}">${status}</div>
+                    <div class="bm-status ${statusClass}">${status}${wasPenalties ? ' (straffar)' : ''}</div>
                     ${isCompleted && match.firstGoalScorer ? `<div class="bm-first-goal">Första mål: <strong>${match.firstGoalScorer}</strong></div>` : ''}
                 </div>
             `;
@@ -538,7 +542,7 @@
                     Object.values(userBets).forEach(bet => {
                         scores[userName] -= bet.amount;
                         if (match.completed) {
-                            const winner = match.homeScore > match.awayScore ? match.home : match.away;
+                            const winner = match.winner || (match.homeScore > match.awayScore ? match.home : match.away);
                             let won = false;
                             if (bet.type === 'winner') won = bet.pick === winner;
                             else if (bet.type === 'firstgoal') won = bet.pick === match.firstGoalScorer;
