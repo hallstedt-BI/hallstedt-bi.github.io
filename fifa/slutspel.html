@@ -896,8 +896,9 @@
             // Calculate attack/defense strength
             Object.values(teams).forEach(t => {
                 if (t.played > 0) {
-                    t.attack = (t.gf / t.played) / leagueAvg;
-                    t.defense = (t.ga / t.played) / leagueAvg;
+                    // Laplace smoothing: +1 virtual goal so perfect-defense / no-attack teams don't collapse to 0
+                    t.attack = ((t.gf + 1) / (t.played + 1)) / leagueAvg;
+                    t.defense = ((t.ga + 1) / (t.played + 1)) / leagueAvg;
                 } else {
                     t.attack = 1;
                     t.defense = 1;
@@ -937,8 +938,8 @@
             awayWin /= total;
 
             return {
-                homeWin: Math.max(MIN_ODDS, Math.round((1 / homeWin) * 10) / 10),
-                awayWin: Math.max(MIN_ODDS, Math.round((1 / awayWin) * 10) / 10),
+                homeWin: Math.min(500, Math.max(MIN_ODDS, Math.round((1 / Math.max(homeWin, 0.002)) * 10) / 10)),
+                awayWin: Math.min(500, Math.max(MIN_ODDS, Math.round((1 / Math.max(awayWin, 0.002)) * 10) / 10)),
                 homeProb: homeWin,
                 awayProb: awayWin
             };
@@ -964,7 +965,7 @@
                 players.push({
                     name,
                     team: homeTeam,
-                    odds: Math.max(MIN_ODDS, Math.round((1 / prob) * 10) / 10),
+                    odds: Math.min(500, Math.max(MIN_ODDS, Math.round((1 / Math.max(prob, 0.002)) * 10) / 10)),
                     prob
                 });
             });
@@ -975,7 +976,7 @@
                 players.push({
                     name,
                     team: awayTeam,
-                    odds: Math.max(MIN_ODDS, Math.round((1 / prob) * 10) / 10),
+                    odds: Math.min(500, Math.max(MIN_ODDS, Math.round((1 / Math.max(prob, 0.002)) * 10) / 10)),
                     prob
                 });
             });
