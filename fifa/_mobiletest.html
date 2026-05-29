@@ -1,0 +1,377 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #ffffff;
+            color: #444;
+            min-height: 100vh;
+        }
+
+        .header {
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ff6b6b;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .header h1 span { color: #ff6b6b; }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+        }
+        .nav-links a {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.08);
+        }
+        .nav-links a.primary {
+            background: #ff6b6b;
+            color: #fff;
+        }
+        .nav-links a.primary:hover {
+            background: #ff5252;
+            color: #fff;
+        }
+
+        .main {
+            padding: 32px;
+            max-width: 1700px;
+            margin: 0 auto;
+        }
+
+        .bottom-row {
+            margin-top: 32px;
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .bottom-col {
+            flex: 1 1 400px;
+            max-width: 600px;
+        }
+
+        /* ── Bracket ── */
+        .bracket-container {
+            overflow-x: auto;
+            padding: 20px 0;
+        }
+
+        .bracket {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            min-width: 1100px;
+            justify-content: center;
+        }
+
+        .round {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            min-width: 220px;
+        }
+
+        .round-label {
+            text-align: center;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #999;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .round-matches {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            flex: 1;
+        }
+
+        .round-qf .round-matches { gap: 16px; }
+        .round-sf .round-matches { gap: 80px; }
+
+        .bracket-match {
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 8px;
+            padding: 14px 16px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .bracket-match.locked { border-color: #ff6b6b; border-width: 2px; }
+        .bracket-match.completed { border-color: #2ec4b6; background: #f0fbfa; border-width: 2px; }
+        .bracket-match.no-teams { opacity: 0.5; }
+
+        .bracket-match .bm-team {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+        }
+
+        .bracket-match .bm-team + .bm-team {
+            border-top: 1px solid #e0e2e8;
+            padding-top: 8px;
+            margin-top: 4px;
+        }
+
+        .bm-team-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bm-score {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #999;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .bm-team.winner .bm-team-name { color: #2ec4b6; }
+        .bm-team.winner .bm-score { color: #2ec4b6; }
+        .bm-team.loser .bm-team-name { color: #999; }
+        .bm-team.loser .bm-score { color: #999; }
+
+        .bm-status {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #e0e2e8;
+        }
+        .bm-status.open { color: #2ec4b6; }
+        .bm-status.locked { color: #ff6b6b; font-weight: 700; }
+        .bm-status.tbd { color: #ccc; }
+        .bm-status.completed { color: #2ec4b6; font-weight: 700; }
+
+        .bm-first-goal {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 4px;
+        }
+        .bm-first-goal strong { color: #ff6b6b; }
+
+        .flag { width: 22px; height: 22px; border-radius: 50%; vertical-align: middle; }
+
+        /* ── Champion banner ── */
+        .champion {
+            margin-top: 32px;
+            padding: 24px;
+            background: linear-gradient(90deg, #fff5f5, #f0fbfa);
+            border: 2px solid #2ec4b6;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+        }
+        .champion.show { display: block; }
+        .champion .crown {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .champion .label {
+            font-size: 0.8rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+        .champion .name {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2ec4b6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .champion .name .flag {
+            width: 32px; height: 32px;
+        }
+
+        /* ── Leaderboard ── */
+        .leaderboard {
+            margin-top: 32px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ff6b6b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lb-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .lb-table th {
+            background: #f5f7fa;
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            padding: 10px 14px;
+            text-align: left;
+            border-bottom: 2px solid #eef1f6;
+        }
+
+        .lb-table th:last-child { text-align: right; }
+
+        .lb-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid #e0e2e8;
+        }
+
+        .lb-table td:last-child {
+            text-align: right;
+            font-weight: 700;
+            color: #2ec4b6;
+            font-size: 1.1rem;
+        }
+
+        .lb-table tr:first-child td { font-weight: 700; }
+        .lb-table .lb-rank { color: #999; width: 30px; }
+        .lb-table .lb-name { font-weight: 600; }
+
+        .flames {
+            position: fixed;
+            bottom: 0; left: 0;
+            width: 100%; height: 120px;
+            background: url('../fuego.gif') repeat-x bottom;
+            background-size: auto 120px;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .empty-state {
+            padding: 60px 32px;
+            text-align: center;
+            color: #999;
+        }
+        .empty-state h2 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: #444;
+        }
+
+        /* ── Skytteliga ── */
+        .scorers-box {
+            background: #f5f7fa;
+            border: 1px solid #e0e2e8;
+            border-radius: 8px;
+            padding: 20px 24px;
+        }
+        .scorers-box .section-title { font-size: 1rem; }
+
+        .scorers-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .scorers-table th {
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e2e8;
+        }
+        .scorers-table th:not(:first-child) { text-align: center; }
+        .scorers-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(224, 226, 232, 0.5);
+        }
+        .scorers-table td:not(:first-child) { text-align: center; }
+        .scorers-table .goals { font-weight: 700; color: #ff6b6b; }
+        .scorers-table .flag { width: 18px; height: 18px; }
+
+        @media (max-width: 900px) {
+            .header { flex-direction: column; gap: 12px; padding: 16px; }
+            .main { padding: 16px; }
+            .bracket { min-width: 700px; }
+            .nav-links { flex-wrap: wrap; justify-content: center; }
+        }
+
+        /* Mobile: stack the bracket rounds vertically (standard mobile pattern) */
+        @media (max-width: 700px) {
+            .main { padding: 12px; }
+            .bracket-container { padding: 4px 0; }
+            .bracket { flex-direction: column; min-width: 0; gap: 4px; align-items: stretch; }
+            .round { min-width: 0; width: 100%; }
+            .round-label { margin: 18px 0 10px; font-size: 0.8rem; border-bottom: 1px solid #e0e2e8; padding-bottom: 8px; }
+            .round-qf .round-matches, .round-sf .round-matches { gap: 10px; }
+            /* hide the desktop vertical spacer between the two quarterfinals */
+            .round-qf .round-matches > div:not(.bracket-match) { display: none; }
+            .bottom-row { gap: 20px; }
+        }
+    </style></head>
+<body><div class="main"><div class="bracket-container"><div class="bracket">
+  <div class="round round-qf"><div class="round-label">Kvartsfinal</div><div class="round-matches">
+    <div class="bracket-match completed">
+      <div class="bm-team winner"><span class="bm-team-name"><span class="team-badge" style="width:22px;height:22px;background:#ff6b6b;font-size:9px;">GF</span> Aleksandersson/Stephanie</span><span class="bm-score">3</span></div>
+      <div class="bm-team"><span class="bm-team-name"><span class="team-badge" style="width:22px;height:22px;background:#2ec4b6;font-size:9px;">AS</span> Amanda/Anton</span><span class="bm-score">1</span></div>
+      <div class="bm-status completed">Avslutad</div>
+    </div>
+    <div style="height:40px"></div>
+    <div class="bracket-match ">
+      <div class="bm-team "><span class="bm-team-name"><span class="team-badge" style="width:22px;height:22px;background:#ff6b6b;font-size:9px;">GF</span> Kristian/Silvan</span><span class="bm-score"></span></div>
+      <div class="bm-team"><span class="bm-team-name"><span class="team-badge" style="width:22px;height:22px;background:#2ec4b6;font-size:9px;">AS</span> Jonas/Mood</span><span class="bm-score"></span></div>
+      <div class="bm-status open">Kommande</div>
+    </div>
+  </div></div>
+  <div class="round round-sf"><div class="round-label">Semifinal</div><div class="round-matches">
+    <div class="bracket-match ">
+      <div class="bm-team "><span class="bm-team-name"><span class="team-badge" style="width:22px;height:22px;background:#ff6b6b;font-size:9px;">GF</span> Hyberg/Dara</span><span class="bm-score"></span></div>
+      <div class="bm-team"><span class="bm-team-name"><span class="team-badge" style="width:22px;height:22px;background:#2ec4b6;font-size:9px;">AS</span> TBD</span><span class="bm-score"></span></div>
+      <div class="bm-status open">Kommande</div>
+    </div>
+    <div class="bracket-match ">
+      <div class="bm-team "><span class="bm-team-name"><span class="team-badge" style="width:22px;height:22px;background:#ff6b6b;font-size:9px;">GF</span> George/Finnström</span><span class="bm-score"></span></div>
+      <div class="bm-team"><span class="bm-team-name"><span class="team-badge" style="width:22px;height:22px;background:#2ec4b6;font-size:9px;">AS</span> TBD</span><span class="bm-score"></span></div>
+      <div class="bm-status open">Kommande</div>
+    </div>
+  </div></div>
+  <div class="round round-final"><div class="round-label">Final</div><div class="round-matches">
+    <div class="bracket-match no-teams">
+      <div class="bm-team "><span class="bm-team-name"><span class="team-badge" style="width:22px;height:22px;background:#ff6b6b;font-size:9px;">GF</span> TBD</span><span class="bm-score"></span></div>
+      <div class="bm-team"><span class="bm-team-name"><span class="team-badge" style="width:22px;height:22px;background:#2ec4b6;font-size:9px;">AS</span> TBD</span><span class="bm-score"></span></div>
+      <div class="bm-status open">Kommande</div>
+    </div>
+  </div></div>
+</div></div></div></body></html>

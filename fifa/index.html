@@ -333,6 +333,19 @@
             .bracket { min-width: 700px; }
             .nav-links { flex-wrap: wrap; justify-content: center; }
         }
+
+        /* Mobile: stack the bracket rounds vertically (standard mobile pattern) */
+        @media (max-width: 700px) {
+            .main { padding: 12px; }
+            .bracket-container { padding: 4px 0; }
+            .bracket { flex-direction: column; min-width: 0; gap: 4px; align-items: stretch; }
+            .round { min-width: 0; width: 100%; }
+            .round-label { margin: 18px 0 10px; font-size: 0.8rem; border-bottom: 1px solid #e0e2e8; padding-bottom: 8px; }
+            .round-qf .round-matches, .round-sf .round-matches { gap: 10px; }
+            /* hide the desktop vertical spacer between the two quarterfinals */
+            .round-qf .round-matches > div:not(.bracket-match) { display: none; }
+            .bottom-row { gap: 20px; }
+        }
     </style>
 </head>
 <body>

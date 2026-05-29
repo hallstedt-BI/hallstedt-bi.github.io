@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournament Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; color: #444; padding: 24px 32px; }
+        h1 { font-size: 1.5rem; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 2px; }
+        h1 span { color: #ff6b6b; }
+        h2 { font-size: 1.1rem; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #ff6b6b; text-transform: uppercase; letter-spacing: 1px; }
+        a { color: #ff6b6b; }
+
+        .login-overlay { position: fixed; inset: 0; background: #fff; display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .login-overlay.hidden { display: none; }
+        .login-box { background: #f5f7fa; border: 1px solid #e0e2e8; border-radius: 12px; padding: 40px; text-align: center; min-width: 340px; }
+        .login-box h2 { border: none; color: #ff6b6b; }
+        .login-box input { width: 100%; padding: 12px 16px; margin-bottom: 16px; border: 1px solid #e0e2e8; border-radius: 8px; background: #eef1f6; color: #444; font-size: 1rem; }
+        .login-hint { font-size: 0.8rem; color: #999; margin-top: 12px; line-height: 1.5; }
+
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: #ff6b6b; color: #fff; }
+        .btn-primary:hover { background: #ff5252; }
+        .btn-success { background: #2ec4b6; color: #fff; }
+        .btn-success:hover { background: #26b5a7; }
+        .btn-secondary { background: #eef1f6; color: #444; border: 1px solid #e0e2e8; }
+        .btn-secondary:hover { background: #f5f7fa; }
+        .btn-danger { background: #ff6b6b; color: #fff; }
+        .btn-full { width: 100%; }
+
+        .tabs { display: flex; margin-bottom: 24px; border-radius: 8px; overflow: hidden; border: 1px solid #e0e2e8; }
+        .tab-btn { flex: 1; padding: 12px; text-align: center; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; background: #eef1f6; color: #999; border: none; transition: all 0.2s; }
+        .tab-btn.active { background: #ff6b6b; color: #fff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .section { background: #f5f7fa; border: 1px solid #e0e2e8; border-radius: 12px; padding: 24px; margin-bottom: 24px; max-width: 900px; }
+        .section p.hint { color: #999; font-size: 0.85rem; margin-bottom: 16px; }
+        .field-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: 600; display: block; margin-bottom: 6px; }
+        .text-input { padding: 10px 12px; border: 1px solid #e0e2e8; border-radius: 6px; background: #fff; color: #444; font-size: 0.95rem; }
+
+        .team-row { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+        .team-row .team-name { width: 180px; }
+        .team-row .team-players { flex: 1; }
+        .team-row .badge-cell { width: 32px; display: flex; justify-content: center; }
+        .team-badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; color: #fff; font-weight: 700; vertical-align: middle; }
+        .remove-x { background: none; border: none; color: #999; cursor: pointer; font-size: 1.2rem; padding: 0 4px; }
+        .remove-x:hover { color: #ff6b6b; }
+
+        .radio-row { display: flex; gap: 20px; margin-bottom: 8px; }
+        .radio-row label { display: flex; align-items: center; gap: 6px; font-size: 0.95rem; cursor: pointer; }
+
+        .match-card { background: #fff; border: 1px solid #e0e2e8; border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
+        .match-card.played { border-color: #2ec4b6; background: #f0fbfa; }
+        .match-card.locked { border-color: #ff6b6b; }
+        .mc-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .mc-order { font-size: 0.75rem; color: #999; font-weight: 700; min-width: 22px; }
+        .mc-team { font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .mc-team.home { flex: 1; justify-content: flex-end; text-align: right; }
+        .mc-team.away { flex: 1; }
+        .mc-score { width: 52px; padding: 8px; border: 1px solid #e0e2e8; border-radius: 6px; background: #eef1f6; color: #444; font-size: 1.1rem; font-weight: 700; text-align: center; -moz-appearance: textfield; }
+        .mc-score::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .mc-dash { color: #ccc; font-weight: 700; font-size: 1.2rem; }
+        .mc-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: 600; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .mc-status { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .mc-status.open { background: rgba(46,196,182,0.15); color: #2ec4b6; }
+        .mc-status.locked { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+        .mc-status.completed { background: rgba(46,196,182,0.2); color: #2ec4b6; }
+        .mc-status.pending { background: rgba(150,150,160,0.15); color: #999; }
+
+        .goal-inputs { margin-top: 12px; padding-top: 12px; border-top: 1px solid #e0e2e8; }
+        .goal-inputs .gi-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #999; font-weight: 600; margin-bottom: 8px; }
+        .goal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+        .goal-player { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: #f5f7fa; border-radius: 6px; padding: 6px 10px; }
+        .goal-player .gp-name { font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .goal-player input { width: 44px; padding: 4px; border: 1px solid #e0e2e8; border-radius: 4px; background: #fff; text-align: center; font-weight: 700; -moz-appearance: textfield; }
+        .goal-player input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+        .controls-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+        .controls-row select { padding: 6px 10px; border: 1px solid #e0e2e8; border-radius: 6px; background: #fff; color: #444; font-size: 0.85rem; }
+
+        .status-msg { padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; margin-top: 12px; }
+        .status-msg.success { background: rgba(46,196,182,0.12); color: #2ec4b6; }
+        .status-msg.error { background: rgba(255,107,107,0.12); color: #ff6b6b; }
+
+        .empty-state { padding: 30px; text-align: center; color: #999; }
+        .user-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+        .user-card { background: #fff; border: 1px solid #e0e2e8; border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; }
+        .btn-logout { background: transparent; border: 1px solid #e0e2e8; color: #999; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <!-- Login -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-box">
+            <h2>Admin</h2>
+            <input type="email" id="adminEmail" placeholder="Email">
+            <input type="password" id="adminPassword" placeholder="Password">
+            <button class="btn btn-primary btn-full" onclick="doLogin()">Log in</button>
+            <div class="status-msg error" id="loginError" style="display:none;"></div>
+            <div class="login-hint">
+                First time? Create an account on the
+                <a href="./betting.html">betting page</a>, then claim admin in the Setup tab.
+            </div>
+        </div>
+    </div>
+
+    <div class="topbar">
+        <h1><span id="tName">Tournament</span> Admin</h1>
+        <button class="btn-logout" onclick="doLogout()">Log out</button>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('setup', event)">Setup</button>
+        <button class="tab-btn" onclick="switchTab('group', event)">Group stage</button>
+        <button class="tab-btn" onclick="switchTab('playoff', event)">Playoff</button>
+        <button class="tab-btn" onclick="switchTab('users', event)">Bettors</button>
+    </div>
+
+    <!-- SETUP -->
+    <div class="tab-content active" id="tab-setup">
+        <div class="section" id="claimSection" style="display:none;">
+            <h2>Claim admin</h2>
+            <p class="hint">No admin is set for this tournament yet. The email you logged in with will become the permanent admin.</p>
+            <button class="btn btn-primary" onclick="claimAdmin()">Claim admin as <span id="claimEmail"></span></button>
+            <div id="claimStatus"></div>
+        </div>
+
+        <div class="section">
+            <h2>Tournament</h2>
+            <label class="field-label">Name</label>
+            <input type="text" id="tournamentName" class="text-input" style="width:100%; margin-bottom:16px;" placeholder="e.g. FIFA Cup 2026">
+            <label class="field-label">Teams advancing to playoff</label>
+            <div class="radio-row">
+                <label><input type="radio" name="qualifiers" value="4"> 4 teams (semis → final)</label>
+                <label><input type="radio" name="qualifiers" value="8"> 8 teams (quarters → semis → final)</label>
+            </div>
+            <button class="btn btn-success" onclick="saveTournamentConfig()">Save</button>
+            <div id="configStatus"></div>
+        </div>
+
+        <div class="section">
+            <h2>Teams</h2>
+            <p class="hint">Add each team and its player(s), comma-separated. Players appear in the top-scorer list and first-goal bets.</p>
+            <div id="teamRows"></div>
+            <button class="btn btn-secondary" onclick="addTeamRow()" style="margin-top:8px;">+ Add team</button>
+            <div style="margin-top:16px;">
+                <button class="btn btn-success" onclick="saveTeams()">Save teams</button>
+            </div>
+            <div id="teamsStatus"></div>
+        </div>
+
+        <div class="section">
+            <h2>Generate schedule</h2>
+            <p class="hint">Creates a round-robin group stage (every team plays every other once). Re-generating clears existing group results.</p>
+            <button class="btn btn-primary" onclick="generateSchedule()">Generate group schedule</button>
+            <div id="scheduleStatus"></div>
+        </div>
+
+        <div class="section">
+            <h2>Generate playoff bracket</h2>
+            <p class="hint">Seeds the top teams from the current group standings into the bracket. Do this once the group stage is finished. Re-generating clears existing playoff data &amp; bets.</p>
+            <button class="btn btn-primary" onclick="generatePlayoff()">Generate bracket from standings</button>
+            <div id="playoffGenStatus"></div>
+        </div>
+    </div>
+
+    <!-- GROUP -->
+    <div class="tab-content" id="tab-group">
+        <div class="section" style="max-width:none;">
+            <h2>Group matches</h2>
+            <div id="groupList"><div class="empty-state">No schedule yet — generate one in Setup.</div></div>
+        </div>
+    </div>
+
+    <!-- PLAYOFF -->
+    <div class="tab-content" id="tab-playoff">
+        <div class="section" style="max-width:none;">
+            <h2>Playoff matches</h2>
+            <p class="hint">Lock bets before a match starts, then enter the result. The winner advances automatically. For a draw decided on penalties, pick the winner manually.</p>
+            <div id="playoffList"><div class="empty-state">No bracket yet — generate one in Setup.</div></div>
+        </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="tab-content" id="tab-users">
+        <div class="section">
+            <h2>Registered bettors</h2>
+            <p class="hint">Bettors register themselves on the betting page. Remove one here if needed (their Firebase Auth login must be deleted separately in the Firebase console).</p>
+            <div class="user-grid" id="userGrid"></div>
+        </div>
+    </div>
+
+    <!-- Firebase + common -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="common.js"></script>
+    <script>
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        let config = {};
+        let teams = [];          // [{ name, players: [] }]
+        let groupMatches = [];
+        let playoffMatches = {};
+        let users = {};
+        let myEmail = null;
+
+        const teamNames = () => teams.map(t => t.name);
+        const rosterMap = () => { const m = {}; teams.forEach(t => m[t.name] = t.players || []); return m; };
+
+        // ── Auth ──
+        async function doLogin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            const err = document.getElementById('loginError');
+            err.style.display = 'none';
+            if (!email || !password) { showErr(err, 'Enter email and password'); return; }
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+            } catch (e) {
+                showErr(err, e.message.replace('Firebase: ', ''));
+            }
+        }
+        function showErr(el, msg) { el.textContent = msg; el.style.display = 'block'; }
+        async function doLogout() { await auth.signOut(); }
+
+        auth.onAuthStateChanged(async user => {
+            const err = document.getElementById('loginError');
+            if (!user) { document.getElementById('loginOverlay').classList.remove('hidden'); return; }
+            myEmail = (user.email || '').toLowerCase();
+
+            const adminEmail = (await db.ref('config/adminEmail').once('value')).val();
+            if (!adminEmail) {
+                // No admin yet — allow this user to claim
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('claimSection').style.display = 'block';
+                document.getElementById('claimEmail').textContent = myEmail;
+                attachListeners();
+            } else if (adminEmail.toLowerCase() === myEmail) {
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('claimSection').style.display = 'none';
+                attachListeners();
+            } else {
+                showErr(err, 'This account is not the admin (' + adminEmail + ')');
+                document.getElementById('loginOverlay').classList.remove('hidden');
+                await auth.signOut();
+            }
+        });
+
+        async function claimAdmin() {
+            try {
+                await db.ref('config/adminEmail').set(myEmail);
+                document.getElementById('claimStatus').innerHTML = '<div class="status-msg success">You are now admin.</div>';
+                document.getElementById('claimSection').style.display = 'none';
+            } catch (e) {
+                document.getElementById('claimStatus').innerHTML = `<div class="status-msg error">${e.message}</div>`;
+            }
+        }
+
+        // ── Listeners ──
+        function attachListeners() {
+            db.ref('config').on('value', s => { config = s.val() || {}; renderConfig(); });
+            db.ref('teams').on('value', s => { teams = toArray(s.val()); renderTeamRows(); renderGroup(); renderPlayoff(); });
+            db.ref('groupStage/matches').on('value', s => { groupMatches = toArray(s.val()); renderGroup(); });
+            db.ref('playoff/matches').on('value', s => { playoffMatches = s.val() || {}; renderPlayoff(); });
+            db.ref('users').on('value', s => { users = s.val() || {}; renderUsers(); });
+        }
+
+        function renderConfig() {
+            document.getElementById('tournamentName').value = config.tournamentName || '';
+            document.getElementById('tName').textContent = config.tournamentName || 'Tournament';
+            document.title = (config.tournamentName || 'Tournament') + ' Admin';
+            const q = config.qualifiers || 4;
+            document.querySelectorAll('input[name="qualifiers"]').forEach(r => r.checked = (parseInt(r.value) === q));
+        }
+
+        // ── Tabs ──
+        function switchTab(tab, ev) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            ev.target.classList.add('active');
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        // ── Tournament config ──
+        async function saveTournamentConfig() {
+            const name = document.getElementById('tournamentName').value.trim();
+            const q = parseInt(document.querySelector('input[name="qualifiers"]:checked')?.value || '4');
+            try {
+                await db.ref('config').update({ tournamentName: name, qualifiers: q });
+                document.getElementById('configStatus').innerHTML = '<div class="status-msg success">Saved.</div>';
+            } catch (e) {
+                document.getElementById('configStatus').innerHTML = `<div class="status-msg error">${e.message}</div>`;
+            }
+        }
+
+        // ── Teams editor ──
+        function renderTeamRows() {
+            const c = document.getElementById('teamRows');
+            if (!c.dataset.dirty) drawTeamRows();
+        }
+        function drawTeamRows() {
+            const c = document.getElementById('teamRows');
+            const rows = teams.length ? teams : [{ name: '', players: [] }];
+            c.innerHTML = rows.map((t, i) => teamRowHtml(t, i)).join('');
+            refreshBadges();
+        }
+        function teamRowHtml(t, i) {
+            return `
+                <div class="team-row" data-i="${i}">
+                    <span class="badge-cell" id="badge_${i}"></span>
+                    <input class="text-input team-name" placeholder="Team name" value="${escapeHtml(t.name || '')}" oninput="onTeamInput(${i})">
+                    <input class="text-input team-players" placeholder="Players (comma-separated)" value="${escapeHtml((t.players || []).join(', '))}">
+                    <button class="remove-x" onclick="removeTeamRow(${i})" title="Remove">&times;</button>
+                </div>`;
+        }
+        function onTeamInput(i) {
+            const row = document.querySelector(`.team-row[data-i="${i}"]`);
+            const name = row.querySelector('.team-name').value;
+            document.getElementById('badge_' + i).innerHTML = teamBadge(name, 26);
+            document.getElementById('teamRows').dataset.dirty = '1';
+        }
+        function refreshBadges() {
+            document.querySelectorAll('.team-row').forEach(row => {
+                const i = row.dataset.i;
+                const name = row.querySelector('.team-name').value;
+                document.getElementById('badge_' + i).innerHTML = teamBadge(name, 26);
+            });
+        }
+        function addTeamRow() {
+            const c = document.getElementById('teamRows');
+            c.dataset.dirty = '1';
+            const i = c.querySelectorAll('.team-row').length;
+            c.insertAdjacentHTML('beforeend', teamRowHtml({ name: '', players: [] }, i));
+            refreshBadges();
+        }
+        function removeTeamRow(i) {
+            const c = document.getElementById('teamRows');
+            c.dataset.dirty = '1';
+            const row = c.querySelector(`.team-row[data-i="${i}"]`);
+            if (row) row.remove();
+        }
+        async function saveTeams() {
+            const rows = document.querySelectorAll('#teamRows .team-row');
+            const out = [];
+            const seen = new Set();
+            for (const row of rows) {
+                const name = row.querySelector('.team-name').value.trim();
+                if (!name) continue;
+                if (seen.has(name)) { document.getElementById('teamsStatus').innerHTML = `<div class="status-msg error">Duplicate team name: ${name}</div>`; return; }
+                seen.add(name);
+                const players = row.querySelector('.team-players').value.split(',').map(s => s.trim()).filter(Boolean);
+                out.push({ name, players });
+            }
+            if (out.length < 2) { document.getElementById('teamsStatus').innerHTML = '<div class="status-msg error">Add at least 2 teams.</div>'; return; }
+            try {
+                await db.ref('teams').set(out);
+                document.getElementById('teamRows').dataset.dirty = '';
+                document.getElementById('teamsStatus').innerHTML = `<div class="status-msg success">Saved ${out.length} teams.</div>`;
+            } catch (e) {
+                document.getElementById('teamsStatus').innerHTML = `<div class="status-msg error">${e.message}</div>`;
+            }
+        }
+
+        // ── Generate schedule ──
+        async function generateSchedule() {
+            const names = teamNames();
+            if (names.length < 2) { document.getElementById('scheduleStatus').innerHTML = '<div class="status-msg error">Save at least 2 teams first.</div>'; return; }
+            if (groupMatches.length && !confirm('This clears all existing group results. Continue?')) return;
+            const matches = generateRoundRobin(names);
+            try {
+                await db.ref('groupStage/matches').set(matches);
+                document.getElementById('scheduleStatus').innerHTML = `<div class="status-msg success">Generated ${matches.length} matches.</div>`;
+            } catch (e) {
+                document.getElementById('scheduleStatus').innerHTML = `<div class="status-msg error">${e.message}</div>`;
+            }
+        }
+
+        // ── Generate playoff ──
+        async function generatePlayoff() {
+            const q = config.qualifiers || 4;
+            const names = teamNames();
+            if (names.length < q) { document.getElementById('playoffGenStatus').innerHTML = `<div class="status-msg error">Need at least ${q} teams for a ${q}-team bracket.</div>`; return; }
+            if (Object.keys(playoffMatches).length && !confirm('This clears the existing bracket AND all bets. Continue?')) return;
+
+            const standings = calculateStandings(groupMatches, names);
+            const bracket = generateBracket(standings, q);
+            try {
+                await db.ref('playoff/matches').set(bracket);
+                await db.ref('bets').remove();
+                const seeds = standings.slice(0, q).map((t, i) => `${i + 1}. ${t.name} (${t.points}p)`).join('<br>');
+                document.getElementById('playoffGenStatus').innerHTML = `<div class="status-msg success">Bracket created.<br>${seeds}</div>`;
+            } catch (e) {
+                document.getElementById('playoffGenStatus').innerHTML = `<div class="status-msg error">${e.message}</div>`;
+            }
+        }
+
+        // ── Group match rendering + saving ──
+        function renderGroup() {
+            const c = document.getElementById('groupList');
+            if (!groupMatches.length) { c.innerHTML = '<div class="empty-state">No schedule yet — generate one in Setup.</div>'; return; }
+            const rosters = rosterMap();
+
+            // played first (by order), then unplayed
+            const indexed = groupMatches.map((m, i) => ({ ...m, idx: i }));
+            const played = indexed.filter(m => m.playedOrder != null).sort((a, b) => a.playedOrder - b.playedOrder);
+            const unplayed = indexed.filter(m => m.playedOrder == null);
+
+            c.innerHTML = [...played, ...unplayed].map(m => {
+                const hasScore = m.homeScore != null && m.awayScore != null;
+                const players = [...(rosters[m.home] || []), ...(rosters[m.away] || [])];
+                return `
+                    <div class="match-card ${hasScore ? 'played' : ''}">
+                        <div class="mc-row">
+                            <span class="mc-order">${m.playedOrder || ''}</span>
+                            <span class="mc-team home">${m.home} ${teamBadge(m.home)}</span>
+                            <input class="mc-score" type="number" min="0" id="g_h_${m.idx}" value="${m.homeScore ?? ''}" placeholder="-">
+                            <span class="mc-dash">-</span>
+                            <input class="mc-score" type="number" min="0" id="g_a_${m.idx}" value="${m.awayScore ?? ''}" placeholder="-">
+                            <span class="mc-team away">${teamBadge(m.away)} ${m.away}</span>
+                        </div>
+                        ${players.length ? `
+                        <div class="goal-inputs">
+                            <div class="gi-title">Goals per player (optional — feeds the top-scorer list)</div>
+                            <div class="goal-grid">
+                                ${players.map(p => `
+                                    <div class="goal-player">
+                                        <span class="gp-name">${teamBadge(playerTeam(p, rosters), 16)} ${p}</span>
+                                        <input type="number" min="0" id="gg_${m.idx}_${cssId(p)}" value="${(m.goals && m.goals[p]) || ''}" placeholder="0">
+                                    </div>`).join('')}
+                            </div>
+                        </div>` : ''}
+                        <div class="controls-row">
+                            <button class="btn btn-success" onclick="saveGroupMatch(${m.idx})">Save</button>
+                            <span id="g_status_${m.idx}"></span>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        function playerTeam(player, rosters) {
+            for (const [team, ps] of Object.entries(rosters)) if (ps.includes(player)) return team;
+            return null;
+        }
+
+        async function saveGroupMatch(idx) {
+            const hRaw = document.getElementById(`g_h_${idx}`).value.trim();
+            const aRaw = document.getElementById(`g_a_${idx}`).value.trim();
+            const statusEl = document.getElementById(`g_status_${idx}`);
+            const m = groupMatches[idx];
+            const rosters = rosterMap();
+            const players = [...(rosters[m.home] || []), ...(rosters[m.away] || [])];
+
+            const goals = {};
+            players.forEach(p => {
+                const v = parseInt(document.getElementById(`gg_${idx}_${cssId(p)}`)?.value);
+                if (!isNaN(v) && v > 0) goals[p] = v;
+            });
+
+            const hasScore = hRaw !== '' && aRaw !== '';
+            const updates = {
+                homeScore: hasScore ? parseInt(hRaw) : null,
+                awayScore: hasScore ? parseInt(aRaw) : null,
+                goals
+            };
+
+            // assign played order
+            if (hasScore && m.playedOrder == null) {
+                const maxOrder = Math.max(0, ...groupMatches.map(x => x.playedOrder || 0));
+                updates.playedOrder = maxOrder + 1;
+            } else if (!hasScore) {
+                updates.playedOrder = null;
+            } else {
+                updates.playedOrder = m.playedOrder;
+            }
+
+            try {
+                await db.ref(`groupStage/matches/${idx}`).update(updates);
+                statusEl.innerHTML = '<span style="color:#2ec4b6;font-size:0.8rem;font-weight:600;">Saved</span>';
+                setTimeout(() => { if (statusEl) statusEl.innerHTML = ''; }, 2500);
+            } catch (e) {
+                statusEl.innerHTML = `<span style="color:#ff6b6b;font-size:0.8rem;">${e.message}</span>`;
+            }
+        }
+
+        // ── Playoff rendering + saving ──
+        function renderPlayoff() {
+            const c = document.getElementById('playoffList');
+            const q = config.qualifiers || 4;
+            const order = bracketOrder(q).filter(id => playoffMatches[id]);
+            if (!order.length) { c.innerHTML = '<div class="empty-state">No bracket yet — generate one in Setup.</div>'; return; }
+            const rosters = rosterMap();
+
+            c.innerHTML = order.map(id => {
+                const m = playoffMatches[id];
+                const home = m.home, away = m.away;
+                const hasTeams = home && away;
+                let statusText = 'Waiting', statusClass = 'pending';
+                if (m.completed) { statusText = 'Completed'; statusClass = 'completed'; }
+                else if (m.locked) { statusText = 'Locked / live'; statusClass = 'locked'; }
+                else if (hasTeams) { statusText = 'Open for bets'; statusClass = 'open'; }
+
+                const players = hasTeams ? [...(rosters[home] || []), ...(rosters[away] || [])] : [];
+
+                return `
+                    <div class="match-card ${m.completed ? 'played' : (m.locked ? 'locked' : '')}">
+                        <div class="mc-label"><span>${m.label}</span><span class="mc-status ${statusClass}">${statusText}</span></div>
+                        <div class="mc-row">
+                            <span class="mc-team home">${home ? home + ' ' + teamBadge(home) : 'TBD'}</span>
+                            ${m.locked || m.completed
+                                ? `<input class="mc-score" type="number" min="0" id="p_h_${id}" value="${m.homeScore ?? ''}" placeholder="0">
+                                   <span class="mc-dash">-</span>
+                                   <input class="mc-score" type="number" min="0" id="p_a_${id}" value="${m.awayScore ?? ''}" placeholder="0">`
+                                : '<span class="mc-dash">vs</span>'}
+                            <span class="mc-team away">${away ? teamBadge(away) + ' ' + away : 'TBD'}</span>
+                        </div>
+
+                        ${(m.locked || m.completed) && players.length ? `
+                        <div class="goal-inputs">
+                            <div class="gi-title">Goals per player</div>
+                            <div class="goal-grid">
+                                ${players.map(p => `
+                                    <div class="goal-player">
+                                        <span class="gp-name">${teamBadge(playerTeam(p, rosters), 16)} ${p}</span>
+                                        <input type="number" min="0" id="pg_${id}_${cssId(p)}" value="${(m.goals && m.goals[p]) || ''}" placeholder="0">
+                                    </div>`).join('')}
+                            </div>
+                        </div>` : ''}
+
+                        <div class="controls-row">
+                            ${hasTeams && !m.locked && !m.completed ? `<button class="btn btn-danger" onclick="lockMatch('${id}')">Lock bets &amp; start</button>` : ''}
+                            ${m.locked && !m.completed ? `
+                                <label class="field-label" style="margin:0;">First goal:</label>
+                                <select id="p_fg_${id}">
+                                    <option value="">—</option>
+                                    ${players.map(p => `<option value="${escapeHtml(p)}" ${m.firstGoalScorer === p ? 'selected' : ''}>${p}</option>`).join('')}
+                                </select>
+                                <label class="field-label" style="margin:0;">Winner (if penalties):</label>
+                                <select id="p_win_${id}">
+                                    <option value="">Auto</option>
+                                    <option value="${escapeHtml(home)}" ${m.winner === home ? 'selected' : ''}>${home}</option>
+                                    <option value="${escapeHtml(away)}" ${m.winner === away ? 'selected' : ''}>${away}</option>
+                                </select>
+                                <button class="btn btn-success" onclick="savePlayoffResult('${id}')">Save result</button>
+                                <button class="btn btn-secondary" onclick="unlockMatch('${id}')">Unlock</button>
+                            ` : ''}
+                            ${m.completed ? `
+                                <span style="font-weight:700;">${m.homeScore} - ${m.awayScore}${m.homeScore === m.awayScore ? ' (pens)' : ''}</span>
+                                <span style="font-size:0.8rem;color:#999;">Winner: ${matchWinner(m) || '-'}${m.firstGoalScorer ? ' · First goal: ' + m.firstGoalScorer : ''}</span>
+                                <button class="btn btn-secondary" onclick="reopenMatch('${id}')">Reopen</button>
+                            ` : ''}
+                            <span id="p_status_${id}"></span>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        async function lockMatch(id) {
+            try { await db.ref(`playoff/matches/${id}/locked`).set(true); pStatus(id, 'Bets locked.', 'success'); }
+            catch (e) { pStatus(id, e.message, 'error'); }
+        }
+        async function unlockMatch(id) {
+            try { await db.ref(`playoff/matches/${id}/locked`).set(false); pStatus(id, 'Unlocked.', 'success'); }
+            catch (e) { pStatus(id, e.message, 'error'); }
+        }
+        async function savePlayoffResult(id) {
+            const m = playoffMatches[id];
+            const h = parseInt(document.getElementById(`p_h_${id}`).value);
+            const a = parseInt(document.getElementById(`p_a_${id}`).value);
+            const fg = document.getElementById(`p_fg_${id}`).value;
+            const manualWinner = document.getElementById(`p_win_${id}`).value;
+            if (isNaN(h) || isNaN(a)) { pStatus(id, 'Enter both scores.', 'error'); return; }
+
+            let winner;
+            if (h === a) {
+                if (!manualWinner) { pStatus(id, 'Draw — pick the penalty winner.', 'error'); return; }
+                winner = manualWinner;
+            } else {
+                winner = manualWinner || (h > a ? m.home : m.away);
+            }
+
+            const rosters = rosterMap();
+            const players = [...(rosters[m.home] || []), ...(rosters[m.away] || [])];
+            const goals = {};
+            players.forEach(p => {
+                const v = parseInt(document.getElementById(`pg_${id}_${cssId(p)}`)?.value);
+                if (!isNaN(v) && v > 0) goals[p] = v;
+            });
+
+            try {
+                await db.ref(`playoff/matches/${id}`).update({
+                    homeScore: h, awayScore: a, winner, firstGoalScorer: fg || null, completed: true, goals
+                });
+                if (m.advancesTo && m.advancesSlot) {
+                    await db.ref(`playoff/matches/${m.advancesTo}/${m.advancesSlot}`).set(winner);
+                }
+                pStatus(id, `Saved. ${winner} advances${h === a ? ' (pens)' : ''}.`, 'success');
+            } catch (e) { pStatus(id, e.message, 'error'); }
+        }
+        async function reopenMatch(id) {
+            try {
+                await db.ref(`playoff/matches/${id}`).update({ completed: false, locked: true });
+                pStatus(id, 'Reopened.', 'success');
+            } catch (e) { pStatus(id, e.message, 'error'); }
+        }
+        function pStatus(id, msg, type) {
+            const el = document.getElementById(`p_status_${id}`);
+            if (!el) return;
+            el.innerHTML = `<span style="color:${type === 'error' ? '#ff6b6b' : '#2ec4b6'};font-size:0.8rem;font-weight:600;">${msg}</span>`;
+            if (type === 'success') setTimeout(() => { if (el) el.innerHTML = ''; }, 3500);
+        }
+
+        // ── Users ──
+        function renderUsers() {
+            const grid = document.getElementById('userGrid');
+            const names = Object.keys(users).sort();
+            if (!names.length) { grid.innerHTML = '<div style="color:#999;font-size:0.85rem;">No bettors registered yet.</div>'; return; }
+            grid.innerHTML = names.map(n => `
+                <div class="user-card">
+                    <div><div style="font-weight:600;">${n}</div><div style="font-size:0.7rem;color:#999;">${users[n].email || ''}</div></div>
+                    <button class="remove-x" onclick="removeUser('${cssId(n)}', '${escapeHtml(n).replace(/'/g, "\\'")}')" title="Remove">&times;</button>
+                </div>`).join('');
+        }
+        async function removeUser(_, name) {
+            if (!confirm(`Remove ${name}? This deletes their bets too.`)) return;
+            await db.ref(`users/${name}`).remove();
+            const bets = (await db.ref('bets').once('value')).val() || {};
+            Object.keys(bets).forEach(mid => { if (bets[mid][name]) db.ref(`bets/${mid}/${name}`).remove(); });
+        }
+
+        // ── utils ──
+        function cssId(s) { return s.replace(/[^a-zA-Z0-9]/g, '_'); }
+        function escapeHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+        document.getElementById('adminPassword').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+    </script>
+</body>
+</html>
