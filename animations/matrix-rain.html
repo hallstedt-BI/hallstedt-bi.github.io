@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Rain</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        body {
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix"></canvas>
+
+    <script>
+        /**
+         * MATRIX RAIN WITH HIDDEN MESSAGE TUTORIAL
+         *
+         * CONCEPT: Create falling streams of characters (like the Matrix movie)
+         * with a hidden smiley ":)" that becomes visible when rain passes over it.
+         *
+         * APPROACH:
+         * 1. Create a canvas that fills the screen
+         * 2. Draw characters in vertical streams that fall downward
+         * 3. Define a "hidden message" area (the smiley)
+         * 4. Change character color when they overlap the message
+         * 5. Fade out old characters for the "trail" effect
+         *
+         * KEY TECHNIQUES:
+         * - Canvas API for drawing text
+         * - Array of "drops" to track each column's position
+         * - Character randomization for variety
+         * - Color change based on position (reveal effect)
+         */
+
+        // ============================================================================
+        // STEP 1: Setup Canvas
+        // ============================================================================
+        // Get the canvas element and its 2D drawing context
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas to full screen (1080p for TV display)
+        canvas.width = 1920;
+        canvas.height = 1080;
+
+        // ============================================================================
+        // STEP 2: Define Characters and Settings
+        // ============================================================================
+        // Matrix-style characters: mix of katakana, numbers, and symbols
+        const characters = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789';
+
+        // Font size determines how big each character is
+        const fontSize = 20;
+
+        // How many columns of characters fit across the screen?
+        // We divide screen width by font size to get number of columns
+        const columns = canvas.width / fontSize;
+
+        // ============================================================================
+        // STEP 3: Create the "Drops" Array
+        // ============================================================================
+        // Each element represents one column of falling characters
+        // The value is the Y position (how far down the screen)
+        // We start each drop at Y=0 (top of screen)
+        const drops = [];
+        for (let i = 0; i < columns; i++) {
+            // Start at random positions so they don't all fall in sync
+            drops[i] = Math.floor(Math.random() * canvas.height / fontSize);
+        }
+
+        // ============================================================================
+        // STEP 4: Define the Hidden Message (Smiley)
+        // ============================================================================
+        // We'll draw a smiley ":)" in the middle of the screen
+        // When rain characters overlap this area, they'll change color to reveal it
+
+        function drawHiddenMessage() {
+            // Set font for the smiley (much larger than rain characters)
+            ctx.font = `${fontSize * 20}px monospace`;
+            ctx.fillStyle = 'rgba(0, 255, 0, 0.05)';  // Very faint green (barely visible)
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Draw the smiley in the center
+            ctx.fillText(':)', canvas.width / 2, canvas.height / 2);
+        }
+
+        // ============================================================================
+        // STEP 5: Check if a Position is Inside the Message
+        // ============================================================================
+        // This function checks if a given (x, y) coordinate overlaps our smiley
+        // Returns true if the point is inside the message area
+
+        function isInsideMessage(x, y) {
+            // Get the pixel data at this position
+            // getImageData returns RGBA values for each pixel
+            const imageData = ctx.getImageData(x, y, 1, 1);
+            const pixel = imageData.data;
+
+            // Check if there's any green value (our smiley is green)
+            // pixel[1] is the green channel (R, G, B, A = indices 0, 1, 2, 3)
+            // If green > 0, we're inside the smiley area
+            return pixel[1] > 0;
+        }
+
+        // ============================================================================
+        // STEP 6: The Main Animation Loop
+        // ============================================================================
+
+        function draw() {
+            // TECHNIQUE: Create "trail" effect by drawing a semi-transparent black rectangle
+            // Instead of clearing the canvas completely (ctx.clearRect), we draw a slightly
+            // transparent black rectangle. This makes old characters fade out gradually.
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';  // Very transparent black
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Redraw the hidden message (keeps it persistent)
+            drawHiddenMessage();
+
+            // Set font for the falling characters
+            ctx.font = `${fontSize}px monospace`;
+
+            // LOOP through each column (each "drop")
+            for (let i = 0; i < drops.length; i++) {
+                // Pick a random character from our character set
+                const char = characters[Math.floor(Math.random() * characters.length)];
+
+                // Calculate X position: column number * font size
+                const x = i * fontSize;
+
+                // Calculate Y position: drop position * font size
+                const y = drops[i] * fontSize;
+
+                // CHECK if this position overlaps the hidden message
+                if (isInsideMessage(x, y)) {
+                    // Inside the message: use bright yellow/white to reveal it!
+                    ctx.fillStyle = '#ffff00';  // Yellow
+                } else {
+                    // Outside the message: use classic Matrix green
+                    ctx.fillStyle = '#0f0';  // Bright green
+                }
+
+                // DRAW the character at this position
+                ctx.fillText(char, x, y);
+
+                // MOVE the drop down: increment its position
+                drops[i]++;
+
+                // RESET: If drop goes off screen (or randomly), reset it to top
+                // This creates the continuous rain effect
+                // Math.random() > 0.975 means ~2.5% chance to reset each frame
+                // This prevents all drops from syncing up
+                if (y > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;  // Reset to top
+                }
+            }
+        }
+
+        // ============================================================================
+        // STEP 7: Start the Animation
+        // ============================================================================
+        // Use setInterval to call draw() repeatedly
+        // 33ms = ~30 frames per second (1000ms / 30fps = 33ms)
+        setInterval(draw, 33);
+
+        /**
+         * CUSTOMIZATION IDEAS:
+         *
+         * 1. Change the hidden message:
+         *    - Modify the text in drawHiddenMessage()
+         *    - Try "HELLO", "WAKE UP", or any text you want
+         *
+         * 2. Adjust rain speed:
+         *    - Change setInterval value (lower = faster)
+         *    - Modify drops[i]++ to drops[i] += 2 for double speed
+         *
+         * 3. Change colors:
+         *    - Message color: change '#ffff00' to any hex color
+         *    - Rain color: change '#0f0' to different green shades
+         *
+         * 4. Adjust trail effect:
+         *    - Change rgba(0, 0, 0, 0.05) alpha value
+         *    - Higher alpha = shorter trails (more fade)
+         *    - Lower alpha = longer trails (less fade)
+         *
+         * 5. Different characters:
+         *    - Replace the 'characters' string with Latin letters, symbols, etc.
+         *    - Try: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*'
+         *
+         * 6. Font size:
+         *    - Change fontSize variable for bigger/smaller characters
+         *    - Affects density of rain
+         *
+         * 7. Multiple messages:
+         *    - Call drawHiddenMessage() multiple times with different positions
+         *    - Create patterns or multiple words
+         */
+
+    </script>
+</body>
+</html>

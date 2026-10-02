@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stats Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            font-family: monospace;
+            overflow: hidden;
+        }
+
+        .wrapper {
+            display: flex;
+            padding: 2rem;
+            gap: 2rem;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+        }
+        .stats-container {
+            width: 20rem;
+            height: 25rem;
+            background-color: #e0eff7;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+        }
+
+        .play-btn {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.3rem;
+            background-color: #4a90d9;
+            color: white;
+            font-family: monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .play-btn:hover {
+            background-color: #3a7bc8;
+        }
+
+        /* === ORIGINAL BARS === */
+        .stat-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .stat-bar {
+            display: block;
+            width: 12rem;
+            height: 1rem;
+            border-radius: 0.5rem;
+            background-color: #f7f7f7;
+            background-image: linear-gradient(to right, #76a2d2, #76a2d2);
+            background-repeat: no-repeat;
+            background-size: 0% 100%;
+            transition: background-size 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* === FUN BARS === */
+        .fun-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .fun-box span:first-child {
+            font-size: 0.8rem;
+            width: 5rem;
+        }
+
+        /* Shared base for all fun bars */
+        .fun-bar {
+            display: block;
+            width: 12rem;
+            height: 1rem;
+            border-radius: 0.5rem;
+            background-color: #f7f7f7;
+            background-repeat: no-repeat;
+            background-size: 0% 100%;
+        }
+
+        /* 1. Wiggle */
+        .fun-bar-wiggle {
+            background-image: linear-gradient(to right, #e06c75, #e06c75);
+            transition: background-size 0.8s ease-out;
+        }
+        .fun-bar-wiggle.animate {
+            animation: wiggle 0.5s ease-in-out 1s 3;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        /* 2. Glow */
+        .fun-bar-glow {
+            background-image: linear-gradient(to right, #61afef, #61afef);
+            transition: background-size 1.2s ease-out;
+        }
+        .fun-bar-glow.animate {
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 2px #61afef; }
+            to { box-shadow: 0 0 12px #61afef, 0 0 24px #61afef55; }
+        }
+
+        /* 3. Rainbow */
+        .fun-bar-rainbow {
+            background-image: linear-gradient(to right, #e06c75, #e06c75);
+            transition: background-size 1s ease-out;
+        }
+        .fun-bar-rainbow.animate {
+            animation: rainbow 3s linear infinite;
+        }
+
+        @keyframes rainbow {
+            from { filter: hue-rotate(0deg); }
+            to { filter: hue-rotate(360deg); }
+        }
+
+        /* 4. Shimmer */
+        .fun-bar-shimmer {
+            background-image: linear-gradient(to right, #98c379, #98c379);
+            transition: background-size 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+        .fun-bar-shimmer.animate::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+            animation: shimmer 2s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -50%; }
+            100% { left: 150%; }
+        }
+
+        /* 5. Bounce */
+        .fun-bar-bounce {
+            background-image: linear-gradient(to right, #c678dd, #c678dd);
+            transition: background-size 1s ease-out;
+        }
+        .fun-bar-bounce.animate {
+            animation: dropBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        @keyframes dropBounce {
+            0% { transform: translateY(-30px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        /* 6. Elastic snap */
+        .fun-bar-elastic {
+            background-image: linear-gradient(to right, #e5c07b, #e5c07b);
+            transition: background-size 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        /* 7. Pulse */
+        .fun-bar-pulse {
+            background-image: linear-gradient(to right, #56b6c2, #56b6c2);
+            transition: background-size 1s ease-out;
+        }
+        .fun-bar-pulse.animate {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scaleX(1); }
+            50% { transform: scaleX(1.05); }
+        }
+
+        /* 8. Flip */
+        .fun-bar-flip {
+            background-image: linear-gradient(to right, #ff6b6b, #ff6b6b);
+            transition: background-size 1s ease-out;
+        }
+        .fun-bar-flip.animate {
+            animation: flip 1s ease-out both;
+        }
+
+        @keyframes flip {
+            0% { transform: rotateX(90deg); opacity: 0; }
+            100% { transform: rotateX(0deg); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="stats-container">
+            <span>Statistics</span>
+            <div id="stat-list"></div>
+            <button class="play-btn" id="play-stats">Play</button>
+        </div>
+        <div class="stats-container">
+            <span>Fun Animations</span>
+            <div id="fun-list"></div>
+            <button class="play-btn" id="play-fun">Play</button>
+        </div>
+    </div>
+
+    <script>
+        /* === ORIGINAL BARS === */
+        const stats = [
+            { name: "Wins", value: 72 },
+            { name: "Aces", value: 45 },
+            { name: "Smashes", value: 88 },
+            { name: "Serves", value: 60 },
+        ];
+
+        const list = document.getElementById("stat-list");
+        const statBars = [];
+
+        stats.forEach(stat => {
+            const box = document.createElement("div");
+            box.className = "stat-box";
+
+            const label = document.createElement("span");
+            label.textContent = stat.name;
+
+            const bar = document.createElement("span");
+            bar.className = "stat-bar";
+
+            box.appendChild(label);
+            box.appendChild(bar);
+            list.appendChild(box);
+
+            statBars.push({ bar, value: stat.value });
+        });
+
+        document.getElementById("play-stats").addEventListener("click", () => {
+            // Reset all bars first
+            statBars.forEach(({ bar }) => {
+                bar.style.transition = "none";
+                bar.style.backgroundSize = "0% 100%";
+            });
+
+            // Trigger grow after reset paints
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    statBars.forEach(({ bar, value }) => {
+                        bar.style.transition = "background-size 1.2s cubic-bezier(0.22, 1, 0.36, 1)";
+                        bar.style.backgroundSize = value + "% 100%";
+                    });
+                });
+            });
+        });
+
+        /* === FUN BARS === */
+        const funStats = [
+            { name: "Wiggle",  value: 72, barClass: "fun-bar-wiggle" },
+            { name: "Glow",    value: 55, barClass: "fun-bar-glow" },
+            { name: "Rainbow", value: 88, barClass: "fun-bar-rainbow" },
+            { name: "Shimmer", value: 65, barClass: "fun-bar-shimmer" },
+            { name: "Bounce",  value: 40, barClass: "fun-bar-bounce" },
+            { name: "Elastic", value: 78, barClass: "fun-bar-elastic" },
+            { name: "Pulse",   value: 60, barClass: "fun-bar-pulse" },
+            { name: "Flip",    value: 50, barClass: "fun-bar-flip" },
+        ];
+
+        const funList = document.getElementById("fun-list");
+        const funBars = [];
+
+        funStats.forEach(stat => {
+            const box = document.createElement("div");
+            box.className = "fun-box";
+
+            const label = document.createElement("span");
+            label.textContent = stat.name;
+
+            const bar = document.createElement("span");
+            bar.className = "fun-bar " + stat.barClass;
+
+            box.appendChild(label);
+            box.appendChild(bar);
+            funList.appendChild(box);
+
+            funBars.push({ bar, value: stat.value, barClass: stat.barClass });
+        });
+
+        document.getElementById("play-fun").addEventListener("click", () => {
+            // Reset: remove animate class, reset bar fill, remove old transition
+            funBars.forEach(({ bar, barClass }) => {
+                bar.classList.remove("animate");
+                bar.style.transition = "none";
+                bar.style.backgroundSize = "0% 100%";
+            });
+
+            // Trigger after reset paints
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    funBars.forEach(({ bar, value }) => {
+                        bar.style.transition = "";  // restore CSS transition
+                        bar.classList.add("animate");
+                        bar.style.backgroundSize = value + "% 100%";
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

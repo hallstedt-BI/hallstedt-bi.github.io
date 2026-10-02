@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Rain</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            font-family: monospace;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            color: #0F0;
+            border: solid 1px #0F0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrix" width="1920" height="1080"></canvas>
+    <script>
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        const kata = `ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789`;
+        const letterSize = 15;
+        const columns = canvas.width / letterSize;
+        const rows = canvas.height / letterSize;
+        const positions = []
+        
+        for (let i = 0; i < columns; i++){
+            positions[i] = Math.floor(Math.random() * rows);
+        }
+
+        function drawHiddenMessage() {
+            const hiddenLetterSize = 400;
+            ctx.font = `${hiddenLetterSize}px monospace`;
+            ctx.fillStyle = "rgba(0, 0, 255, 0.005)";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(":)", canvas.width/2-hiddenLetterSize/2, canvas.height/2-hiddenLetterSize/2);
+        }
+
+        function isInsideMessage(x, y){
+            const imageData = ctx.getImageData(x, y, 1, 1);
+            return imageData.data[2] > 0; 
+        }
+
+        function draw(){
+            ctx.fillStyle = "rgba(0, 0, 0, 0.01)";
+            ctx.fillRect(0, 0, 1920, 1080);
+            drawHiddenMessage();
+            ctx.font = `${letterSize}px monospace`;
+            
+            for (let i = 0; i < columns; i++){
+                const x = i * letterSize;
+                const y = positions[i] * letterSize;
+                if (isInsideMessage(x, y)) {
+                ctx.fillStyle = "#ff0000";  // Yellow
+                    } else {
+                    ctx.fillStyle = "#0f0";      // Green
+                } 
+                let char = kata[Math.floor(Math.random() * kata.length)];
+                    ctx.fillText(char, x, y);
+                positions[i]++;
+                if (y > canvas.height && Math.random() > 0.975) {
+                    positions[i] = 0;
+                }
+            }
+        }
+        
+        setInterval(draw, 33);
+    </script>
+</body>
+</html>
