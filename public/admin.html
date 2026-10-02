@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Drinkkommittén · Fredagsdrinken</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍸</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="login" id="login">
+  <h1 class="lbl">Drinkkommittén</h1>
+  <p>Logga in med kommitténs lösenord för att ändra schemat och se rösterna.</p>
+  <div class="pass-row">
+    <input type="password" id="admin-pass" placeholder="Kommitténs lösenord" aria-label="Kommitténs lösenord" autocomplete="current-password">
+    <button class="btn lbl" id="admin-go" type="button">Logga in</button>
+  </div>
+  <p class="msg" id="login-msg" role="status"></p>
+</div>
+
+<div id="panel" hidden>
+  <div class="topbar"><a href="./">← Till sidan</a><button class="link" id="logout" type="button">Logga ut</button></div>
+  <section class="admin" aria-labelledby="admin-heading">
+    <h2 class="lbl" id="admin-heading">Drinkkommittén</h2>
+    <p class="intro">Lägg in en drink per kalendervecka, eller klistra in hela schemat direkt från Excel.</p>
+
+    <div class="tv-card">
+      <div class="qr" id="tv-qr" aria-label="QR-kod till röstningen"></div>
+      <div>
+        <h3 class="lbl">TV-läge</h3>
+        <p>Visa veckans drink, en stor QR-kod med "Rösta på veckans drink här!" och topplistan som uppdateras live. Öppna på datorn som är kopplad till TV:n och tryck F11 för helskärm.</p>
+        <a class="btn lbl" href="tv.html" target="_blank" rel="noopener">Öppna TV-läge</a>
+      </div>
+    </div>
+
+    <div class="admin-grid">
+      <div class="panel">
+        <h3 class="lbl" id="form-title">Lägg till vecka</h3>
+        <div class="inline">
+          <div class="field"><label for="f-year">År</label><input id="f-year" type="number" inputmode="numeric" min="2020" max="2100"></div>
+          <div class="field"><label for="f-week">Vecka</label><input id="f-week" type="number" inputmode="numeric" min="1" max="53"></div>
+          <div class="field"><label for="f-drink">Drink</label><input id="f-drink" type="text" maxlength="80" placeholder="t.ex. Espresso martini" autocomplete="off"></div>
+        </div>
+        <div class="field"><label for="f-note">Ingredienser (valfritt)</label><input id="f-note" type="text" maxlength="400" placeholder="t.ex. 4 cl vodka, 2 cl kaffelikör, 1 shot espresso" autocomplete="off"></div>
+        <button class="btn lbl" id="f-save" type="button">Spara vecka</button>
+        <button class="btn ghost lbl" id="f-cancel" type="button" hidden>Avbryt</button>
+        <p class="msg" id="f-msg" role="status"></p>
+      </div>
+      <div class="panel">
+        <h3 class="lbl">Klistra in från Excel</h3>
+        <div class="field">
+          <label for="p-text">Markera kolumnerna i Excel (vecka, drink och ingredienser, eller med år först), kopiera och klistra in här.</label>
+          <textarea id="p-text" placeholder="40&#9;Espresso martini&#9;Vodka, kaffelikör, espresso&#10;41&#9;Paloma&#9;Tequila, grapefrukt, lime&#10;42&#9;Negroni&#9;Gin, Campari, röd vermouth"></textarea>
+        </div>
+        <p class="hint">Ingredienskolumnen är valfri, och ligger ingredienserna i flera kolumner slås de ihop. Rader utan år hamnar på året du valt till vänster. Finns veckan redan skrivs den över.</p>
+        <div class="preview" id="p-preview"></div>
+        <button class="btn lbl" id="p-import" type="button" disabled>Importera</button>
+        <p class="msg" id="p-msg" role="status"></p>
+      </div>
+    </div>
+
+    <div class="sched-head">
+      <h3 class="lbl">Schema och röster</h3>
+      <div class="yearnav"><button type="button" id="y-prev" aria-label="Föregående år">‹</button><span id="y-label"></span><button type="button" id="y-next" aria-label="Nästa år">›</button></div>
+    </div>
+    <ul class="sched" id="sched"></ul>
+    <p class="names-list" id="names"></p>
+  </section>
+</div>
+
+<script src="assets/qrcode.js"></script>
+<script src="assets/common.js"></script>
+<script src="assets/admin.js"></script>
+</body>
+</html>

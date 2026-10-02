@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fredagsdrinken</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍸</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="hero">
+  <div class="title-wrap">
+    <h1 class="title" aria-label="Fredagsdrinken, brought to you by Drinkkommittén">
+      <span class="l1" aria-hidden="true"><span class="f">F</span><span class="rest"><span class="tag lbl"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.5l1.6 6.2 5.6-3.1-3.1 5.6 6.4 1.8-6.4 1.8 3.1 5.6-5.6-3.1L12 22.5l-1.6-6.2-5.6 3.1 3.1-5.6-6.4-1.8 6.4-1.8-3.1-5.6 5.6 3.1z"/></svg><span>Brought to you by Drinkkommittén</span><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.5l1.6 6.2 5.6-3.1-3.1 5.6 6.4 1.8-6.4 1.8 3.1 5.6-5.6-3.1L12 22.5l-1.6-6.2-5.6 3.1 3.1-5.6-6.4-1.8 6.4-1.8-3.1-5.6 5.6 3.1z"/></svg></span>redags-</span></span>
+      <span class="l2" aria-hidden="true">drinken</span>
+    </h1>
+  </div>
+  <nav class="hero-nav">
+    <a class="pill lbl" href="#topplistan">Topplistan
+      <svg width="46" height="30" viewBox="0 0 46 30" fill="none" aria-hidden="true"><path d="M23 1v27M15 20l8 8 8-8" stroke="currentColor" stroke-width="1.6"/></svg></a>
+    <a class="pill lbl" href="#rosta">Rösta här
+      <svg width="46" height="30" viewBox="0 0 46 30" fill="none" aria-hidden="true"><path d="M23 1v27M15 20l8 8 8-8" stroke="currentColor" stroke-width="1.6"/></svg></a>
+  </nav>
+</header>
+
+<main>
+  <section class="vote" id="rosta" aria-labelledby="vote-heading">
+    <div class="vote-img" role="img" aria-label="Kornig bild av en drink i grönt och blått ljus"></div>
+    <div class="vote-body" id="vote-body">
+      <p class="week-line lbl" id="vote-heading">Veckans drink</p>
+      <p class="empty-big">Laddar…</p>
+    </div>
+  </section>
+
+  <section class="board" id="topplistan" aria-labelledby="board-heading">
+    <h2 class="board-title" id="board-heading"><span class="script">Topplistan</span><span class="sub lbl">Snittbetyg per drink</span></h2>
+    <div id="board"><p class="board-empty">Laddar…</p></div>
+  </section>
+</main>
+
+<footer>Fredagsdrinken, varje fredag på kontoret.</footer>
+
+<script src="assets/common.js"></script>
+<script src="assets/vote.js"></script>
+</body>
+</html>
